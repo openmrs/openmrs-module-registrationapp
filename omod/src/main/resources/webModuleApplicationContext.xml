@@ -22,5 +22,8 @@
 
 	<!-- Add here beans related to the web context -->
 
+    <bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
+        <property name="moduleId" value="${project.parent.artifactId}"/>
+    </bean>
 
 </beans>

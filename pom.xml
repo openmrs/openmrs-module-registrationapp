@@ -34,23 +34,14 @@
 	
 	<properties>
 		<openMRSVersion>1.9.4-SNAPSHOT</openMRSVersion>
+        <uiframeworkVersion>2.5.2-SNAPSHOT</uiframeworkVersion>
+        <appframeworkVersion>2.0-SNAPSHOT</appframeworkVersion>
+        <springVersion>3.0.5.RELEASE</springVersion>
+        <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
     <dependencies>
-
-        <!--
-        Libraries to add as dependencies with compile or runtime scope:
-        Find matching dependencies in the maven central repository.
-        <dependency>
-            <groupId>org.other.library</groupId>
-            <artifactId>library-name</artifactId>
-            <version>library.version</version>
-            <scope>compile</scope>
-        </dependency>
-        -->
-
-
 
         <!-- Begin OpenMRS core -->
 
@@ -95,6 +86,42 @@
         </dependency>
 
         <!-- End OpenMRS core -->
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uiframework-api</artifactId>
+            <version>${uiframeworkVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appframework-api</artifactId>
+            <version>${appframeworkVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- OpenMRS modules required for testing -->
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uicommons-api</artifactId>
+            <version>${uicommonsVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- End OpenMRS modules -->
+
+        <!-- start other dependencies -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${springVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- end other dependencies -->
 
     </dependencies>
 
