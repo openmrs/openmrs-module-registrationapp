@@ -22,9 +22,10 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:https://svn.openmrs.org/openmrs-modules/registrationapp/trunk/</connection>
-		<developerConnection>scm:svn:https://svn.openmrs.org/openmrs-modules/registrationapp/trunk/</developerConnection>
-		<url>https://svn.openmrs.org/openmrs-modules/registrationapp/trunk/</url>
+		<connection>scm:git:git@github.com:openmrs/openmrs-module-registrationapp.git</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-module-registrationapp.git</developerConnection>
+		<url>scm:git:git@github.com:openmrs/openmrs-module-registrationapp.git</url>
+        <tag>HEAD</tag>
 	</scm>
 
 	<modules>
