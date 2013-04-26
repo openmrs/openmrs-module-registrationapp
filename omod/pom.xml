@@ -20,28 +20,6 @@
 			<artifactId>${project.parent.artifactId}-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-        <!--dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>${project.parent.artifactId}-api</artifactId>
-            <version>${project.parent.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency-->
-		
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-            <version>${openMRSVersion}</version>
-			<type>jar</type>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.openmrs.web</groupId>
-			<artifactId>openmrs-web</artifactId>
-            <version>${openMRSVersion}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
 
 	</dependencies>
 

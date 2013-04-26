@@ -102,8 +102,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- OpenMRS modules required for testing -->
-
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-api</artifactId>
@@ -114,13 +112,6 @@
         <!-- End OpenMRS modules -->
 
         <!-- start other dependencies -->
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${springVersion}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- end other dependencies -->
 
