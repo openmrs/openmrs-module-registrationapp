@@ -38,7 +38,17 @@
         <uiframeworkVersion>2.5.2-SNAPSHOT</uiframeworkVersion>
         <appframeworkVersion>2.0-SNAPSHOT</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
+        <idgenVersion>2.5</idgenVersion>
         <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
+        <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <emrVersion>2.0-SNAPSHOT</emrVersion>
+        <calculationVersion>1.0</calculationVersion>
+        <htmlformentryVersion>2.0.8</htmlformentryVersion>
+        <htmlformentry19extVersion>1.1-SNAPSHOT</htmlformentry19extVersion>
+        <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
+        <providerManagementVersion>1.1.3</providerManagementVersion>
+        <reportingVersion>0.7.6-SNAPSHOT</reportingVersion>
+        <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -87,6 +97,77 @@
         </dependency>
 
         <!-- End OpenMRS core -->
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>idgen-api</artifactId>
+            <version>${idgenVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api</artifactId>
+            <version>${emrapiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emr-api</artifactId>
+            <version>${emrVersion}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emr-api</artifactId>
+            <version>${emrVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlformentry-api</artifactId>
+            <version>${htmlformentryVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>reporting-api</artifactId>
+            <version>${reportingVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>calculation-api</artifactId>
+            <version>${calculationVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>paperrecord-api</artifactId>
+            <version>${paperrecordVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>providermanagement-api</artifactId>
+            <version>${providerManagementVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api</artifactId>
+            <version>${serializationxstreamVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
