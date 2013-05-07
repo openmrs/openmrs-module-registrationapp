@@ -29,4 +29,17 @@ ${ ui.includeFragment("emr", "validationMessages")}
     <h2>
         ${ ui.message("registrationapp.registration.label") }
     </h2>
+
+    <form id="patientRegistration" method="POST">
+
+        <div id="confirmation">
+            <span class="title">Confirm</span>
+            <div id="confirmationQuestion">
+                Confirm submission? <p style="display: inline"><input type="submit" class="confirm" value="Yes" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="No" /></p>
+            </div>
+            <div class="before-dataCanvas"></div>
+            <div id="dataCanvas"></div>
+            <div class="after-data-canvas"></div>
+        </div>
+    </form>
 </div>
