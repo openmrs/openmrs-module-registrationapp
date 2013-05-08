@@ -49,6 +49,7 @@
         <providerManagementVersion>1.1.3</providerManagementVersion>
         <reportingVersion>0.7.6-SNAPSHOT</reportingVersion>
         <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
+        <registrationcoreVersion>1.0-SNAPSHOT</registrationcoreVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -187,6 +188,13 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-api</artifactId>
             <version>${uicommonsVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>registrationcore-api</artifactId>
+            <version>${registrationcoreVersion}</version>
             <scope>provided</scope>
         </dependency>
 

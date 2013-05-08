@@ -1,5 +1,15 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.openmrs.Patient;
+import org.openmrs.PersonName;
+import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.emr.EmrContext;
@@ -7,30 +17,28 @@ import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
-import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.ui.framework.annotation.BindParams;
+import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class RegisterPatientPageController {
 
     private static final String REGISTRATION_SECTION_EXTENSION_POINT = "org.openmrs.module.registrationapp.section";
 
-    private NavigableFormStructure formStructure = new NavigableFormStructure();
-
-    public void controller( UiUtils ui,
-                            EmrContext emrContext,
-                            PageModel model,
-                            @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService) {
+    public void get(EmrContext emrContext, PageModel model,
+        @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
+        @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate) {
 
         emrContext.requireAuthentication();
 
         NavigableFormStructure formStructure = buildFormStructure(appFrameworkService);
 
+        model.addAttribute("form", formStructure);
+        model.addAttribute("nameTemplate", nameTemplate);
     }
 
     private NavigableFormStructure buildFormStructure(AppFrameworkService appFrameworkService) {
@@ -67,4 +75,29 @@ public class RegisterPatientPageController {
 
         return formStructure;
     }
+
+    public void post(EmrContext emrContext,
+        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
+        @ModelAttribute("patient") @BindParams Patient patient,
+        @MethodParam("buildBirthdate") @BindParams Date birthdate,
+        @ModelAttribute("personName") @BindParams PersonName name) {
+
+        patient.setBirthdate(birthdate);
+        patient.addName(name);
+
+        //TODO create encounters
+        registrationService.registerPatient(patient, null, emrContext.getSessionLocation());
+    }
+
+
+    public Date buildBirthdate(@RequestParam("birthDay") int birthDay,
+        @RequestParam("birthMonth") int birthMonth,
+        @RequestParam("birthYear") int birthYear) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(birthYear, birthMonth, birthDay);
+
+        return calendar.getTime();
+    }
+
 }

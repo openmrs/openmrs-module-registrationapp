@@ -22,6 +22,7 @@
         <require_module version="${htmlformentryVersion}">org.openmrs.module.htmlformentry</require_module>
         <require_module version="${htmlformentry19extVersion}">org.openmrs.module.htmlformentry19ext</require_module>
         <require_module version="${emrVersion}">org.openmrs.module.emr</require_module>
+        <require_module version="${registrationcoreVersion}">org.openmrs.module.registrationcore</require_module>
     </require_modules>
 	
 	<!-- Module Activator -->
