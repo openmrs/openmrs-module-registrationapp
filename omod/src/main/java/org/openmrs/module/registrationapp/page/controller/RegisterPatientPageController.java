@@ -18,6 +18,7 @@ import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -76,17 +77,19 @@ public class RegisterPatientPageController {
         return formStructure;
     }
 
-    public void post(EmrContext emrContext,
+    public String post(EmrContext emrContext,
         @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
         @ModelAttribute("patient") @BindParams Patient patient,
         @MethodParam("buildBirthdate") @BindParams Date birthdate,
-        @ModelAttribute("personName") @BindParams PersonName name) {
+        @ModelAttribute("personName") @BindParams PersonName name,
+        UiUtils ui) {
 
         patient.setBirthdate(birthdate);
         patient.addName(name);
 
         //TODO create encounters
-        registrationService.registerPatient(patient, null, emrContext.getSessionLocation());
+        patient = registrationService.registerPatient(patient, null, emrContext.getSessionLocation());
+        return "redirect:" + ui.pageLink("emr", "patient?patientId=" + patient.getId().toString());
     }
 
 
