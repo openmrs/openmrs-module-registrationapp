@@ -75,6 +75,25 @@ ${ ui.includeFragment("emr", "validationMessages")}
                         formFieldName: "birthYear",
                         left: true])}
             </fieldset>
+            
+            <% if (enableOverrideOfAddressPortlet == 'false') { %>
+	            <fieldset>
+	                <legend>${ ui.message("Person.address") }</legend>
+	                <h3>What is the patient's address?</h3>
+	                <% addressTemplate.lines.each { line -> %>
+	                    <% line.each { token -> %>
+	                        <% if (token.isToken == addressTemplate.layoutToken) { %>
+			                    ${ ui.includeFragment("emr", "field/text", [
+			                            label: ui.message(token.displayText),
+			                            formFieldName: token.codeName,
+			                            initialValue: addressTemplate.elementDefaults.get(token.codeName),
+			                            left: true])}
+			                <% } %>
+	                    <% } %>
+	                <% } %>
+	            </fieldset>
+            <% } %>
+            
         </section>
 
         <div id="confirmation">

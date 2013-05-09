@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmrs.Patient;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
@@ -40,6 +43,8 @@ public class RegisterPatientPageController {
 
         model.addAttribute("form", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
+        model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
+        model.addAttribute("enableOverrideOfAddressPortlet", Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet"));
     }
 
     private NavigableFormStructure buildFormStructure(AppFrameworkService appFrameworkService) {
@@ -82,10 +87,12 @@ public class RegisterPatientPageController {
         @ModelAttribute("patient") @BindParams Patient patient,
         @MethodParam("buildBirthdate") @BindParams Date birthdate,
         @ModelAttribute("personName") @BindParams PersonName name,
+        @ModelAttribute("personAddress") @BindParams PersonAddress address,
         UiUtils ui) {
 
         patient.setBirthdate(birthdate);
         patient.addName(name);
+        patient.addAddress(address);
 
         //TODO create encounters
         patient = registrationService.registerPatient(patient, null, emrContext.getSessionLocation());
