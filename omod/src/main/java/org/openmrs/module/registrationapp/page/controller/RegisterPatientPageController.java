@@ -44,7 +44,7 @@ public class RegisterPatientPageController {
         model.addAttribute("form", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("enableOverrideOfAddressPortlet", Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet"));
+        model.addAttribute("enableOverrideOfAddressPortlet", Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
 
     private NavigableFormStructure buildFormStructure(AppFrameworkService appFrameworkService) {
