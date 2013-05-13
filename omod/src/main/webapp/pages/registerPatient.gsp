@@ -26,6 +26,8 @@ ${ ui.includeFragment("emr", "validationMessages")}
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
     ];
+
+    var testFormStructure = "${formStructure}";
 </script>
 
 <div id="content" class="container">
@@ -42,7 +44,7 @@ ${ ui.includeFragment("emr", "validationMessages")}
                 <h3>What's the patient's name?</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("emr", "field/text", [
-                            label: ui.message("emr.registration." + name),
+                            label: ui.message("emr.person." + name),
                             formFieldName: name,
                             left: true])}
 
@@ -95,7 +97,28 @@ ${ ui.includeFragment("emr", "validationMessages")}
             <% } %>
             
         </section>
-
+        <!-- read configurable sections from the json config file-->
+        <% formStructure.sections.each { structure ->
+            def section = structure.value
+            def questions=section.questions
+        %>
+            <section id="${section.id}">
+                <span class="title">${ui.message(section.label)}</span>
+                    <% questions.each { question ->
+                        def fields=question.value.fields
+                    %>
+                        <fieldset>
+                            <legend>${ ui.message(question.value.legend)}</legend>
+                            <% fields.each { field -> %>
+                                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, [
+                                        label:ui.message(field.label),
+                                        formFieldName: field.formFieldName,
+                                        left: true])}
+                            <% } %>
+                        </fieldset>
+                    <% } %>
+            </section>
+        <% } %>
         <div id="confirmation">
             <span class="title">Confirm</span>
             <div id="confirmationQuestion">

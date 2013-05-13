@@ -26,5 +26,24 @@ public class NavigableFormStructure {
     public void addSection(Section section) {
         sections.put(section.getId(), section);
     }
+    public List<Field> getFields(){
+        List<Field> fields = null;
+        if(sections!=null && sections.size()>0){
+            fields = new ArrayList<Field>();
+            for (Section section : sections.values()) {
+                Map<String, Question> questions = section.getQuestions();
+                if(questions!=null && questions.size()>0){
+                    for (Question question : questions.values()) {
+                        List<Field> qFields = question.getFields();
+                        if(qFields!=null && qFields.size()>0){
+                            fields.addAll(qFields);
+                        }
+                    }
+                }
+            }
+        }
+
+        return fields;
+    }
 
 }

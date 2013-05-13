@@ -1,38 +1,21 @@
 [
     {
-        "id": "registrationapp.form.registration",
+        "id": "contactInfo",
         "extensionPointId": "org.openmrs.module.registrationapp.section",
         "type": "section",
-        "label": "registrationapp.registration.label",
+        "label": "emr.patientDashBoard.contactinfo",
         "order": 1,
         "extensionParams": {
             "questions": [
-                {"label": "phone.number",
+                {"legend": "emr.person.telephoneNumber",
                 "fields": [{
-                    "type": "field",
-                    "table": "org.openmrs.PersonAttributeType",
+                    "type": "personAttribute",
+                    "label": "registrationapp.patient.phone.label",
+                    "formFieldName": "phoneNumber",
                     "uuid": "14d4f066-15f5-102d-96e4-000c29c2a5d7",
-                    "fragment" : "widget/phoneNumber"
-                }
-                ]},
-                {"label": "name",
-                 "fields": [{
-                        "type": "template",
-                        "uuid": "",
-                        "table": "org.openmrs.Person",
-                        "fragment": "widget/nameTemplate"
-                     }
-                 ]},
-                {"label": "gender",
-                 "fields": [
-                     {
-                         "type": "field",
-                         "table": "org.openmrs.Person",
-						 "uuid": "",                        
-                         "fragment" : "widget/gender"
-                     }
-                 ]
-                }
+                    "widget" : {"providerName": "emr", "fragmentId": "field/text"}
+                    }
+                ]}
             ]
         }
     }

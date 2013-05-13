@@ -6,15 +6,15 @@ import java.util.Map;
 
 public class Question {
 
-    private String label;
+    private String legend;
     private List<Field> fields;
 
     public Question() {
     }
 
-    public Question(List<Field> fields, String label) {
+    public Question(List<Field> fields, String legend) {
         this.fields = fields;
-        this.label = label;
+        this.legend = legend;
     }
 
     public List<Field> getFields() {
@@ -25,11 +25,11 @@ public class Question {
         this.fields = fields;
     }
 
-    public String getLabel() {
-        return label;
+    public String getLegend() {
+        return legend;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setLegend(String legend) {
+        this.legend = legend;
     }
 }

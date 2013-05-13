@@ -1,35 +1,39 @@
 package org.openmrs.module.registrationapp.model;
 
+import org.openmrs.ui.framework.fragment.FragmentRequest;
+
 public class Field {
     private String type;
-    private String table;
+    private String label;
+    private String formFieldName;
     private String uuid;
-    private String fragment;
+    private FragmentRequest fragmentRequest;
 
     public Field() {
     }
 
-    public Field(String type, String table, String uuid, String fragment) {
+    public Field(String type, String label, String formFieldName, String uuid, FragmentRequest fragmentRequest) {
         this.type = type;
-        this.table = table;
+        this.label = label;
+        this.formFieldName = formFieldName;
         this.uuid = uuid;
-        this.fragment = fragment;
+        this.fragmentRequest =fragmentRequest;
     }
 
-    public String getFragment() {
-        return fragment;
+    public String getLabel() {
+        return label;
     }
 
-    public void setFragment(String fragment) {
-        this.fragment = fragment;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public String getTable() {
-        return table;
+    public String getFormFieldName() {
+        return formFieldName;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setFormFieldName(String formFieldName) {
+        this.formFieldName = formFieldName;
     }
 
     public String getType() {
@@ -46,5 +50,13 @@ public class Field {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public FragmentRequest getFragmentRequest() {
+        return fragmentRequest;
+    }
+
+    public void setFragmentRequest(FragmentRequest fragmentRequest) {
+        this.fragmentRequest = fragmentRequest;
     }
 }
