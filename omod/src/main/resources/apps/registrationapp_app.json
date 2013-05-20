@@ -1,28 +1,11 @@
 [
     {
-        "id": "registration.section",
-        "description": "Patient Registration Application Section Configuration",
+        "id": "registrationapp.registerPatient",
+        "description": "Create a new Patient Record",
         "extensionPoints": [
             {
-                "id": "org.openmrs.module.registrationapp.section", "description": "A section of the patient registration screen"
-            }
-        ]
-    },
-    {
-        "id": "registration.question",
-        "description": "Patient Registration Application Question Configuration",
-        "extensionPoints": [
-            {
-                "id": "org.openmrs.module.registrationapp.question", "description": "A question of the patient registration screen"
-            }
-        ]
-    },
-    {
-        "id": "registration.field",
-        "description": "Patient Registration Application Field Configuration",
-        "extensionPoints": [
-            {
-                "id": "org.openmrs.module.registrationapp.field", "description": "A field of the patient registration screen"
+                "id": "org.openmrs.module.registrationapp.section",
+                "description": "Configuration for a section to display on the patient registration screen"
             }
         ]
     }
