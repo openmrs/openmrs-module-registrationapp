@@ -14,13 +14,18 @@
 	<description>OMOD project for RegistrationApp</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>${project.parent.artifactId}-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appui-omod</artifactId>
+            <version>${appuiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 	</dependencies>
 
 	<build>

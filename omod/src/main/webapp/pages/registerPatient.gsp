@@ -1,19 +1,19 @@
 <%
-    if (emrContext.authenticated && !emrContext.currentProvider) {
+    if (sessionContext.authenticated && !sessionContext.currentProvider) {
         throw new IllegalStateException("Logged-in user is not a Provider")
     }
-    ui.decorateWith("emr", "standardEmrPage")
-    ui.includeJavascript("emr", "navigator/validators.js", Integer.MAX_VALUE - 19)
-    ui.includeJavascript("emr", "navigator/navigator.js", Integer.MAX_VALUE - 20)
-    ui.includeJavascript("emr", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("emr", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("emr", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
-    ui.includeCss("mirebalais", "simpleFormUi.css", -200)
+    ui.decorateWith("appui", "standardEmrPage")
+    ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
+    ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
+    ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
+    ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
+    ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
+    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200)
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
 %>
-${ ui.includeFragment("emr", "validationMessages")}
+${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
     jQuery(function() {
@@ -43,7 +43,7 @@ ${ ui.includeFragment("emr", "validationMessages")}
                 <legend>Name</legend>
                 <h3>What's the patient's name?</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
-                    ${ ui.includeFragment("emr", "field/text", [
+                    ${ ui.includeFragment("uicommons", "field/text", [
                             label: ui.message("emr.person." + name),
                             formFieldName: name,
                             left: true])}
@@ -54,7 +54,7 @@ ${ ui.includeFragment("emr", "validationMessages")}
 
             <fieldset>
                 <legend>${ ui.message("emr.gender") }</legend>
-                ${ ui.includeFragment("emr", "field/radioButtons", [
+                ${ ui.includeFragment("uicommons", "field/radioButtons", [
                         label: "What's the patient's gender?",
                         formFieldName: "gender",
                         options: genderOptions
@@ -64,20 +64,20 @@ ${ ui.includeFragment("emr", "validationMessages")}
             <fieldset>
                 <legend>Age</legend>
                 <h3>What's the patient's age?</h3>
-                ${ ui.includeFragment("emr", "field/text", [
+                ${ ui.includeFragment("uicommons", "field/text", [
                         label: ui.message("emr.retrospectiveCheckin.checkinDate.day.label"),
                         formFieldName: "birthDay",
                         left: true])}
-                ${ ui.includeFragment("emr", "field/text", [
+                ${ ui.includeFragment("uicommons", "field/text", [
                         label: ui.message("emr.retrospectiveCheckin.checkinDate.month.label"),
                         formFieldName: "birthMonth",
                         left: true])}
-                ${ ui.includeFragment("emr", "field/text", [
+                ${ ui.includeFragment("uicommons", "field/text", [
                         label: ui.message("emr.retrospectiveCheckin.checkinDate.year.label"),
                         formFieldName: "birthYear",
                         left: true])}
             </fieldset>
-            
+
             <% if (enableOverrideOfAddressPortlet == 'false') { %>
 	            <fieldset>
 	                <legend>${ ui.message("Person.address") }</legend>
@@ -85,17 +85,17 @@ ${ ui.includeFragment("emr", "validationMessages")}
 	                <% addressTemplate.lines.each { line -> %>
 	                    <% line.each { token -> %>
 	                        <% if (token.isToken == addressTemplate.layoutToken) { %>
-			                    ${ ui.includeFragment("emr", "field/text", [
+			                    ${ ui.includeFragment("uicommons", "field/text", [
 			                            label: ui.message(token.displayText),
 			                            formFieldName: token.codeName,
-			                            initialValue: addressTemplate.elementDefaults.get(token.codeName),
+			                            initialValue: addressTemplate.elementDefaults ? addressTemplate.elementDefaults.get(token.codeName) : null,
 			                            left: true])}
 			                <% } %>
 	                    <% } %>
 	                <% } %>
 	            </fieldset>
             <% } %>
-            
+
         </section>
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
