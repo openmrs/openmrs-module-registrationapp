@@ -21,7 +21,8 @@
         <require_module version="${uicommonsVersion}">org.openmrs.module.uicommons</require_module>
         <require_module version="${htmlformentryVersion}">org.openmrs.module.htmlformentry</require_module>
         <require_module version="${htmlformentry19extVersion}">org.openmrs.module.htmlformentry19ext</require_module>
-        <require_module version="${emrVersion}">org.openmrs.module.emr</require_module>
+        <require_module version="${emrapiVersion}">org.openmrs.module.emrapi</require_module>
+        <require_module version="${appuiVersion}}">org.openmrs.module.appui</require_module>
         <require_module version="${registrationcoreVersion}">org.openmrs.module.registrationcore</require_module>
     </require_modules>
 	

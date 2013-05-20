@@ -41,7 +41,6 @@
         <idgenVersion>2.5</idgenVersion>
         <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
-        <emrVersion>2.0-SNAPSHOT</emrVersion>
         <calculationVersion>1.0</calculationVersion>
         <htmlformentryVersion>2.0.8</htmlformentryVersion>
         <htmlformentry19extVersion>1.1-SNAPSHOT</htmlformentry19extVersion>
@@ -50,8 +49,9 @@
         <reportingVersion>0.7.6-SNAPSHOT</reportingVersion>
         <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
         <registrationcoreVersion>1.0-SNAPSHOT</registrationcoreVersion>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+        <appuiVersion>1.0-SNAPSHOT</appuiVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
 
@@ -115,16 +115,8 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>emr-api</artifactId>
-            <version>${emrVersion}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>emr-api</artifactId>
-            <version>${emrVersion}</version>
+            <artifactId>appui-api</artifactId>
+            <version>${appuiVersion}</version>
             <scope>provided</scope>
         </dependency>
 
