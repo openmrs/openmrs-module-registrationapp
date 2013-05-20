@@ -18,5 +18,16 @@
                 ]}
             ]
         }
+    },
+    
+    {
+        "id": "registrationapp.registerPatient",
+        "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+        "type": "link",
+        "label": "registrationapp.patientRegistration.label",
+        "url": "registrationapp/registerPatient.page",
+        "icon": "icon-register",
+        "order": 13,
+        "requiredPrivilege": "App: registrationapp.registerPatient"
     }
 ]
