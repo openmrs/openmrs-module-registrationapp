@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<module configVersion="1.2">
+<module configVersion="1.4">
 
 	<!-- Module Properties -->
 	<id>${project.parent.artifactId}</id>
@@ -25,6 +25,10 @@
         <require_module version="${appuiVersion}}">org.openmrs.module.appui</require_module>
         <require_module version="${registrationcoreVersion}">org.openmrs.module.registrationcore</require_module>
     </require_modules>
+
+    <aware_of_modules>
+        <aware_of_module>org.openmrs.module.referencemetadata</aware_of_module>
+    </aware_of_modules>
 	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.RegistrationAppActivator</activator>
