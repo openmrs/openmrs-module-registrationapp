@@ -42,8 +42,6 @@
         <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <calculationVersion>1.0</calculationVersion>
-        <htmlformentryVersion>2.0.8</htmlformentryVersion>
-        <htmlformentry19extVersion>1.1-SNAPSHOT</htmlformentry19extVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <providerManagementVersion>1.1.3</providerManagementVersion>
         <reportingVersion>0.7.6-SNAPSHOT</reportingVersion>
@@ -117,13 +115,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>appui-api</artifactId>
             <version>${appuiVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>htmlformentry-api</artifactId>
-            <version>${htmlformentryVersion}</version>
             <scope>provided</scope>
         </dependency>
 
