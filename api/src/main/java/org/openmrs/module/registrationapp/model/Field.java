@@ -1,23 +1,29 @@
 package org.openmrs.module.registrationapp.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 
 public class Field {
+
+    @JsonProperty
     private String type;
+
+    @JsonProperty
     private String label;
+
+    @JsonProperty
     private String formFieldName;
+
+    @JsonProperty
     private String uuid;
-    private FragmentRequest fragmentRequest;
+
+    @JsonProperty
+    private ObjectNode widget;
+
+    private transient FragmentRequest fragmentRequest;
 
     public Field() {
-    }
-
-    public Field(String type, String label, String formFieldName, String uuid, FragmentRequest fragmentRequest) {
-        this.type = type;
-        this.label = label;
-        this.formFieldName = formFieldName;
-        this.uuid = uuid;
-        this.fragmentRequest =fragmentRequest;
     }
 
     public String getLabel() {
@@ -58,5 +64,13 @@ public class Field {
 
     public void setFragmentRequest(FragmentRequest fragmentRequest) {
         this.fragmentRequest = fragmentRequest;
+    }
+
+    public ObjectNode getWidget() {
+        return widget;
+    }
+
+    public void setWidget(ObjectNode widget) {
+        this.widget = widget;
     }
 }

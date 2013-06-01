@@ -1,12 +1,16 @@
 package org.openmrs.module.registrationapp.model;
 
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.List;
-import java.util.Map;
 
 public class Question {
 
+    @JsonProperty
     private String legend;
+
+    @JsonProperty
     private List<Field> fields;
 
     public Question() {

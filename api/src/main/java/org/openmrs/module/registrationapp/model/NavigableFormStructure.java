@@ -1,9 +1,8 @@
 package org.openmrs.module.registrationapp.model;
 
-import org.openmrs.module.appframework.domain.Extension;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,9 +30,9 @@ public class NavigableFormStructure {
         if(sections!=null && sections.size()>0){
             fields = new ArrayList<Field>();
             for (Section section : sections.values()) {
-                Map<String, Question> questions = section.getQuestions();
-                if(questions!=null && questions.size()>0){
-                    for (Question question : questions.values()) {
+                Map<String, Question> questions = new LinkedHashMap<String, Question>();
+                if (section.getQuestions() != null) {
+                    for (Question question : section.getQuestions()) {
                         List<Field> qFields = question.getFields();
                         if(qFields!=null && qFields.size()>0){
                             fields.addAll(qFields);

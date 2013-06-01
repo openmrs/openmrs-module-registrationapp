@@ -1,11 +1,19 @@
 [
     {
-        "id": "registrationapp.registerPatient",
+        "id": "registrationapp.basicRegisterPatient",
+        "instanceOf": "registrationapp.registerPatient",
+        "label": "Register Patient",
         "description": "Create a new Patient Record",
-        "extensionPoints": [
+        "extensions": [
             {
-                "id": "org.openmrs.module.registrationapp.section",
-                "description": "Configuration for a section to display on the patient registration screen"
+                "id": "registrationapp.basicRegisterPatient.homepageLink",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "registrationapp.app.registerPatient.label",
+                "url": "registrationapp/registerPatient.page?appId=registrationapp.basicRegisterPatient",
+                "icon": "icon-user",
+                "order": 1,
+                "requiredPrivilege": "App: registrationapp.registerPatient"
             }
         ]
     }

@@ -1,11 +1,19 @@
 package org.openmrs.module.registrationapp.model;
 
-import java.util.Map;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import java.util.List;
 
 public class Section {
+
+    @JsonProperty
     private String id;
+
+    @JsonProperty
     private String label;
-    private Map<String, Question> questions;
+
+    @JsonProperty
+    private List<Question> questions;
 
     public Section() {
     }
@@ -15,17 +23,17 @@ public class Section {
         this.label = label;
     }
 
-    public Section(String id, String label, Map<String, Question> questions) {
+    public Section(String id, String label, List<Question> questions) {
         this.id = id;
         this.label = label;
         this.questions = questions;
     }
 
-    public Map<String, Question> getQuestions() {
+    public List<Question> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(Map<String, Question> questions) {
+    public void setQuestions(List<Question> questions) {
         this.questions = questions;
     }
 
@@ -35,5 +43,13 @@ public class Section {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

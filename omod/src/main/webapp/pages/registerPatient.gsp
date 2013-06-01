@@ -44,7 +44,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <h3>What's the patient's name?</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("uicommons", "field/text", [
-                            label: ui.message("emr.person." + name),
+                            label: ui.message(nameTemplate.nameMappings[name]),
+                            size: nameTemplate.sizeMappings[name],
                             formFieldName: name,
                             left: true])}
 
@@ -105,10 +106,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <section id="${section.id}">
                 <span class="title">${ui.message(section.label)}</span>
                     <% questions.each { question ->
-                        def fields=question.value.fields
+                        def fields=question.fields
                     %>
                         <fieldset>
-                            <legend>${ ui.message(question.value.legend)}</legend>
+                            <legend>${ ui.message(question.legend)}</legend>
                             <% fields.each { field -> %>
                                 ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, [
                                         label:ui.message(field.label),
