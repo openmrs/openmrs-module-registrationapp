@@ -66,15 +66,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <legend>Age</legend>
                 <h3>What's the patient's age?</h3>
                 ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("emr.retrospectiveCheckin.checkinDate.day.label"),
+                        label: ui.message("registrationapp.birthdate.day.label"),
                         formFieldName: "birthDay",
                         left: true])}
                 ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("emr.retrospectiveCheckin.checkinDate.month.label"),
+                        label: ui.message("registrationapp.birthdate.month.label"),
                         formFieldName: "birthMonth",
                         left: true])}
                 ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("emr.retrospectiveCheckin.checkinDate.year.label"),
+                        label: ui.message("registrationapp.birthdate.year.label"),
                         formFieldName: "birthYear",
                         left: true])}
             </fieldset>
