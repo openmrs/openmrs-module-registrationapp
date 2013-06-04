@@ -143,7 +143,7 @@ public class RegisterPatientPageController {
         @RequestParam("birthYear") int birthYear) {
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(birthYear, birthMonth, birthDay);
+        calendar.set(birthYear, birthMonth - 1, birthDay);
 
         return calendar.getTime();
     }
