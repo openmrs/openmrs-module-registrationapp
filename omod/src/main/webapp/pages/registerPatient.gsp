@@ -99,17 +99,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 	            <fieldset>
 	                <legend>${ ui.message("Person.address") }</legend>
 	                <h3>What is the patient's address?</h3>
-	                <% addressTemplate.lines.each { line -> %>
-	                    <% line.each { token -> %>
-	                        <% if (token.isToken == addressTemplate.layoutToken) { %>
-			                    ${ ui.includeFragment("uicommons", "field/text", [
-			                            label: ui.message(token.displayText),
-			                            formFieldName: token.codeName,
-			                            initialValue: addressTemplate.elementDefaults ? addressTemplate.elementDefaults.get(token.codeName) : null,
-			                            left: true])}
-			                <% } %>
-	                    <% } %>
-	                <% } %>
+	        		${ ui.includeFragment("uicommons", "field/personAddress", [
+                    	addressTemplate: addressTemplate
+                	])}
 	            </fieldset>
             <% } %>
 
