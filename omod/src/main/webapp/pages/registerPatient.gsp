@@ -12,6 +12,19 @@
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
+                          
+    def monthOptions = [ [label: ui.message("registrationapp.month.1"), value: 1],
+    					 [label: ui.message("registrationapp.month.2"), value: 2],
+    					 [label: ui.message("registrationapp.month.3"), value: 3],
+    					 [label: ui.message("registrationapp.month.4"), value: 4],
+    					 [label: ui.message("registrationapp.month.5"), value: 5],
+    					 [label: ui.message("registrationapp.month.6"), value: 6],
+    					 [label: ui.message("registrationapp.month.7"), value: 7],
+    					 [label: ui.message("registrationapp.month.8"), value: 8],
+    					 [label: ui.message("registrationapp.month.9"), value: 9],
+    					 [label: ui.message("registrationapp.month.10"), value: 10],
+    					 [label: ui.message("registrationapp.month.11"), value: 11],
+                         [label: ui.message("registrationapp.month.12"), value: 12] ]
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -64,15 +77,17 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
 
             <fieldset>
-                <legend>Age</legend>
-                <h3>What's the patient's age?</h3>
+                <legend>Birthdate</legend>
+                <h3>What's the patient's birth date?</h3>
                 ${ ui.includeFragment("uicommons", "field/text", [
                         label: ui.message("registrationapp.birthdate.day.label"),
                         formFieldName: "birthDay",
                         left: true])}
-                ${ ui.includeFragment("uicommons", "field/text", [
+                ${ ui.includeFragment("uicommons", "field/dropDown", [
                         label: ui.message("registrationapp.birthdate.month.label"),
                         formFieldName: "birthMonth",
+                        options: monthOptions,
+                        maximumSize: 10,
                         left: true])}
                 ${ ui.includeFragment("uicommons", "field/text", [
                         label: ui.message("registrationapp.birthdate.year.label"),
