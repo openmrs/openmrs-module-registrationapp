@@ -9,7 +9,6 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
     ui.includeJavascript("registrationapp", "registerPatient.js");
-    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200)
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
@@ -73,7 +72,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 	</div>
 	
 
-    <form id="registration" method="POST">
+    <form class="simple-form-ui" id="registration" method="POST">
         <section id="demographics">
             <span class="title">Demographics</span>
 
@@ -156,12 +155,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <% } %>
         <div id="confirmation">
             <span class="title">Confirm</span>
-            <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="confirm" value="Yes" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="No" /></p>
-            </div>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
+            <div id="confirmationQuestion">
+                Confirm submission? <p style="display: inline"><input type="submit" class="confirm" value="Yes" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="No" /></p>
+            </div>
         </div>
     </form>
 </div>
