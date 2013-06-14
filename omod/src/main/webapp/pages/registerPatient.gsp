@@ -8,6 +8,7 @@
     ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
+    ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("uicommons", "emr/simpleFormUi.css", -200)
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
@@ -41,12 +42,36 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     ];
 
     var testFormStructure = "${formStructure}";
+    
+    var patientDashboardLink = '${ui.pageLink("coreapps", "patientdashboard/patientDashboard")}';
+    var getSimilarPatientsLink = '${ ui.actionLink("registrationapp", "matchingPatients", "getSimilarPatients") }';
 </script>
+
+<div id="reviewSimilarPatients" class="dialog" style="display: none">
+    <div class="dialog-header">
+      <h3>Select an existing patient</h3>
+    </div>
+    <div class="dialog-content">
+        <p>
+        	<em>Click to pick a patient: </em>
+        </p>
+        
+        <ul id="similarPatientsSelect" class="select"></ul>
+       
+        <span class="button cancel"> Cancel </span>
+    </div>
+</div>
 
 <div id="content" class="container">
     <h2>
         ${ ui.message("registrationapp.registration.label") }
     </h2>
+
+	<div id="similarPatients" class="highlighted" style="display: none;">
+		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> similar patient(s) found</div><button class="right" id="reviewSimilarPatientsButton">Review patient(s)</button>
+		   <div class="clear"></div>
+	</div>
+	
 
     <form id="registration" method="POST">
         <section id="demographics">
@@ -54,6 +79,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend>Name</legend>
+			    
                 <h3>What's the patient's name?</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("uicommons", "field/text", [
