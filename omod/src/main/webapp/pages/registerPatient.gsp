@@ -74,7 +74,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     <form class="simple-form-ui" id="registration" method="POST">
         <section id="demographics">
-            <span class="title">${ui.message("registrationapp.patient.birthdate.demographics")}</span>
+            <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.birthdate.name")}</legend>
