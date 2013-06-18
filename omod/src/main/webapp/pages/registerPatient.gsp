@@ -74,18 +74,20 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     <form class="simple-form-ui" id="registration" method="POST">
         <section id="demographics">
-            <span class="title">Demographics</span>
+            <span class="title">${ui.message("registrationapp.patient.birthdate.demographics")}</span>
 
             <fieldset>
-                <legend>Name</legend>
+                <legend>${ui.message("registrationapp.patient.birthdate.name")}</legend>
 			    
-                <h3>What's the patient's name?</h3>
+                <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("uicommons", "field/text", [
                             label: ui.message(nameTemplate.nameMappings[name]),
                             size: nameTemplate.sizeMappings[name],
                             formFieldName: name,
-                            left: true])}
+                            left: true,
+                            classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+                    ])}
 
                 <% } %>
                 <input type="hidden" name="preferred" value="true"/>
@@ -94,36 +96,30 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <fieldset>
                 <legend>${ ui.message("emr.gender") }</legend>
                 ${ ui.includeFragment("uicommons", "field/dropDown", [
-                        label: "What's the patient's gender?",
+                        label: ui.message("registrationapp.patient.gender.questio"),
                         formFieldName: "gender",
                         maximumSize: 3,
-                        options: genderOptions
+                        options: genderOptions,
+                        classes: ["required"]
                 ])}
             </fieldset>
 
             <fieldset>
-                <legend>Birthdate</legend>
-                <h3>What's the patient's birth date?</h3>
-                ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("registrationapp.birthdate.day.label"),
-                        formFieldName: "birthDay",
-                        left: true])}
-                ${ ui.includeFragment("uicommons", "field/dropDown", [
-                        label: ui.message("registrationapp.birthdate.month.label"),
-                        formFieldName: "birthMonth",
-                        options: monthOptions,
-                        maximumSize: 10,
-                        left: true])}
-                ${ ui.includeFragment("uicommons", "field/text", [
-                        label: ui.message("registrationapp.birthdate.year.label"),
-                        formFieldName: "birthYear",
-                        left: true])}
+                <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
+                <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
+                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                        label: "",
+                        formFieldName: "birthdate",
+                        useTime: false,
+                        left: true,
+                        classes: ["required"]
+                  ])}
             </fieldset>
 
             <% if (enableOverrideOfAddressPortlet == 'false') { %>
 	            <fieldset>
 	                <legend>${ ui.message("Person.address") }</legend>
-	                <h3>What is the patient's address?</h3>
+	                <h3>${ui.message("registrationapp.patient.address.question")}</h3>
 	        		${ ui.includeFragment("uicommons", "field/personAddress", [
                     	addressTemplate: addressTemplate
                 	])}
@@ -154,7 +150,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
         <div id="confirmation">
-            <span class="title">Confirm</span>
+            <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>

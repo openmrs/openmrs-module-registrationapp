@@ -13,6 +13,7 @@ import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
@@ -21,6 +22,7 @@ import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -28,6 +30,11 @@ import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.ui.framework.session.Session;
+import org.openmrs.validator.PatientValidator;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -49,10 +56,7 @@ public class RegisterPatientPageController {
         sessionContext.requireAuthentication();
         NavigableFormStructure formStructure = buildFormStructure(app);
 
-        model.addAttribute("formStructure", formStructure);
-        model.addAttribute("nameTemplate", nameTemplate);
-        model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("enableOverrideOfAddressPortlet", Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
+        addModelAttributes(model, app, nameTemplate);
     }
 
     public NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
@@ -86,19 +90,42 @@ public class RegisterPatientPageController {
     }
 
     public String post(UiSessionContext sessionContext,
+                       PageModel model,
+                       BindingResult errors,
                        @RequestParam("appId") AppDescriptor app,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                        @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
+                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @ModelAttribute("patient") @BindParams Patient patient,
-                       @MethodParam("buildBirthdate") @BindParams Date birthdate,
                        @ModelAttribute("personName") @BindParams PersonName name,
                        @ModelAttribute("personAddress") @BindParams PersonAddress address,
-                       HttpServletRequest request,
-                       UiUtils ui) throws IOException {
+                       @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate, HttpServletRequest request,
+                       Session Session, UiUtils ui) throws Exception {
+
+        //The framework isn't passing in the BindingResult object
+        if(errors == null)
+            errors = new BeanPropertyBindingResult(patient, "");
+
+        new PatientValidator().validate(patient, errors);
+        if (errors.hasErrors()) {
+            model.addAttribute("errors", errors);
+            StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation"));
+            errorMessage.append("<ul>");
+            for (ObjectError error : errors.getAllErrors()) {
+                errorMessage.append("<li>");
+                errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
+                        error.getDefaultMessage(), null));
+                errorMessage.append("</li>");
+            }
+            errorMessage.append("</ul>");
+            Session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
+            addModelAttributes(model, app, nameTemplate);
+
+            return null;//redisplay the form to show validation messages
+        }
 
         NavigableFormStructure formStructure = buildFormStructure(app);
 
-        patient.setBirthdate(birthdate);
         patient.addName(name);
         patient.addAddress(address);
 
@@ -138,14 +165,15 @@ public class RegisterPatientPageController {
         return patient;
     }
 
-    public Date buildBirthdate(@RequestParam("birthDay") int birthDay,
-        @RequestParam("birthMonth") int birthMonth,
-        @RequestParam("birthYear") int birthYear) {
+    public void addModelAttributes(PageModel model, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
+        NavigableFormStructure formStructure = buildFormStructure(app);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(birthYear, birthMonth - 1, birthDay);
-
-        return calendar.getTime();
+        model.addAttribute("formStructure", formStructure);
+        model.addAttribute("nameTemplate", nameTemplate);
+        model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
+        model.addAttribute("enableOverrideOfAddressPortlet",
+                Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
+
 
 }
