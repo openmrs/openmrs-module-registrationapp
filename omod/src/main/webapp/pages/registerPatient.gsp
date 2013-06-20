@@ -77,7 +77,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
             <fieldset>
-                <legend>${ui.message("registrationapp.patient.birthdate.name")}</legend>
+                <legend>${ui.message("registrationapp.patient.name.label")}</legend>
 			    
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
@@ -97,7 +97,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <fieldset>
                 <legend>${ ui.message("emr.gender") }</legend>
                 ${ ui.includeFragment("uicommons", "field/radioButtons", [
-                        label: ui.message("registrationapp.patient.gender.questio"),
+                        label: ui.message("registrationapp.patient.gender.question"),
                         formFieldName: "gender",
                         maximumSize: 3,
                         options: genderOptions,
