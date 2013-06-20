@@ -102,28 +102,6 @@ public class RegisterPatientPageController {
                        @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate, HttpServletRequest request,
                        Session Session, UiUtils ui) throws Exception {
 
-        //The framework isn't passing in the BindingResult object
-        if(errors == null)
-            errors = new BeanPropertyBindingResult(patient, "");
-
-        new PatientValidator().validate(patient, errors);
-        if (errors.hasErrors()) {
-            model.addAttribute("errors", errors);
-            StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation"));
-            errorMessage.append("<ul>");
-            for (ObjectError error : errors.getAllErrors()) {
-                errorMessage.append("<li>");
-                errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
-                        error.getDefaultMessage(), null));
-                errorMessage.append("</li>");
-            }
-            errorMessage.append("</ul>");
-            Session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
-            addModelAttributes(model, app, nameTemplate);
-
-            return null;//redisplay the form to show validation messages
-        }
-
         NavigableFormStructure formStructure = buildFormStructure(app);
 
         patient.addName(name);
