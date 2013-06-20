@@ -30,7 +30,7 @@
 
 	jq('#${ config.id }-field').typeahead({
 		source: function (query, process){
-			jq.getJSON('${ ui.actionLink("registrationapp", "personNameSearch", "getSimilarNames") }',
+			jq.getJSON('${ ui.actionLink("registrationapp", "personName", "getSimilarNames") }',
 		        {
 		          'searchPhrase': query,
 		          'formFieldName': '${ config.formFieldName }'

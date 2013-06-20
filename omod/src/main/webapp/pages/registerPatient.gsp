@@ -81,7 +81,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 			    
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
-                    ${ ui.includeFragment("uicommons", "field/personName", [
+                    ${ ui.includeFragment("registrationapp", "field/personName", [
                             label: ui.message(nameTemplate.nameMappings[name]),
                             size: nameTemplate.sizeMappings[name],
                             formFieldName: name,
