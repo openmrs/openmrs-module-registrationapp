@@ -23,7 +23,7 @@ import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public class PersonNameSearchFragmentController {
+public class PersonNameFragmentController {
 
 	public String getSimilarNames(
 			@SpringBean("registrationCoreService") RegistrationCoreService service,
