@@ -117,16 +117,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                   ])}
             </fieldset>
 
-            <% if (enableOverrideOfAddressPortlet == 'false') { %>
-	            <fieldset>
-	                <legend>${ ui.message("Person.address") }</legend>
-	                <h3>${ui.message("registrationapp.patient.address.question")}</h3>
-	        		${ ui.includeFragment("uicommons", "field/personAddress", [
-                    	addressTemplate: addressTemplate
-                	])}
-	            </fieldset>
-            <% } %>
-
         </section>
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
@@ -140,11 +130,16 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     %>
                         <fieldset>
                             <legend>${ ui.message(question.legend)}</legend>
-                            <% fields.each { field -> %>
-                                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, [
+                            <% fields.each { field ->
+                                def configOptions = [
                                         label:ui.message(field.label),
                                         formFieldName: field.formFieldName,
-                                        left: true])}
+                                        left: true]
+                                if(field.type == 'address'){
+                                    configOptions.addressTemplate = addressTemplate
+                                }
+                            %>
+                                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                             <% } %>
                         </fieldset>
                     <% } %>
