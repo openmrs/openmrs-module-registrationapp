@@ -74,19 +74,20 @@ public class RegisterPatientFormBuilder {
 		if (fields != null && fields.size() > 0) {
 			for (Field field : fields) {
 				String[] parameterValues = personAttributes.get(field.getFormFieldName());
-				for (String parameterValue : parameterValues) {
-					if (StringUtils.isNotBlank(parameterValue)) {
-						if (StringUtils.equals(field.getType(), "personAttribute")) {
-							PersonAttributeType personAttributeByUuid = Context.getPersonService()
-							        .getPersonAttributeTypeByUuid(field.getUuid());
-							if (personAttributeByUuid != null) {
-								PersonAttribute attribute = new PersonAttribute(personAttributeByUuid, parameterValue);
-								person.addAttribute(attribute);
+				if (parameterValues != null) {
+					for (String parameterValue : parameterValues) {
+						if (StringUtils.isNotBlank(parameterValue)) {
+							if (StringUtils.equals(field.getType(), "personAttribute")) {
+								PersonAttributeType personAttributeByUuid = Context.getPersonService()
+								        .getPersonAttributeTypeByUuid(field.getUuid());
+								if (personAttributeByUuid != null) {
+									PersonAttribute attribute = new PersonAttribute(personAttributeByUuid, parameterValue);
+									person.addAttribute(attribute);
+								}
 							}
 						}
 					}
 				}
-				
 			}
 		}
 	}
