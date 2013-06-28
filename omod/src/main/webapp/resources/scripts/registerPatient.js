@@ -16,15 +16,8 @@ jq(function() {
 	});
 	
 	getSimilarPatients = function(field) {
-		jq.getJSON(getSimilarPatientsLink,
-        {
-          'givenName': jq('input[name=givenName]').val(),
-          'familyName': jq('input[name=familyName]').val(),
-          'gender': jq('select[name=gender]').val(),
-          'birthDay': jq('input[name=birthDay]').val(),
-          'birthMonth': jq('select[name=birthMonth]').val(),
-          'birthYear': jq('input[name=birthYear]').val()
-        })
+		var formData = jq('#registration').serialize();
+		jq.getJSON(getSimilarPatientsLink, formData)
 	    .success(function(data) {
 	    	if (data.length == 0) {
 	    		jq("#similarPatients").hide();

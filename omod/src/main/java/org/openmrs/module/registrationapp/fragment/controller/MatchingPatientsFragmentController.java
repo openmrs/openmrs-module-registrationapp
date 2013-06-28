@@ -14,17 +14,23 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import javax.servlet.http.HttpServletRequest;
+
 import org.openmrs.Patient;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
+import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -32,32 +38,21 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 public class MatchingPatientsFragmentController {
 	
-	public List<SimpleObject> getSimilarPatients(@SpringBean("registrationCoreService") RegistrationCoreService service,
-	                                             @RequestParam(value = "givenName", required = false) String givenName,
-	                                             @RequestParam(value = "familyName", required = false) String familyName,
-	                                             @RequestParam(value = "gender", required = false) String gender,
-	                                             @RequestParam(value = "birthDay", required = false) Integer birthDay,
-	                                             @RequestParam(value = "birthMonth", required = false) Integer birthMonth,
-	                                             @RequestParam(value = "birthYear", required = false) Integer birthYear,
-	                                             UiUtils ui) {
-		Patient patient = new Patient();
-		patient.addName(new PersonName(givenName, null, familyName));
-		if (!StringUtils.isBlank(gender)) {
-			patient.setGender(gender);
+	public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
+	                                             @SpringBean("registrationCoreService") RegistrationCoreService service,
+	                                             @ModelAttribute("patient") @BindParams Patient patient,
+	                                             @ModelAttribute("personName") @BindParams PersonName name,
+	                                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
+	                                             HttpServletRequest request, UiUtils ui) throws Exception {
+		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+		
+		patient.addName(name);
+		patient.addAddress(address);
+		
+		if (formStructure != null) {
+			RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
 		}
-		Calendar calendar = Calendar.getInstance();
-		if (birthYear != null) {
-			calendar.set(Calendar.YEAR, birthYear);
-			patient.setBirthdate(calendar.getTime());
-		}
-		if (birthMonth != null) {
-			calendar.set(Calendar.MONTH, birthMonth - 1);
-			patient.setBirthdate(calendar.getTime());
-		}
-		if (birthDay != null) {
-			calendar.set(Calendar.DATE, birthDay);
-			patient.setBirthdate(calendar.getTime());
-		}
+		
 		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, 2.0, 10);
 		
 		List<Patient> similarPatients = new ArrayList<Patient>();
@@ -65,7 +60,8 @@ public class MatchingPatientsFragmentController {
 			similarPatients.add(match.getPatient());
 		}
 		
-		String[] propertiesToInclude = new String[] { "patientId", "givenName", "familyName", "patientIdentifier.identifier", "gender", "birthdate", "personAddress" };
+		String[] propertiesToInclude = new String[] { "patientId", "givenName", "familyName",
+		        "patientIdentifier.identifier", "gender", "birthdate", "personAddress" };
 		
 		return SimpleObject.fromCollection(similarPatients, ui, propertiesToInclude);
 	}
