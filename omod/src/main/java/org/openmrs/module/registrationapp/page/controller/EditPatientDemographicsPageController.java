@@ -49,8 +49,8 @@ public class EditPatientDemographicsPageController {
 	}
 	
 	/**
-	 * @should void an the name and replace it with a new one when the given name is changed
-	 * @should void an the name and replace it with a new one when the family name is changed
+	 * @should void the old person name and replace it with a new one when the given name is changed
+	 * @should void the old person name and replace it with a new one when the family name is changed
 	 * @should not void the existing name if there are no changes in the name
 	 */
 	public String post(UiSessionContext sessionContext, PageModel model,
