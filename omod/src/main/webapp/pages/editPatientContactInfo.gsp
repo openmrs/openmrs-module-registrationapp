@@ -37,67 +37,49 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "registrationapp.patientDashboard", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
-        { label: "${ ui.message("registrationapp.editPatientDemographics.label") }", link: "${ ui.pageLink("registrationapp", "editPatientDemographics") }" }
+        { label: "${ ui.message("registrationapp.editPatientContactInfo.label") }", link: "${ ui.pageLink("registrationapp", "editPatientContactInfo") }" },
     ];
 </script>
 
 <div id="content" class="container">
     <h2>
-        ${ ui.message("registrationapp.editPatientDemographics.label") }
+        ${ ui.message("registrationapp.editPatientContactInfo.label") }
     </h2>
 
     <form class="simple-form-ui" method="POST">
-        <section id="demographics">
-            <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
-
+        <!-- read configurable sections from the json config file-->
+        <% formStructure.sections.each { structure ->
+            def section = structure.value
+            def questions=section.questions
+        %>
+        <section id="${section.id}">
+            <span class="title">${ui.message(section.label)}</span>
+            <% questions.each { question ->
+                def fields=question.fields
+            %>
             <fieldset>
-                <legend>${ui.message("registrationapp.patient.name.label")}</legend>
-                <% nameTemplate.lineByLineFormat.each { name ->
-                    def initialNameFieldValue = ""
-                    if(patient.personName && patient.personName[name]){
-                        initialNameFieldValue = patient.personName[name]
+                <legend>${ ui.message(question.legend)}</legend>
+                <% fields.each { field ->
+                    def configOptions = [
+                            label:ui.message(field.label),
+                            formFieldName: field.formFieldName,
+                            left: true]
+                    if(field.type == 'personAddress'){
+                        configOptions.addressTemplate = addressTemplate
+                        configOptions.initialValue = patient.personAddress;
+                %>
+                        <input type="hidden" name="personAddressUuid" value="${patient.personAddress.uuid}" />
+                <%
+                    }else if(field.type == 'personAttribute'){
+                        configOptions.initialValue = uiUtils.getAttribute(patient, field);
                     }
                 %>
-                ${ ui.includeFragment("registrationapp", "field/personName", [
-                        label: ui.message(nameTemplate.nameMappings[name]),
-                        size: nameTemplate.sizeMappings[name],
-                        formFieldName: name,
-                        dataItems: 4,
-                        left: true,
-                        ignoreCheckForSimilarNames: true,
-                        initialValue: initialNameFieldValue,
-                        classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
-                ])}
-
+                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                 <% } %>
-                <input type="hidden" name="preferred" value="true"/>
             </fieldset>
-
-            <fieldset>
-                <legend>${ ui.message("emr.gender") }</legend>
-                ${ ui.includeFragment("uicommons", "field/radioButtons", [
-                        label: "",
-                        formFieldName: "gender",
-                        maximumSize: 3,
-                        options: genderOptions,
-                        classes: ["required"],
-                        initialValue: patient.gender
-                ])}
-            </fieldset>
-
-            <fieldset>
-                <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
-                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
-                        label: "",
-                        formFieldName: "birthdate",
-                        useTime: false,
-                        left: true,
-                        classes: ["required"],
-                        defaultDate: patient.birthdate
-                ])}
-            </fieldset>
-
+            <% } %>
         </section>
+        <% } %>
 
         <div id="confirmation">
             <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
@@ -105,7 +87,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="confirm" value="${ui.message("general.yes")}" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("general.no")}" /></p>
+                ${ui.message("registrationapp.confirm")} <p style="display: inline"><input type="submit" class="confirm" value="${ui.message("general.yes")}" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("general.no")}" /></p>
             </div>
         </div>
     </form>

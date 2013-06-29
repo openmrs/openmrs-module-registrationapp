@@ -136,7 +136,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                         label:ui.message(field.label),
                                         formFieldName: field.formFieldName,
                                         left: true]
-                                if(field.type == 'address'){
+                                if(field.type == 'personAddress'){
                                     configOptions.addressTemplate = addressTemplate
                                 }
                             %>

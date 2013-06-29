@@ -42,8 +42,6 @@ public class RegisterPatientPageController {
                     @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate) throws Exception {
 
         sessionContext.requireAuthentication();
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
-
         addModelAttributes(model, app, nameTemplate);
     }
 
@@ -51,7 +49,6 @@ public class RegisterPatientPageController {
 
     public String post(UiSessionContext sessionContext,
                        PageModel model,
-                       BindingResult errors,
                        @RequestParam("appId") AppDescriptor app,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                        @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
