@@ -1,7 +1,4 @@
 <%
-    if (sessionContext.authenticated && !sessionContext.currentProvider) {
-        throw new IllegalStateException("Logged-in user is not a Provider")
-    }
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
     ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
@@ -36,8 +33,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "registrationapp.patientDashboard", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
-        { label: "${ ui.message("registrationapp.editPatientContactInfo.label") }", link: "${ ui.pageLink("registrationapp", "editPatientContactInfo") }" },
+        { label: "${ ui.message("registrationapp.patientDashboard")}", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
+        { label: "${ ui.message("registrationapp.editPatientContactInfo.label") }", link: "${ ui.pageLink("registrationapp", "editPatientContactInfo") }" }
     ];
 </script>
 
@@ -71,7 +68,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         <input type="hidden" name="personAddressUuid" value="${patient.personAddress.uuid}" />
                 <%
                     }else if(field.type == 'personAttribute'){
-                        configOptions.initialValue = uiUtils.getAttribute(patient, field);
+                        configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
                     }
                 %>
                 ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}

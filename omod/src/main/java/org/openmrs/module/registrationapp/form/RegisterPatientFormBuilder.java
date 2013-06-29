@@ -91,8 +91,4 @@ public class RegisterPatientFormBuilder {
 			}
 		}
 	}
-
-    /*public static void resolvePersonAddress(NavigableFormStructure form, Person person,
-                                                    Map<String, String[]> personAttributes) {
-*/
 }

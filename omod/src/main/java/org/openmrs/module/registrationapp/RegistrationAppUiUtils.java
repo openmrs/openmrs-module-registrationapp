@@ -16,14 +16,13 @@ package org.openmrs.module.registrationapp;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.registrationapp.model.Field;
 
 public class RegistrationAppUiUtils {
 	
-	public String getAttribute(Person person, Field field) {
+	public String getAttribute(Person person, String attributeTypeUuid) {
 		if (person != null) {
 			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(
-			    field.getUuid()));
+			    attributeTypeUuid));
 			if (attr != null) {
 				return attr.getValue();
 			}

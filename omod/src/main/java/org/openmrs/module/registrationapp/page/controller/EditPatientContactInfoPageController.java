@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.registrationapp.page.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -41,6 +39,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class EditPatientContactInfoPageController {
 	
 	protected final Log log = LogFactory.getLog(EditPatientContactInfoPageController.class);
@@ -52,7 +52,7 @@ public class EditPatientContactInfoPageController {
 		sessionContext.requireAuthentication();
 		
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
-		addModelAttributes(model, patient, app, formStructure, administrationService);
+		addModelAttributes(model, patient, formStructure, administrationService);
 	}
 	
 	public String post(UiSessionContext sessionContext, PageModel model,
@@ -102,14 +102,13 @@ public class EditPatientContactInfoPageController {
 			session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
 		}
 		
-		addModelAttributes(model, patient, app, formStructure, administrationService);
+		addModelAttributes(model, patient, formStructure, administrationService);
 		//redisplay the form
 		return null;
 	}
 	
-	private void addModelAttributes(PageModel model, Patient patient, AppDescriptor app,
-	                                NavigableFormStructure formStructure, AdministrationService adminService)
-	    throws Exception {
+	private void addModelAttributes(PageModel model, Patient patient, NavigableFormStructure formStructure,
+	                                AdministrationService adminService) throws Exception {
 		
 		model.put("uiUtils", new RegistrationAppUiUtils());
 		model.addAttribute("patient", patient);

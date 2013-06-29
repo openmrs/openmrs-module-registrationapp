@@ -1,7 +1,4 @@
 <%
-    if (sessionContext.authenticated && !sessionContext.currentProvider) {
-        throw new IllegalStateException("Logged-in user is not a Provider")
-    }
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
     ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
@@ -36,7 +33,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "registrationapp.patientDashboard", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
+        { label: "${ ui.message("registrationapp.patientDashboard")}", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
         { label: "${ ui.message("registrationapp.editPatientDemographics.label") }", link: "${ ui.pageLink("registrationapp", "editPatientDemographics") }" }
     ];
 </script>
@@ -52,6 +49,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
+                <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name ->
                     def initialNameFieldValue = ""
                     if(patient.personName && patient.personName[name]){
@@ -76,7 +74,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <fieldset>
                 <legend>${ ui.message("emr.gender") }</legend>
                 ${ ui.includeFragment("uicommons", "field/radioButtons", [
-                        label: "",
+                        label: ui.message("registrationapp.patient.gender.question"),
                         formFieldName: "gender",
                         maximumSize: 3,
                         options: genderOptions,
@@ -87,6 +85,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
+                <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/datetimepicker", [
                         label: "",
                         formFieldName: "birthdate",

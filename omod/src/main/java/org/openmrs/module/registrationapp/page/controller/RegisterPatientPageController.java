@@ -45,19 +45,15 @@ public class RegisterPatientPageController {
         addModelAttributes(model, app, nameTemplate);
     }
 
-    
+
 
     public String post(UiSessionContext sessionContext,
-                       PageModel model,
                        @RequestParam("appId") AppDescriptor app,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
-                       @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
-                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @ModelAttribute("patient") @BindParams Patient patient,
                        @ModelAttribute("personName") @BindParams PersonName name,
-                       @ModelAttribute("personAddress") @BindParams PersonAddress address,
-                       @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate, HttpServletRequest request,
-                       Session Session, UiUtils ui) throws Exception {
+                       @ModelAttribute("personAddress") @BindParams PersonAddress address, HttpServletRequest request,
+                       UiUtils ui) throws Exception {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
