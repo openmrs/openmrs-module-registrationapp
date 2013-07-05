@@ -4,6 +4,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.node.ObjectNode;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 
+import java.util.List;
+
 public class Field {
 
     @JsonProperty
@@ -20,6 +22,9 @@ public class Field {
 
     @JsonProperty
     private ObjectNode widget;
+
+    @JsonProperty
+    private List<String> cssClasses;
 
     private transient FragmentRequest fragmentRequest;
 
@@ -72,5 +77,13 @@ public class Field {
 
     public void setWidget(ObjectNode widget) {
         this.widget = widget;
+    }
+
+    public List<String> getCssClasses() {
+        return cssClasses;
+    }
+
+    public void setCssClasses(List<String> cssClasses) {
+        this.cssClasses = cssClasses;
     }
 }

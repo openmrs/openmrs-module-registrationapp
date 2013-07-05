@@ -91,7 +91,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         formFieldName: "birthdate",
                         useTime: false,
                         left: true,
-                        classes: ["required"],
+                        classes: ["required no-future-date"],
                         defaultDate: patient.birthdate
                 ])}
             </fieldset>

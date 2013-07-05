@@ -114,7 +114,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         formFieldName: "birthdate",
                         useTime: false,
                         left: true,
-                        classes: ["required"]
+                        classes: ["required no-future-date"]
                   ])}
             </fieldset>
 
@@ -135,7 +135,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 def configOptions = [
                                         label:ui.message(field.label),
                                         formFieldName: field.formFieldName,
-                                        left: true]
+                                        left: true,
+                                        "classes": field.cssClasses
+                                ]
                                 if(field.type == 'personAddress'){
                                     configOptions.addressTemplate = addressTemplate
                                 }

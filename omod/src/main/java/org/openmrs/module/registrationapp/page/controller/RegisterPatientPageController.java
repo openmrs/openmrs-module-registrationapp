@@ -18,17 +18,21 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.session.Session;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -47,12 +51,13 @@ public class RegisterPatientPageController {
 
 
 
-    public String post(UiSessionContext sessionContext,
-                       @RequestParam("appId") AppDescriptor app,
+    public String post(UiSessionContext sessionContext, PageModel model, @RequestParam("appId") AppDescriptor app,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                        @ModelAttribute("patient") @BindParams Patient patient,
                        @ModelAttribute("personName") @BindParams PersonName name,
                        @ModelAttribute("personAddress") @BindParams PersonAddress address, HttpServletRequest request,
+                       @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+                       @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        UiUtils ui) throws Exception {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
@@ -62,6 +67,28 @@ public class RegisterPatientPageController {
 
         if(formStructure!=null){
         	RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+        }
+
+        BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
+        //TODO This validation code really belongs to the PersonAddressValidator in core
+        RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(address, errors);
+
+        if (errors.hasErrors()) {
+            model.addAttribute("errors", errors);
+            StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation"));
+            errorMessage.append("<ul>");
+            for (ObjectError error : errors.getAllErrors()) {
+                errorMessage.append("<li>");
+                errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
+                        error.getDefaultMessage(), null));
+                errorMessage.append("</li>");
+            }
+            errorMessage.append("</ul>");
+            session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
+
+            //send the user back to the form to fix errors
+            addModelAttributes(model, app, nameTemplate);
+            return null;
         }
 
         //TODO create encounters

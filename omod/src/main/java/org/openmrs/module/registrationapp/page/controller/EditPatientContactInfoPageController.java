@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.registrationapp.page.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -38,8 +40,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class EditPatientContactInfoPageController {
 	
@@ -70,6 +70,7 @@ public class EditPatientContactInfoPageController {
 		
 		BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
 		patientValidator.validate(patient, errors);
+		RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(address, errors);
 		
 		if (formStructure != null) {
 			RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
