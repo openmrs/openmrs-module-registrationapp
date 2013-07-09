@@ -55,9 +55,13 @@ public class EditPatientContactInfoPageController {
 		addModelAttributes(model, patient, formStructure, administrationService);
 	}
 	
+	/**
+	 * @should void the old person address and replace it with a new one when it is edited
+	 * @should void the old person address and replace it with a new one when it is edited
+	 * @should not void the existing address if there are no changes
+	 */
 	public String post(UiSessionContext sessionContext, PageModel model,
-	                   @RequestParam("patientId") @BindParams Patient patient,
-	                   @RequestParam("personAddressUuid") @BindParams PersonAddress address,
+	                   @RequestParam("patientId") @BindParams Patient patient, @BindParams PersonAddress address,
 	                   @SpringBean("patientService") PatientService patientService,
 	                   @RequestParam("appId") AppDescriptor app,
 	                   @SpringBean("adminService") AdministrationService administrationService, HttpServletRequest request,
@@ -65,6 +69,15 @@ public class EditPatientContactInfoPageController {
 	                   @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 		
 		sessionContext.requireAuthentication();
+		
+		if (patient.getPersonAddress() != null && address != null) {
+			PersonAddress currentAddress = patient.getPersonAddress();
+			if (!currentAddress.equalsContent(address)) {
+				//void the old address and replace it with the new one
+				patient.addAddress(address);
+				currentAddress.setVoided(true);
+			}
+		}
 		
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 		
