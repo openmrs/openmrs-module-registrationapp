@@ -14,6 +14,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,20 +28,16 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
-import org.openmrs.layout.web.name.NameTemplate;
-import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.ui.framework.session.Session;
 import org.openmrs.validator.PatientValidator;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
+@PrepareForTest({ Context.class, InfoErrorMessageUtil.class })
 public class EditPatientDemographicsPageControllerTest {
 	
 	@Mock
@@ -54,6 +51,7 @@ public class EditPatientDemographicsPageControllerTest {
 	@Mock
 	private UiUtils ui;
 	
+	@Mock
 	private HttpServletRequest request;
 	
 	@Mock
@@ -62,8 +60,6 @@ public class EditPatientDemographicsPageControllerTest {
 	@Mock
 	private UiSessionContext uiSessionContext;
 	
-	private PageModel model;
-	
 	@Before
 	public void setUpMockUserContext() throws Exception {
 		UserContext userContext = Mockito.mock(UserContext.class);
@@ -71,50 +67,35 @@ public class EditPatientDemographicsPageControllerTest {
 		Mockito.when(userContext.isAuthenticated()).thenReturn(true);
 		
 		PowerMockito.mockStatic(Context.class);
-		Mockito.when(Context.getPatientService()).thenReturn(patientService);
 		Mockito.when(Context.getAdministrationService()).thenReturn(adminService);
+		Mockito.when(Context.getPatientService()).thenReturn(patientService);
+		
+		PowerMockito.spy(InfoErrorMessageUtil.class);
+		PowerMockito.doNothing().when(InfoErrorMessageUtil.class);
+		InfoErrorMessageUtil.flashInfoMessage(Mockito.any(HttpSession.class), Mockito.anyString());
 		
 		controller = new EditPatientDemographicsPageController();
-		request = new MockHttpServletRequest();
-		model = new PageModel();
-		Mockito.when(ui.message(Mockito.anyString())).thenReturn("Testing message");
 	}
 	
 	/**
-	 * @see EditPatientDemographicsPageController#post(UiSessionContext,PageModel,PatientService,Patient,PersonName,NameTemplate,HttpServletRequest,MessageSourceService,Session,PatientValidator,UiUtils)
-	 * @verifies void the old person name and replace it with a new one when the given name is
-	 *           changed
+	 * @verifies void the old person name and replace it with a new one when it is edited
+	 * @see EditPatientDemographicsPageController#post(org.openmrs.module.appui.UiSessionContext,
+	 *      org.openmrs.ui.framework.page.PageModel, org.openmrs.api.PatientService,
+	 *      org.openmrs.Patient, org.openmrs.PersonName, org.openmrs.layout.web.name.NameTemplate,
+	 *      javax.servlet.http.HttpServletRequest, org.openmrs.messagesource.MessageSourceService,
+	 *      org.openmrs.ui.framework.session.Session, org.openmrs.validator.PatientValidator,
+	 *      org.openmrs.ui.framework.UiUtils)
 	 */
 	@Test
-	public void post_shouldVoidTheOldPersonNameAndReplaceItWithANewOneWhenTheGivenNameIsChanged() throws Exception {
+	public void post_shouldVoidTheOldPersonNameAndReplaceItWithANewOneWhenItIsEdited() throws Exception {
 		final String familyName = "familyName";
 		PersonName oldName = new PersonName("oldGivenName", null, familyName);
 		Patient patient = new Patient();
 		patient.addName(oldName);
 		
 		PersonName newName = new PersonName("newGivenName", null, familyName);
-		controller.post(uiSessionContext, model, null, patient, newName, null, request, null, null, patientValidator, ui);
-		
-		Assert.assertNotSame(oldName, patient.getPersonName());
-		Assert.assertSame(newName, patient.getPersonName());
-		Assert.assertEquals(true, oldName.isVoided());
-		Assert.assertEquals(2, patient.getNames().size());
-	}
-	
-	/**
-	 * @see EditPatientDemographicsPageController#post(UiSessionContext,PageModel,PatientService,Patient,PersonName,NameTemplate,HttpServletRequest,MessageSourceService,Session,PatientValidator,UiUtils)
-	 * @verifies void the old person name and replace it with a new one when the family name is
-	 *           changed
-	 */
-	@Test
-	public void post_shouldVoidTheOldPersonNameAndReplaceItWithANewOneWhenTheFamilyNameIsChanged() throws Exception {
-		final String giveName = "giveName";
-		PersonName oldName = new PersonName(giveName, null, "oldFamilyName");
-		Patient patient = new Patient();
-		patient.addName(oldName);
-		
-		PersonName newName = new PersonName(giveName, null, "newFamilyName");
-		controller.post(uiSessionContext, model, null, patient, newName, null, request, null, null, patientValidator, ui);
+		controller.post(uiSessionContext, null, patientService, patient, newName, null, request, null, null,
+		    patientValidator, ui);
 		
 		Assert.assertNotSame(oldName, patient.getPersonName());
 		Assert.assertSame(newName, patient.getPersonName());
@@ -138,8 +119,9 @@ public class EditPatientDemographicsPageControllerTest {
 		patient.addName(oldName);
 		
 		//should be case insensitive
-		PersonName newName = new PersonName("GivenName", null, "FamilyName");
-		controller.post(uiSessionContext, model, null, patient, newName, null, request, null, null, patientValidator, ui);
+		PersonName newName = new PersonName("givenName", null, "familyName");
+		controller.post(uiSessionContext, null, patientService, patient, newName, null, request, null, null,
+		    patientValidator, ui);
 		
 		Assert.assertSame(oldName, patient.getPersonName());
 		Assert.assertEquals(false, oldName.isVoided());

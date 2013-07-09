@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.registrationapp.page.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -34,8 +36,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class EditPatientDemographicsPageController {
 	
 	protected final Log log = LogFactory.getLog(EditPatientDemographicsPageController.class);
@@ -49,8 +49,7 @@ public class EditPatientDemographicsPageController {
 	}
 	
 	/**
-	 * @should void the old person name and replace it with a new one when the given name is changed
-	 * @should void the old person name and replace it with a new one when the family name is changed
+	 * @should void the old person name and replace it with a new one when it is edited
 	 * @should not void the existing name if there are no changes in the name
 	 */
 	public String post(UiSessionContext sessionContext, PageModel model,
@@ -64,8 +63,7 @@ public class EditPatientDemographicsPageController {
 		
 		if (patient.getPersonName() != null && name != null) {
 			PersonName currentName = patient.getPersonName();
-			if (!currentName.getGivenName().equalsIgnoreCase(name.getGivenName())
-			        || !currentName.getFamilyName().equalsIgnoreCase(name.getFamilyName())) {
+			if (!currentName.equalsContent(name)) {
 				//void the old name and replace it with the new one
 				patient.addName(name);
 				currentName.setVoided(true);
