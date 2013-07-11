@@ -86,13 +86,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
-                ${ ui.includeFragment("uicommons", "field/datetimepicker", [
+                ${ ui.includeFragment("uicommons", "field/date", [
                         label: "",
                         formFieldName: "birthdate",
-                        useTime: false,
                         left: true,
+                        monthOptions: monthOptions,
                         classes: ["required no-future-date"],
-                        defaultDate: patient.birthdate
+                        initialValue: patient.birthdate
                 ])}
             </fieldset>
 
