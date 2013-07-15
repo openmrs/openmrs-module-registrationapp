@@ -52,7 +52,7 @@ public class MatchingPatientsFragmentController {
 		if (formStructure != null) {
 			RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
 		}
-		
+
 		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, 2.0, 10);
 		
 		List<Patient> similarPatients = new ArrayList<Patient>();

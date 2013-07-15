@@ -16,6 +16,8 @@ jq(function() {
 	});
 	
 	getSimilarPatients = function(field) {
+        jq('.date-component').trigger('blur');
+
 		var formData = jq('#registration').serialize();
 		jq.getJSON(getSimilarPatientsLink, formData)
 	    .success(function(data) {
@@ -44,6 +46,6 @@ jq(function() {
 	};
 	
 	jq('input').change(getSimilarPatients);
-	jq('select').change(getSimilarPatients);
+    jq('select').change(getSimilarPatients);
     
 });

@@ -36,16 +36,16 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <div id="reviewSimilarPatients" class="dialog" style="display: none">
     <div class="dialog-header">
-      <h3>Select an existing patient</h3>
+      <h3>${ ui.message("registrationapp.reviewSimilarPatients")}</h3>
     </div>
     <div class="dialog-content">
         <p>
-        	<em>Click to pick a patient: </em>
+        	<em>${ ui.message("registrationapp.selectSimilarPatient") }</em>
         </p>
         
         <ul id="similarPatientsSelect" class="select"></ul>
        
-        <span class="button cancel"> Cancel </span>
+        <span class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
     </div>
 </div>
 
@@ -55,7 +55,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </h2>
 
 	<div id="similarPatients" class="highlighted" style="display: none;">
-		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> similar patient(s) found</div><button class="right" id="reviewSimilarPatientsButton">Review patient(s)</button>
+		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
 	</div>
 	
