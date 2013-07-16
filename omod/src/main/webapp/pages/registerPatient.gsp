@@ -115,8 +115,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
-                        <fieldset>
+                        <fieldset<% if(question.legend == "Person.address"){ %> class="required-question"<% } %>>
                             <legend>${ ui.message(question.legend)}</legend>
+                            <% if(question.legend == "Person.address"){ %>
+                                ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
+                            <% } %>
                             <% fields.each { field ->
                                 def configOptions = [
                                         label:ui.message(field.label),
