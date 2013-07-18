@@ -64,9 +64,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     if(field.type == 'personAddress'){
                         configOptions.addressTemplate = addressTemplate
                         configOptions.initialValue = patient.personAddress;
-                %>
-                        <input type="hidden" name="personAddressUuid" value="${patient.personAddress.uuid}" />
-                <%
                     }else if(field.type == 'personAttribute'){
                         configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
                     }
