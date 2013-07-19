@@ -47,5 +47,15 @@ jq(function() {
 	
 	jq('input').change(getSimilarPatients);
     jq('select').change(getSimilarPatients);
+
+    jq('body').keydown(function(event) {
+        if (jq('#demographics-gender').hasClass('focused')) {
+            if (event.keyCode == '70') {
+                jq('input[name=gender][value=F]').prop("checked",true);
+            } else if (event.keyCode == '77') {
+                jq('input[name=gender][value=M]').prop("checked",true);
+            }
+        }
+    });
     
 });
