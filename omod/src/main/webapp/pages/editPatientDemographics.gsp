@@ -70,14 +70,14 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 ])}
             </fieldset>
 
-            <fieldset>
+            <fieldset class="multiple-input-date no-future-date">
                 <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                         label: "",
                         formFieldName: "birthdate",
                         left: true,
-                        classes: ["required", "no-future-date"],
+                        classes: ["required"],
                         initialValue: patient.birthdate
                 ])}
             </fieldset>

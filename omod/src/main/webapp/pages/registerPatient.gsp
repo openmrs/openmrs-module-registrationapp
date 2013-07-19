@@ -93,14 +93,14 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 ])}
             </fieldset>
 
-            <fieldset>
+            <fieldset class="multiple-input-date no-future-date">
                 <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                         label: "",
                         formFieldName: "birthdate",
                         left: true,
-                        classes: ["required", "no-future-date"]
+                        classes: ["required"]
                   ])}
             </fieldset>
 
@@ -115,7 +115,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
-                        <fieldset<% if(question.legend == "Person.address"){ %> class="required-question"<% } %>>
+                        <fieldset<% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>>
                             <legend>${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
