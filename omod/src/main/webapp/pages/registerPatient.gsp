@@ -83,7 +83,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
 
             <fieldset id="demographics-gender">
-                <legend>${ ui.message("emr.gender") }</legend>
+                <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
                 ${ ui.includeFragment("uicommons", "field/radioButtons", [
                         label: ui.message("registrationapp.patient.gender.question"),
                         formFieldName: "gender",
