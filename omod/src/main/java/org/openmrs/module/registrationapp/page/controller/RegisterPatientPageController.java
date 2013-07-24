@@ -1,5 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +57,10 @@ public class RegisterPatientPageController {
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                        @ModelAttribute("patient") @BindParams Patient patient,
                        @ModelAttribute("personName") @BindParams PersonName name,
-                       @ModelAttribute("personAddress") @BindParams PersonAddress address, HttpServletRequest request,
-                       @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+                       @ModelAttribute("personAddress") @BindParams PersonAddress address,
+                       @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
+                       @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                       HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        UiUtils ui) throws Exception {
 
@@ -64,6 +68,18 @@ public class RegisterPatientPageController {
 
         patient.addName(name);
         patient.addAddress(address);
+
+        if (patient.getBirthdate() == null) {
+            patient.setBirthdateEstimated(true);
+            Calendar calendar = Calendar.getInstance();
+            if (birthdateYears != null) {
+                calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - birthdateYears);
+            }
+            if (birthdateMonths != null) {
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - birthdateMonths);
+            }
+            patient.setBirthdate(calendar.getTime());
+        }
 
         if(formStructure!=null){
         	RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
