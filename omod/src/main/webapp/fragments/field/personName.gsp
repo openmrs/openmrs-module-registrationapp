@@ -18,7 +18,7 @@
 
     <input type="text" id="${ config.id }-field" name="${ config.formFieldName }" value="${ config.initialValue ?: '' }"
            <% if (config.classes) { %>class="${ config.classes.join(' ') }" <% } %>
-        <% if (!config.ignoreCheckForSimilarNames) { %> data-provide="typeahead" <% } %> placeholder="Auto Suggest" dataItems="4" autocomplete="off" />
+        <% if (!config.ignoreCheckForSimilarNames) { %> data-provide="typeahead" <% } %> dataItems="4" autocomplete="off" />
 
     ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: config.formFieldName ]) }
     <% if (config.optional) { %>
