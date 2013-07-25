@@ -1,28 +1,16 @@
 package org.openmrs.module.registrationapp.page.controller;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
-import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
-import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.uicommons.UiCommonsConstants;
@@ -37,6 +25,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 
 public class RegisterPatientPageController {
 
@@ -121,6 +112,7 @@ public class RegisterPatientPageController {
     public void addModelAttributes(PageModel model, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
+        model.addAttribute("appId", app.getId());
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));

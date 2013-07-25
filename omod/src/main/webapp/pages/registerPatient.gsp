@@ -30,7 +30,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     var testFormStructure = "${formStructure}";
     
     var patientDashboardLink = '${ui.pageLink("coreapps", "patientdashboard/patientDashboard")}';
-    var getSimilarPatientsLink = '${ ui.actionLink("registrationapp", "matchingPatients", "getSimilarPatients") }&appId=referenceapplication.registrationapp.registerPatient';
+    var getSimilarPatientsLink = '${ ui.actionLink("registrationapp", "matchingPatients", "getSimilarPatients") }&appId=${appId}';
     
 </script>
 
