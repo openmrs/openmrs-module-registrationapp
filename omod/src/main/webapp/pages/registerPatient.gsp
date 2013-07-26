@@ -111,7 +111,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def questions=section.questions
         %>
             <section id="${section.id}">
-                <span id="${section.id}_id" class="title">${ui.message(section.label)}</span>
+                <span id="${section.id}_label" class="title">${ui.message(section.label)}</span>
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
@@ -138,7 +138,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
         <div id="confirmation">
-            <span id="confirmation_id" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
+            <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
