@@ -107,7 +107,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 					
 		<!-- photo -->
             <fieldset class="photo">
-
                 <legend>${ui.message("registrationapp.photo.label")}</legend>
                 <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
                 
@@ -121,7 +120,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <i class="icon-camera"></i>
             </a>
           </p>
-
             </fieldset>    			
 		</section>
 
