@@ -105,27 +105,22 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                   ])}
             </fieldset>
 
-			<!-- photo -->
-			<fieldset class="photo">
-				<legend>
-					${ui.message("registrationapp.photo.label")}
-				</legend>
-				<h3>
-					${ui.message("registrationapp.photo.capturemessage.label")}
-				</h3>
+		<!-- photo -->
+            <fieldset class="photo">
+                <legend>${ui.message("registrationapp.photo.label")}</legend>
+                <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
+                
+          <video id="video" width="200" height="150"></video>
 
+          <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
 
-				<video id="video" width="200" height="150"></video>
-
-				<canvas id="canvas">
-					<img src="omrs.png" id="photo" alt="photo"></canvas>
-
-				<p>
-					<a class="button" href="#" id="startbutton"> <input
-						type="hidden" /> <i class="icon-camera"></i>
-					</a>
-				</p>
-			</fieldset>
+          <p>
+            <a class="button" href="#" id = "startbutton">
+                 <input type="hidden" />
+                <i class="icon-camera"></i>
+            </a>
+          </p>
+            </fieldset>    			
 		</section>
 
         <!-- read configurable sections from the json config file-->
