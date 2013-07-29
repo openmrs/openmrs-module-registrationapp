@@ -104,7 +104,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         showEstimated: true
                   ])}
             </fieldset>
-
+					
 		<!-- photo -->
             <fieldset class="photo">
 
@@ -124,6 +124,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             </fieldset>    			
 		</section>
+
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
