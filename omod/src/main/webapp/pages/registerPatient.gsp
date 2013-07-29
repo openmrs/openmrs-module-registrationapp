@@ -103,8 +103,103 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         showEstimated: true
                   ])}
             </fieldset>
+					
+		<!-- photo -->
+            <fieldset class="photo">
+                <legend>${ui.message("Photo")}</legend>
+                <h3>${ui.message("Take a photo!")}</h3>
+                
+          <video id="video" width="200" height="150"></video>
 
-        </section>
+          <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
+
+          <p>
+            <a class="button" href="#" id = "startbutton">
+                 <input type="hidden" />
+                <i class="icon-camera"></i>
+            </a>
+          </p>
+
+          <script type="text/javascript">
+          (function() {
+
+            var streaming = false,
+                video        = document.querySelector('#video'),
+                cover        = document.querySelector('#cover'),
+                canvas       = document.querySelector('#canvas'),
+                startbutton  = document.querySelector('#startbutton'),
+                width = 200,
+                height = 200;
+
+            navigator.getMedia = ( navigator.getUserMedia || 
+                                   navigator.webkitGetUserMedia ||
+                                   navigator.mozGetUserMedia ||
+                                   navigator.msGetUserMedia);
+
+            navigator.getMedia(
+              { 
+                video: true, 
+                audio: false 
+              },
+              function(stream) {
+                if (navigator.mozGetUserMedia) { 
+                  video.mozSrcObject = stream;
+                } else {
+                  var vendorURL = window.URL || window.webkitURL;
+                  video.src = vendorURL ? vendorURL.createObjectURL(stream) : stream;
+                }
+                video.play();
+              },
+              function(err) {
+                console.log("An error occured! " + err);
+              }
+            );
+
+            video.addEventListener('canplay', function(ev){
+              if (!streaming) {
+                height = video.videoHeight / (video.videoWidth/width);
+                video.setAttribute('width', width);
+                video.setAttribute('height', height);
+                canvas.setAttribute('width', width);
+                canvas.setAttribute('height', height);
+                streaming = true;
+              }
+            }, false);
+
+            function takepicture() {
+              canvas.width = width;
+              canvas.height = height;
+              canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+              var data = canvas.toDataURL('image/png');
+              photo.setAttribute('src', data);
+              confirmPhoto.setAttribute('src', data);
+            }
+
+            startbutton.addEventListener('click', function(ev){
+                takepicture();
+              ev.preventDefault();
+            }, false);
+
+
+          document.addEventListener("keydown", keyDownTextField, false);
+
+          function keyDownTextField(e) {
+          var selected = jQuery('fieldset.photo').hasClass('focused');
+          var keyCode = e.keyCode;
+            if(keyCode==32 && selected) {
+                takepicture();
+                ev.preventDefault();
+            }
+          }
+
+
+
+
+          })();
+          </script>
+            </fieldset>    			
+
+					       </section>
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
@@ -140,6 +235,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <div id="confirmation">
             <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
+			<img src="" id="confirmPhoto" alt="">
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
