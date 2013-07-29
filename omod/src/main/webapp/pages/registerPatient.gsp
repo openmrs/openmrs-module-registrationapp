@@ -94,7 +94,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
 
             <fieldset class="multiple-input-date no-future-date date-required">
-                <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
+                <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                         label: "",
@@ -111,12 +111,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def questions=section.questions
         %>
             <section id="${section.id}">
-                <span class="title">${ui.message(section.label)}</span>
+                <span id="${section.id}_label" class="title">${ui.message(section.label)}</span>
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
                         <fieldset<% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>>
-                            <legend>${ ui.message(question.legend)}</legend>
+                            <legend id="${question.id}">${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
                             <% } %>
@@ -138,7 +138,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
         <div id="confirmation">
-            <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
+            <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
