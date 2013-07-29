@@ -59,7 +59,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
 	</div>
-	
+
 
     <form class="simple-form-ui" id="registration" method="POST">
         <section id="demographics">
@@ -67,7 +67,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
-			    
+
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("registrationapp", "field/personName", [
@@ -104,7 +104,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         showEstimated: true
                   ])}
             </fieldset>
-					
+
 		<!-- photo -->
             <fieldset class="photo">
 
@@ -124,7 +124,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             </fieldset>    			
 		</section>
-		
+
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
