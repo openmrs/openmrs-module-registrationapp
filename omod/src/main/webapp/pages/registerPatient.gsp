@@ -110,7 +110,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
                 <legend>${ui.message("registrationapp.photo.label")}</legend>
                 <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
-
                 
           <video id="video" width="200" height="150"></video>
 
