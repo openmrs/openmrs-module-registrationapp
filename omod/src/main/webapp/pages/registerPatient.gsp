@@ -107,8 +107,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 					
 		<!-- photo -->
             <fieldset class="photo">
+
                 <legend>${ui.message("registrationapp.photo.label")}</legend>
                 <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
+
                 
           <video id="video" width="200" height="150"></video>
 
@@ -120,9 +122,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <i class="icon-camera"></i>
             </a>
           </p>
+
             </fieldset>    			
 		</section>
 		
+
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
