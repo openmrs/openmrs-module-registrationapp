@@ -9,6 +9,7 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
     ui.includeJavascript("registrationapp", "registerPatient.js");
+	ui.includeJavascript("registrationapp", "webcam.js");
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
@@ -106,8 +107,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 					
 		<!-- photo -->
             <fieldset class="photo">
-                <legend>${ui.message("Photo")}</legend>
-                <h3>${ui.message("Take a photo!")}</h3>
+                <legend>${ui.message("registrationapp.photo.label")}</legend>
+                <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
                 
           <video id="video" width="200" height="150"></video>
 
@@ -119,84 +120,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <i class="icon-camera"></i>
             </a>
           </p>
-
-          <script type="text/javascript">
-          (function() {
-
-            var streaming = false,
-                video        = document.querySelector('#video'),
-                cover        = document.querySelector('#cover'),
-                canvas       = document.querySelector('#canvas'),
-                startbutton  = document.querySelector('#startbutton'),
-                width = 200,
-                height = 200;
-
-            navigator.getMedia = ( navigator.getUserMedia || 
-                                   navigator.webkitGetUserMedia ||
-                                   navigator.mozGetUserMedia ||
-                                   navigator.msGetUserMedia);
-
-            navigator.getMedia(
-              { 
-                video: true, 
-                audio: false 
-              },
-              function(stream) {
-                if (navigator.mozGetUserMedia) { 
-                  video.mozSrcObject = stream;
-                } else {
-                  var vendorURL = window.URL || window.webkitURL;
-                  video.src = vendorURL ? vendorURL.createObjectURL(stream) : stream;
-                }
-                video.play();
-              },
-              function(err) {
-                console.log("An error occured! " + err);
-              }
-            );
-
-            video.addEventListener('canplay', function(ev){
-              if (!streaming) {
-                height = video.videoHeight / (video.videoWidth/width);
-                video.setAttribute('width', width);
-                video.setAttribute('height', height);
-                canvas.setAttribute('width', width);
-                canvas.setAttribute('height', height);
-                streaming = true;
-              }
-            }, false);
-
-            function takepicture() {
-              canvas.width = width;
-              canvas.height = height;
-              canvas.getContext('2d').drawImage(video, 0, 0, width, height);
-              var data = canvas.toDataURL('image/png');
-              photo.setAttribute('src', data);
-              confirmPhoto.setAttribute('src', data);
-            }
-
-            startbutton.addEventListener('click', function(ev){
-                takepicture();
-              ev.preventDefault();
-            }, false);
-
-
-          document.addEventListener("keydown", keyDownTextField, false);
-
-          function keyDownTextField(e) {
-          var selected = jQuery('fieldset.photo').hasClass('focused');
-          var keyCode = e.keyCode;
-            if(keyCode==32 && selected) {
-                takepicture();
-                ev.preventDefault();
-            }
-          }
-
-
-
-
-          })();
-          </script>
             </fieldset>    			
 
 					       </section>
