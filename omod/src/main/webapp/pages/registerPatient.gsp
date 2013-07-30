@@ -121,8 +121,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </a>
           </p>
             </fieldset>    			
-
-					       </section>
+		</section>
+		
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
