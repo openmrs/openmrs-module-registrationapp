@@ -51,6 +51,7 @@ public class RegisterPatientPageController {
                        @ModelAttribute("personAddress") @BindParams PersonAddress address,
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                       @RequestParam(value="patientPhoto") String patientPhoto, //receiving photo not implemented yet
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        UiUtils ui) throws Exception {
@@ -59,7 +60,7 @@ public class RegisterPatientPageController {
 
         patient.addName(name);
         patient.addAddress(address);
-
+        
         if (patient.getBirthdate() == null) {
             patient.setBirthdateEstimated(true);
             Calendar calendar = Calendar.getInstance();

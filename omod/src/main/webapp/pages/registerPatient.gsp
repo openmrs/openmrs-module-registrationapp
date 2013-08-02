@@ -111,7 +111,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
                 
           <video id="video" width="200" height="150"></video>
-
           <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
 
           <p>
@@ -158,6 +157,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
 			<img src="" id="confirmPhoto" alt="">
+			<input type="hidden" id="patientPhoto" name="patientPhoto"/>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
