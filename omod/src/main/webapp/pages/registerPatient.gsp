@@ -111,7 +111,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
                 
           <video id="video" width="200" height="150"></video>
-
           <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
 
           <p>
