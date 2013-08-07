@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.registrationapp.page.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -35,6 +33,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class EditPatientDemographicsPageController {
 	
@@ -83,6 +83,7 @@ public class EditPatientDemographicsPageController {
 			}
 			catch (Exception e) {
 				log.warn("Error occurred while saving patient demographics", e);
+				session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, "registrationapp.save.fail");
 			}
 			
 		} else {
