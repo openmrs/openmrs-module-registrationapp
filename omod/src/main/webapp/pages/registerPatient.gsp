@@ -9,7 +9,9 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
     ui.includeJavascript("registrationapp", "registerPatient.js");
-	ui.includeJavascript("registrationapp", "webcam.js");
+	
+	if (featureToggles.isFeatureEnabled("photoPatient"))
+		ui.includeJavascript("registrationapp", "webcam.js");
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
@@ -105,7 +107,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
 					
 			<% if (featureToggles.isFeatureEnabled("photoPatient")) { %>
-	            <!-- photo -->
 	            <fieldset class="photo">
 		            <legend>${ui.message("registrationapp.photo.label")}</legend>
 		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
