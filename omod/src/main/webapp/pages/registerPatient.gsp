@@ -59,7 +59,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
 	</div>
-	
+
 
     <form class="simple-form-ui" id="registration" method="POST">
         <section id="demographics">
@@ -67,7 +67,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
-			    
+
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name -> %>
                     ${ ui.includeFragment("registrationapp", "field/personName", [
@@ -105,24 +105,26 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                   ])}
             </fieldset>
 					
-		<!-- photo -->
-            <fieldset class="photo">
-                <legend>${ui.message("registrationapp.photo.label")}</legend>
-                <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
-                
-          <video id="video" width="200" height="150"></video>
-
-          <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
-
-          <p>
-            <a class="button" href="#" id = "startbutton">
-                 <input type="hidden" />
-                <i class="icon-camera"></i>
-            </a>
-          </p>
-            </fieldset>    			
+			<% if (featureToggles.isFeatureEnabled("photoPatient")) { %>
+	            <!-- photo -->
+	            <fieldset class="photo">
+		            <legend>${ui.message("registrationapp.photo.label")}</legend>
+		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
+		            
+		            <video id="video" width="200" height="150"></video>
+		            <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
+	
+		          <p>
+		            <a class="button" href="#" id = "startbutton">
+		                 <input type="hidden" />
+		                <i class="icon-camera"></i>
+		            </a>
+		          </p>
+	            </fieldset>    	
+		    <% } %>		
 		</section>
-		
+					
+					
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
@@ -159,6 +161,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
 			<img src="" id="confirmPhoto" alt="">
+			<input type="hidden" id="patientPhoto" name="patientPhoto"/>
+
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
