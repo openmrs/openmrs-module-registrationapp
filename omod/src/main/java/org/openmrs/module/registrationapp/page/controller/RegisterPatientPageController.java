@@ -20,6 +20,7 @@ import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.session.Session;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -28,6 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import sun.misc.BASE64Decoder;
+import java.io.FileNotFoundException;
 
 public class RegisterPatientPageController {
 
@@ -42,8 +49,7 @@ public class RegisterPatientPageController {
         addModelAttributes(model, app, nameTemplate);
     }
 
-
-
+    	
     public String post(UiSessionContext sessionContext, PageModel model, @RequestParam("appId") AppDescriptor app,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                        @ModelAttribute("patient") @BindParams Patient patient,
@@ -51,15 +57,16 @@ public class RegisterPatientPageController {
                        @ModelAttribute("personAddress") @BindParams PersonAddress address,
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                       @RequestParam(value="patientPhoto") String patientPhoto,
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        UiUtils ui) throws Exception {
-
+    	
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         patient.addName(name);
         patient.addAddress(address);
-        
+
         if (patient.getBirthdate() == null) {
             patient.setBirthdateEstimated(true);
             Calendar calendar = Calendar.getInstance();
@@ -95,17 +102,22 @@ public class RegisterPatientPageController {
 
             //send the user back to the form to fix errors
             addModelAttributes(model, app, nameTemplate);
+                                 
             return null;
         }
 
         //TODO create encounters
         patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
-
+        
+        savePhotoInDirectory(patientPhoto, patient.getId());
+        
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
         redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getId().toString());
+        
         return "redirect:" + redirectUrl;
+    
     }
 
 
@@ -119,6 +131,17 @@ public class RegisterPatientPageController {
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
-
+    
+    public void savePhotoInDirectory(String photo, int id) throws FileNotFoundException, IOException{    	
+    	String blobPhoto = photo.replaceAll("data:image/png;base64,", "");
+		BASE64Decoder decoder = new BASE64Decoder();
+		byte[] decodedBytes = decoder.decodeBuffer(blobPhoto);
+		String path = OpenmrsUtil.getApplicationDataDirectory() + File.separatorChar + "photoUser";
+		new File(path).mkdirs();
+		String target = path + File.separatorChar + id + ".png";
+		FileOutputStream fos = new FileOutputStream(target);
+		fos.write(decodedBytes);
+		fos.close();	  	
+    }
 
 }
