@@ -120,7 +120,6 @@ public class RegisterPatientPageController {
     
     }
 
-
     public void addModelAttributes(PageModel model, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
