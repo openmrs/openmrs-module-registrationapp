@@ -119,6 +119,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		                 <input type="hidden" />
 		                <i class="icon-camera"></i>
 		            </a>
+					${ui.message("registrationapp.photo.spacebarmessage.label")}
 		          </p>
 	            </fieldset>    	
 		    <% } %>		
