@@ -57,7 +57,7 @@ public class RegisterPatientPageController {
                        @ModelAttribute("personAddress") @BindParams PersonAddress address,
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
-                       @RequestParam(value="patientPhoto") String patientPhoto,
+                       @RequestParam(value="patientPhoto", required = false) String patientPhoto,
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        UiUtils ui) throws Exception {
@@ -119,6 +119,7 @@ public class RegisterPatientPageController {
         return "redirect:" + redirectUrl;
     
     }
+
 
     public void addModelAttributes(PageModel model, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
