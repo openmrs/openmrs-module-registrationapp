@@ -9,6 +9,7 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
     ui.includeJavascript("registrationapp", "registerPatient.js");
+	ui.includeCss("registrationapp", "webcam.css");
 	
 	if (featureToggles.isFeatureEnabled("photoPatient"))
 		ui.includeJavascript("registrationapp", "webcam.js");
@@ -112,14 +113,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
 		            
 		            <video id="video" width="200" height="150"></video>
-		            <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
+					<div class="default-patient-photo"><i class="icon-user"></i></div>
+		            <canvas id="canvas"><img src="" id="photo" alt="photo"></canvas>
 	
 		          <p>
 		            <a class="button" href="#" id = "startbutton">
-		                 <input type="hidden" />
+		                <input type="hidden" />
 		                <i class="icon-camera"></i>
 		            </a>
-					${ui.message("registrationapp.photo.spacebarmessage.label")}
+					<em>${ui.message("registrationapp.photo.spacebarmessage.label")}</em>
 		          </p>
 	            </fieldset>    	
 		    <% } %>		

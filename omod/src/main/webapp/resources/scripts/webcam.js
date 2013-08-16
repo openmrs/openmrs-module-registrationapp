@@ -67,7 +67,9 @@ jq(function() {
 		var keyCode = e.keyCode;
 		if(keyCode==32 && selected) {
 			takepicture();
-			ev.preventDefault();
+			e.preventDefault();
+			jq(".default-patient-photo").hide();
 		}
 	}
-})();
+	
+};

@@ -1,0 +1,7 @@
+.default-patient-photo {
+	display: inline-block;
+	background: white;
+	padding: 43px 55px;
+	vertical-align: top;
+	border: 1px solid #ddd;
+}
