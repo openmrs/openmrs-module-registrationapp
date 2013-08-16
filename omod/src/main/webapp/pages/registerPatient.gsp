@@ -164,6 +164,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
 			<img src="" id="confirmPhoto" alt="">
+	        <div class="default-patient-photo"><i class="icon-user"></i></div> 				
 			<input type="hidden" id="patientPhoto" name="patientPhoto"/>
 
             <div id="dataCanvas"></div>
