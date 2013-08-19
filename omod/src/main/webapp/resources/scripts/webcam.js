@@ -67,7 +67,8 @@ jq(function() {
 		var keyCode = e.keyCode;
 		if(keyCode==32 && selected) {
 			takepicture();
-			ev.preventDefault();
+			jq("#photo-field").val('true');
+			e.preventDefault();
 		}
 	}
 })();

@@ -108,16 +108,17 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 					
 			<% if (featureToggles.isFeatureEnabled("photoPatient")) { %>
 	            <fieldset class="photo">
-		            <legend>${ui.message("registrationapp.photo.label")}</legend>
+		            <legend id="photoLabel">${ui.message("registrationapp.photo.label")}</legend>
 		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
 		            
 		            <video id="video" width="200" height="150"></video>
 		            <canvas id="canvas"><img src="omrs.png" id="photo" alt="photo"></canvas>
-	
+					
 		          <p>
+		            
+		            <input type="hidden" id="photo-field" name="photo" />
 		            <a class="button" href="#" id = "startbutton">
-		                 <input type="hidden" />
-		                <i class="icon-camera"></i>
+					    <i class="icon-camera"></i>
 		            </a>
 					${ui.message("registrationapp.photo.spacebarmessage.label")}
 		          </p>
