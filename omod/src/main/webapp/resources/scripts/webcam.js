@@ -69,6 +69,8 @@ jq(function() {
 			takepicture();
 			jq("#photo-field").val('true');
 			e.preventDefault();
+			jq(".default-patient-photo").hide();
 		}
 	}
-})();
+	
+});
