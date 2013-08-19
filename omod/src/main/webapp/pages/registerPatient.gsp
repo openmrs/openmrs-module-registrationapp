@@ -167,7 +167,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="before-dataCanvas"></div>
 			<img src="" id="confirmPhoto" alt="">
 	        <div class="default-patient-photo"><i class="icon-user"></i></div> 				
-			<input type="hidden" id="patientPhoto" name="patientPhoto"/>
+			<input type="hidden" id="patientPhoto" name="patientPhoto" class="ignore"/>
 
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
