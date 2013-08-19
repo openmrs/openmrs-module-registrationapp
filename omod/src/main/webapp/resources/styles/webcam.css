@@ -5,3 +5,9 @@
 	vertical-align: top;
 	border: 1px solid #ddd;
 }
+
+.fielderror {
+color: #ff6666;
+font-size: 1.1em;
+display: block;
+}

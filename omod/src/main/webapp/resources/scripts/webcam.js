@@ -25,11 +25,13 @@ jq(function() {
 				} else {
 					var vendorURL = window.URL || window.webkitURL;
 					video.src = vendorURL ? vendorURL.createObjectURL(stream) : stream;
+					jq("#message-error").hide();
 				}
 				video.play();
 			},
 			function(err) {
-				console.log("An error occured! " + err);
+				console.log("An error occured! " + err);	
+				jq("#video").hide();
 			}
 	);
 
@@ -69,6 +71,7 @@ jq(function() {
 			takepicture();
 			e.preventDefault();
 			jq(".default-patient-photo").hide();
+
 		}
 	}
 	

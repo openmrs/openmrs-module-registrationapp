@@ -112,6 +112,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		            <legend>${ui.message("registrationapp.photo.label")}</legend>
 		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
 		            
+					<span id="message-error" class="fielderror" style>
+                          ${ui.message("registrationapp.photo.cameraunavailable.label")}
+					</span>
+					
 		            <video id="video" width="200" height="150"></video>
 					<div class="default-patient-photo"><i class="icon-user"></i></div>
 		            <canvas id="canvas"><img src="" id="photo" alt="photo"></canvas>
