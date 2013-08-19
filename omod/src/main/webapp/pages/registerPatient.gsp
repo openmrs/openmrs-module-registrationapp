@@ -109,7 +109,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 					
 			<% if (featureToggles.isFeatureEnabled("photoPatient")) { %>
 	            <fieldset class="photo">
-		            <legend>${ui.message("registrationapp.photo.label")}</legend>
+		            <legend id="photoLabel">${ui.message("registrationapp.photo.label")}</legend>
 		            <h3>${ui.message("registrationapp.photo.capturemessage.label")}</h3>
 		            
 					<span id="message-error" class="fielderror" style>
@@ -121,7 +121,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		            <canvas id="canvas"><img src="" id="photo" alt="photo"></canvas>
 	
 		          <p>
-		            <a class="button" href="#" id="startbutton">
+		            
+		            <input type="hidden" id="photo-field" name="photo" />
+		            <a class="button" href="#" id = "startbutton">
+
 		                <input type="hidden" />
 		                <i class="icon-camera"></i>
 		            </a>
@@ -169,7 +172,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="before-dataCanvas"></div>
 			<img src="" id="confirmPhoto" alt="">
 	        <div class="default-patient-photo"><i class="icon-user"></i></div> 				
-			<input type="hidden" id="patientPhoto" name="patientPhoto"/>
+			<input type="hidden" id="patientPhoto" name="patientPhoto" class="ignore"/>
 
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>

@@ -75,6 +75,7 @@ jq(function() {
 		var keyCode = e.keyCode;
 		if(keyCode==32 && selected && enablePhoto) {
 			takepicture();
+			jq("#photo-field").val('true');
 			e.preventDefault();
 			jq(".default-patient-photo").hide();
 			
