@@ -35,6 +35,7 @@ jq(function() {
 			function(err) {
 				console.log("An error occured! " + err);	
 				jq("#video").hide();
+				jq("#startbutton").addClass("disabled");
 				enablePhoto = false;
 			}
 	);
