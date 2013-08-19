@@ -8,7 +8,9 @@ jq(function() {
 	startbutton  = document.querySelector('#startbutton'),
 	width = 200,
 	height = 200;
-
+	
+	var enablePhoto = true;
+	
 	navigator.getMedia = ( navigator.getUserMedia || 
 			navigator.webkitGetUserMedia ||
 			navigator.mozGetUserMedia ||
@@ -26,12 +28,14 @@ jq(function() {
 					var vendorURL = window.URL || window.webkitURL;
 					video.src = vendorURL ? vendorURL.createObjectURL(stream) : stream;
 					jq("#message-error").hide();
+					jq("#startbutton").removeAttr('disabled');
 				}
 				video.play();
 			},
 			function(err) {
 				console.log("An error occured! " + err);	
 				jq("#video").hide();
+				enablePhoto = false;
 			}
 	);
 
@@ -57,8 +61,10 @@ jq(function() {
 	}
 
 	startbutton.addEventListener('click', function(ev){
-		takepicture();
-		ev.preventDefault();
+		if(enablePhoto){
+			takepicture();
+			ev.preventDefault();
+		}
 	}, false);
 
 
@@ -67,10 +73,11 @@ jq(function() {
 	function keyDownTextField(e) {
 		var selected = jQuery('fieldset.photo').hasClass('focused');
 		var keyCode = e.keyCode;
-		if(keyCode==32 && selected) {
+		if(keyCode==32 && selected && enablePhoto) {
 			takepicture();
 			e.preventDefault();
 			jq(".default-patient-photo").hide();
+			
 
 		}
 	}

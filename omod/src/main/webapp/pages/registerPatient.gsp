@@ -121,7 +121,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		            <canvas id="canvas"><img src="" id="photo" alt="photo"></canvas>
 	
 		          <p>
-		            <a class="button" href="#" id = "startbutton">
+		            <a class="button" href="#" id="startbutton">
 		                <input type="hidden" />
 		                <i class="icon-camera"></i>
 		            </a>
