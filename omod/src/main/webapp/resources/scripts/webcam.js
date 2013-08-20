@@ -65,6 +65,7 @@ jq(function() {
 		if(enablePhoto){
 			takepicture();
 			ev.preventDefault();
+			jq(".default-patient-photo").hide();
 		}
 	}, false);
 
@@ -79,8 +80,6 @@ jq(function() {
 			jq("#photo-field").val('true');
 			e.preventDefault();
 			jq(".default-patient-photo").hide();
-			
-
 		}
 	}
 	
