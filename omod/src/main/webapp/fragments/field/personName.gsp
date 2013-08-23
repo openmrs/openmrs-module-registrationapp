@@ -17,8 +17,7 @@
     </label>
 
     <input type="text" id="${ config.id }-field" name="${ config.formFieldName }" value="${ config.initialValue ?: '' }"
-           <% if (config.classes) { %>class="${ config.classes.join(' ') }" <% } %>
-        <% if (!config.ignoreCheckForSimilarNames) { %> data-provide="typeahead" <% } %> dataItems="4" autocomplete="off" />
+           <% if (config.classes) { %>class="${ config.classes.join(' ') }" <% } %> />
 
     ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: config.formFieldName ]) }
     <% if (config.optional) { %>
@@ -29,20 +28,28 @@
 <% if (!config.ignoreCheckForSimilarNames) { %>
 <script type="text/javascript">
 
-    jq('#${ config.id }-field').typeahead({
-        source: function (query, process){
-            jq.getJSON('${ ui.actionLink("registrationapp", "personName", "getSimilarNames") }',
-                    {
-                        'searchPhrase': query,
+    jq(function() {
+        jq("#${ config.id }-field" ).autocomplete({
+            source: function( request, response ) {
+                jq.ajax({
+                    url: "${ ui.actionLink("registrationapp", "personName", "getSimilarNames") }",
+                    dataType: "json",
+                    data: {
+                        'searchPhrase': request.term,
                         'formFieldName': '${ config.formFieldName }'
-                    })
-                    .success(function(data) {
-                        process(JSON.parse(data));
-                    })
-                    .error(function(xhr, status, err) {
-                        alert('Name search AJAX error' + err);
-                    });
-        }
+                    },
+                    success: function( data ) {
+                        response( jq.map( data.names, function( item ) {
+                            return {
+                                label: item,
+                                value: item
+                            }
+                        }));
+                    }
+                });
+            },
+            minLength: 1
+        });
     });
 
 </script>
