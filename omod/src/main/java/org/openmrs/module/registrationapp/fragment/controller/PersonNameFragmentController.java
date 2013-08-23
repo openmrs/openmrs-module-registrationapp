@@ -14,8 +14,7 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
@@ -30,14 +29,17 @@ public class PersonNameFragmentController {
 			@RequestParam(value = "searchPhrase", required = true) String searchPhrase,
 			@RequestParam(value = "formFieldName", required = true) String formFieldName) {
 
-		List<String> names = new ArrayList<String>();
+		Set<String> names = new LinkedHashSet<String>();
+		names.add(searchPhrase);
 
 		if ("givenName".equals(formFieldName)) {
-			names = service.findSimilarGivenNames(searchPhrase);
+			names.addAll(service.findSimilarGivenNames(searchPhrase));
 		} 
 		else if ("familyName".equals(formFieldName)) {
-			names = service.findSimilarFamilyNames(searchPhrase);
+			names.addAll(service.findSimilarFamilyNames(searchPhrase));
 		}
+
+
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
