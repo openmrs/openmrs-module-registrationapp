@@ -1,0 +1,18 @@
+[
+    {
+        "id": "registrationapp.registerPatient",
+        "description": "Create a new Patient Record",
+        "configOptions": [
+            {
+                "name": "sections",
+                "description": "Configuration for a section to display on the patient registration screen. Format: list of { id, label, questions: [ { legend, fields:[] } ] }",
+                "defaultValue": [ ]
+            },
+            {
+                "name": "afterCreatedUrl",
+                "description": "What url to go to after successfully registering the patient. Supports {{patientId}}",
+                "defaultValue": "/index.htm"
+            }
+        ]
+    }
+]

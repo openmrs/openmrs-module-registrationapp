@@ -1,6 +1,11 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
+import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
@@ -15,6 +20,8 @@ import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
+import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -28,12 +35,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import sun.misc.BASE64Decoder;
+
 import java.io.FileNotFoundException;
 
 public class RegisterPatientPageController {
@@ -109,7 +121,7 @@ public class RegisterPatientPageController {
         //TODO create encounters
         patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
         
-        savePhotoInDirectory(patientPhoto, patient.getId());
+        savePhotoUsingConcepts(patient, patientPhoto, sessionContext);
         
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
 
@@ -118,6 +130,20 @@ public class RegisterPatientPageController {
         
         return "redirect:" + redirectUrl;
     
+    }
+    
+    public void savePhotoUsingConcepts(Person patient, String photo, UiSessionContext sessionContext) throws IOException {
+    	String blobPhoto = photo.replaceAll("data:image/png;base64,", "");
+		BASE64Decoder decoder = new BASE64Decoder();
+		byte[] decodedBytes = decoder.decodeBuffer(blobPhoto);
+    	ConceptComplex conceptComplex = Context.getConceptService().getConceptComplex(27);
+    	InputStream in = new ByteArrayInputStream(decodedBytes);
+    	Location location = sessionContext.getSessionLocation();
+    
+    	Obs obs = new Obs(patient, conceptComplex, new Date(), location);
+    	ComplexData data = new ComplexData(patient.getId()+".png", in);
+    	obs.setComplexData(data);
+    	Context.getObsService().saveObs(obs, null);
     }
 
 
@@ -131,17 +157,4 @@ public class RegisterPatientPageController {
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
-    
-    public void savePhotoInDirectory(String photo, int id) throws FileNotFoundException, IOException{    	
-    	String blobPhoto = photo.replaceAll("data:image/png;base64,", "");
-		BASE64Decoder decoder = new BASE64Decoder();
-		byte[] decodedBytes = decoder.decodeBuffer(blobPhoto);
-		String path = OpenmrsUtil.getApplicationDataDirectory() + File.separatorChar + "photoUser";
-		new File(path).mkdirs();
-		String target = path + File.separatorChar + id + ".png";
-		FileOutputStream fos = new FileOutputStream(target);
-		fos.write(decodedBytes);
-		fos.close();	  	
-    }
-
 }
