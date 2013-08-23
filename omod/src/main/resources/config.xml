@@ -46,6 +46,11 @@
 		<file>messages_ht.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-
+	
+	<globalProperty>
+		<property>registrationapp.patientPhotoConceptUuid</property>
+		<defaultValue>18f14cd9-bcc8-45c4-adf5-8aa6f60b8bec</defaultValue>
+		<description>The UUID of the Patient's photo concept.</description>
+	</globalProperty>
 </module>
 

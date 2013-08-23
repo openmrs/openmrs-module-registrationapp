@@ -13,6 +13,7 @@ import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.feature.FeatureToggleProperties;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
@@ -45,6 +46,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import sun.misc.BASE64Decoder;
+
+import org.openmrs.module.registrationapp.RegistrationAppConstants;
 
 import java.io.FileNotFoundException;
 
@@ -121,7 +124,7 @@ public class RegisterPatientPageController {
         //TODO create encounters
         patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
         
-        savePhotoUsingConcepts(patient, patientPhoto, sessionContext);
+        savePatientPhoto(patient, patientPhoto, sessionContext);
         
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
 
@@ -132,16 +135,17 @@ public class RegisterPatientPageController {
     
     }
     
-    public void savePhotoUsingConcepts(Person patient, String photo, UiSessionContext sessionContext) throws IOException {
+    public void savePatientPhoto(Person patient, String photo, UiSessionContext sessionContext) throws IOException {
     	String blobPhoto = photo.replaceAll("data:image/png;base64,", "");
 		BASE64Decoder decoder = new BASE64Decoder();
 		byte[] decodedBytes = decoder.decodeBuffer(blobPhoto);
-    	ConceptComplex conceptComplex = Context.getConceptService().getConceptComplex(27);
+		String photoConceptUuid = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.GP_PHOTO_PATIENT_CONCEPT_UUID);
+		Concept concept = Context.getConceptService().getConceptByUuid(photoConceptUuid);
     	InputStream in = new ByteArrayInputStream(decodedBytes);
     	Location location = sessionContext.getSessionLocation();
     
-    	Obs obs = new Obs(patient, conceptComplex, new Date(), location);
-    	ComplexData data = new ComplexData(patient.getId()+".png", in);
+    	Obs obs = new Obs(patient, concept, new Date(), location);
+    	ComplexData data = new ComplexData(patient.getUuid()+".png", in);
     	obs.setComplexData(data);
     	Context.getObsService().saveObs(obs, null);
     }
