@@ -49,7 +49,7 @@
 	
 	<globalProperty>
 		<property>registrationapp.patientPhotoConceptUuid</property>
-		<defaultValue>6edca69f-1d7e-497f-8032-db3d1ea7e936</defaultValue>
+		<defaultValue></defaultValue>
 		<description>The UUID of the Patient's photo concept.</description>
 	</globalProperty>
 </module>

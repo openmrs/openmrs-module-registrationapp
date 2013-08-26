@@ -144,6 +144,8 @@ public class RegisterPatientPageController {
     	InputStream in = new ByteArrayInputStream(decodedBytes);
     	Location location = sessionContext.getSessionLocation();
     	
+    	System.out.println(photoConceptUuid);
+    	
     	Obs obs = new Obs(patient, concept, new Date(), location);
     	ComplexData data = new ComplexData(patient.getUuid()+".png", in);
     	obs.setComplexData(data);
