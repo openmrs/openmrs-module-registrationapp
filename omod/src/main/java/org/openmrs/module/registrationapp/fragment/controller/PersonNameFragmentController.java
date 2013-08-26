@@ -14,23 +14,24 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class PersonNameFragmentController {
 
-	public String getSimilarNames(
+	public SimpleObject getSimilarNames(
 			@SpringBean("registrationCoreService") RegistrationCoreService service,
 			@RequestParam(value = "searchPhrase", required = true) String searchPhrase,
 			@RequestParam(value = "formFieldName", required = true) String formFieldName) {
 
-		Set<String> names = new LinkedHashSet<String>();
-		names.add(searchPhrase);
+		List<String> names = new ArrayList<String>();
 
 		if ("givenName".equals(formFieldName)) {
 			names.addAll(service.findSimilarGivenNames(searchPhrase));
@@ -39,15 +40,9 @@ public class PersonNameFragmentController {
 			names.addAll(service.findSimilarFamilyNames(searchPhrase));
 		}
 
+		SimpleObject result = new SimpleObject();
+		result.put("names", names);
 
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			StringWriter sw = new StringWriter();
-			mapper.writeValue(sw, names);
-			return sw.toString();
-		} catch (Exception ex) {
-			throw new UiFrameworkException("Error converting to JSON", ex);
-		}
+		return result;
 	}
 }
