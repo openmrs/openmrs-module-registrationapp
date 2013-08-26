@@ -1,4 +1,4 @@
-jq = jQuery;
+JQ = jQuery;
  
 jq(function() {
 	reviewSimilarPatients = emr.setupConfirmationDialog({
@@ -50,10 +50,27 @@ jq(function() {
 
     jq('body').keydown(function(event) {
         if (jq('#demographics-gender').hasClass('focused')) {
+            function goToNextQuestion() {
+                var esc = jq.Event("keydown");
+                esc.which = 27;
+                var down = jq.Event("keydown");
+                down.which = 40;
+                var tab = jq.Event("keydown");
+                tab.which = 9;
+                jq('body').trigger(esc);
+                jq('body').trigger(down);
+                jq('body').trigger(tab);
+            }
+
             if (event.keyCode == '70') {
+                event.preventDefault();
                 jq('input[name=gender][value=F]').prop("checked",true);
+                goToNextQuestion();
+
             } else if (event.keyCode == '77') {
+                event.preventDefault();
                 jq('input[name=gender][value=M]').prop("checked",true);
+                goToNextQuestion();
             }
         }
     });
