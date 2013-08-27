@@ -49,10 +49,21 @@ jq(function() {
 
     jq('body').keydown(function(event) {
         if (jq('#demographics-gender').hasClass('focused')) {
+            function prepareForNextQuestion() {
+                jq('input[name=gender][value=F]').focus();
+                var enter = jq.Event("keydown");
+                enter.which = 13;
+                jq('body').trigger(enter);
+            }
+
             if (event.keyCode == '70') {
+                event.preventDefault();
                 jq('input[name=gender][value=F]').prop("checked",true);
+                prepareForNextQuestion();
             } else if (event.keyCode == '77') {
+                event.preventDefault();
                 jq('input[name=gender][value=M]').prop("checked",true);
+                prepareForNextQuestion();
             }
         }
     });
