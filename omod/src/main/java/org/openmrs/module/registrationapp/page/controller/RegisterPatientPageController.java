@@ -124,7 +124,9 @@ public class RegisterPatientPageController {
         //TODO create encounters
         patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
         
-        savePatientPhoto(patient, patientPhoto, sessionContext);
+        if(!patientPhoto.isEmpty()){
+        	savePatientPhoto(patient, patientPhoto, sessionContext);
+        }
         
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
 
@@ -143,8 +145,6 @@ public class RegisterPatientPageController {
 		Concept concept = Context.getConceptService().getConceptByUuid(photoConceptUuid);
     	InputStream in = new ByteArrayInputStream(decodedBytes);
     	Location location = sessionContext.getSessionLocation();
-    	
-    	System.out.println(photoConceptUuid);
     	
     	Obs obs = new Obs(patient, concept, new Date(), location);
     	ComplexData data = new ComplexData(patient.getUuid()+".png", in);
