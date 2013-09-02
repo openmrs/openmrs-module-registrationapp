@@ -48,7 +48,7 @@
 	<!-- /Internationalization -->
 	
 	<globalProperty>
-		<property>registrationapp.patientPhotoConceptUuid</property>
+		<property>coreapps.patientPhotoConceptUuid</property>
 		<defaultValue></defaultValue>
 		<description>The UUID of the Patient's photo concept.</description>
 	</globalProperty>

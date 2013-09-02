@@ -150,6 +150,7 @@ public class RegisterPatientPageController {
     	ComplexData data = new ComplexData(patient.getUuid()+".png", in);
     	obs.setComplexData(data);
     	Context.getObsService().saveObs(obs, null);
+    	
     }
 
 
