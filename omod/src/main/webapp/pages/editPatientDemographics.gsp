@@ -20,7 +20,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("registrationapp.patientDashboard")}", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
+        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
         { label: "${ ui.message("registrationapp.editPatientDemographics.label") }", link: "${ ui.pageLink("registrationapp", "editPatientDemographics") }" }
     ];
 </script>
