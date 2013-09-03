@@ -79,7 +79,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         left: true,
                         classes: ["required"],
                         showEstimatedCheckbox: true,
-                        birthDateEstimated: patient.birthdateEstimated,
+                        estimated: patient.birthdateEstimated,
                         initialValue: patient.birthdate
                 ])}
             </fieldset>
