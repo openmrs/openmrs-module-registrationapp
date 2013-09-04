@@ -78,8 +78,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         formFieldName: "birthdate",
                         left: true,
                         classes: ["required"],
-                        showEstimatedCheckbox: true,
-                        birthDateEstimated: patient.birthdateEstimated,
+                        estimated: patient.birthdateEstimated,
                         initialValue: patient.birthdate
                 ])}
             </fieldset>
@@ -92,7 +91,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="confirm right" value="${ui.message("general.yes")}" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("general.no")}" /></p>
+                Confirm submission? <p style="display: inline"><input type="submit" class="confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" /></p><p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" /></p>
             </div>
         </div>
     </form>
