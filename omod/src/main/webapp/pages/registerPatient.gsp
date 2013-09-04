@@ -144,7 +144,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="confirm right" value="Yes" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="No" /></p>
+                Confirm submission? <p style="display: inline"><input type="submit" class="confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" /></p><p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" /></p>
             </div>
         </div>
     </form>
