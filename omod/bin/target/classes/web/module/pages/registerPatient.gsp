@@ -88,7 +88,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset id="demographics-gender">
                 <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
-                <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
+                <h3>ui.message("registrationapp.patient.gender.question")</h3>
                 ${ ui.includeFragment("uicommons", "field/radioButtons", [
                         label: "",
                         formFieldName: "gender",
@@ -179,7 +179,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" /></p><p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" /></p>
+                Confirm submission? <p style="display: inline"><input type="submit" class="confirm" value="Yes" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="No" /></p>
             </div>
         </div>
     </form>

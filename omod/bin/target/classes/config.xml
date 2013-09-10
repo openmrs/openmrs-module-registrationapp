@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module configVersion="1.4">
+
+	<!-- Module Properties -->
+	<id>registrationapp</id>
+	<name>Registration App Module</name>
+	<version>1.0-SNAPSHOT</version>
+	<package>org.openmrs.module.registrationapp</package>
+	<author>OpenMRS</author>
+	<description>
+		Registration App for the Reference Application
+	</description>
+	<updateURL>https://modules.openmrs.org/modules/download/registrationapp/update.rdf</updateURL>
+	<require_version>1.9.3</require_version>
+	<!-- / Module Properties -->
+
+    <require_modules>
+        <require_module version="1.0-SNAPSHOT">org.openmrs.module.uicommons</require_module>
+        <require_module version="1.0-SNAPSHOT">org.openmrs.module.emrapi</require_module>
+        <require_module version="1.0-SNAPSHOT}">org.openmrs.module.appui</require_module>
+        <require_module version="1.0-SNAPSHOT">org.openmrs.module.registrationcore</require_module>
+    </require_modules>
+
+	<!-- Module Activator -->
+	<activator>org.openmrs.module.registrationapp.RegistrationAppActivator</activator>
+	
+	
+	<!-- Maps hibernate file's, if present -->
+	<mappingFiles>
+				
+	</mappingFiles>
+
+	<!-- Internationalization -->
+	<!-- All message codes should start with registrationapp. -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>ht</lang>
+		<file>messages_ht.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+
+</module>
+

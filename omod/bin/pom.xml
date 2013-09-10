@@ -13,10 +13,6 @@
 	<name>Registration App Module OMOD</name>
 	<description>OMOD project for RegistrationApp</description>
 
-	<properties>
-        <coreappsVersion>1.0-SNAPSHOT</coreappsVersion>
-    </properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -35,13 +31,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-omod</artifactId>
             <version>${uicommonsVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>coreapps-api</artifactId>
-            <version>${coreappsVersion}</version>
             <scope>provided</scope>
         </dependency>
 	</dependencies>
