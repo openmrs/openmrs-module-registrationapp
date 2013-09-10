@@ -15,6 +15,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.feature.FeatureToggleProperties;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.coreapps.CoreAppsConstants;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -47,7 +48,6 @@ import java.io.InputStream;
 
 import sun.misc.BASE64Decoder;
 
-import org.openmrs.module.registrationapp.RegistrationAppConstants;
 
 import java.io.FileNotFoundException;
 
@@ -141,7 +141,7 @@ public class RegisterPatientPageController {
     	String blobPhoto = photo.replaceAll("data:image/png;base64,", "");
 		BASE64Decoder decoder = new BASE64Decoder();
 		byte[] decodedBytes = decoder.decodeBuffer(blobPhoto);
-		String photoConceptUuid = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.GP_PHOTO_PATIENT_CONCEPT_UUID);
+		String photoConceptUuid = Context.getAdministrationService().getGlobalProperty(CoreAppsConstants.GP_PHOTO_PATIENT_CONCEPT_UUID);
 		Concept concept = Context.getConceptService().getConceptByUuid(photoConceptUuid);
     	InputStream in = new ByteArrayInputStream(decodedBytes);
     	Location location = sessionContext.getSessionLocation();
@@ -151,6 +151,7 @@ public class RegisterPatientPageController {
     	obs.setComplexData(data);
     	Context.getObsService().saveObs(obs, null);
     	
+    	//System.out.println(photoConceptUuid);
     }
 
 
