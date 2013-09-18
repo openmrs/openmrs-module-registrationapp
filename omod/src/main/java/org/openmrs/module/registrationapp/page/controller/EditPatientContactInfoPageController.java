@@ -46,13 +46,14 @@ public class EditPatientContactInfoPageController {
 	protected final Log log = LogFactory.getLog(EditPatientContactInfoPageController.class);
 	
 	public void get(UiSessionContext sessionContext, PageModel model, @RequestParam("patientId") Patient patient,
-	                @RequestParam("appId") AppDescriptor app,
+	                @RequestParam("appId") AppDescriptor app, @RequestParam(value = "returnUrl", required = false) String returnUrl,
 	                @SpringBean("adminService") AdministrationService administrationService) throws Exception {
 		
 		sessionContext.requireAuthentication();
 		
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 		addModelAttributes(model, patient, formStructure, administrationService);
+		model.addAttribute("returnUrl", returnUrl);
 	}
 	
 	/**
@@ -64,6 +65,7 @@ public class EditPatientContactInfoPageController {
 	                   @RequestParam("patientId") @BindParams Patient patient, @BindParams PersonAddress address,
 	                   @SpringBean("patientService") PatientService patientService,
 	                   @RequestParam("appId") AppDescriptor app,
+					   @RequestParam("returnUrl") String returnUrl,
 	                   @SpringBean("adminService") AdministrationService administrationService, HttpServletRequest request,
 	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
 	                   @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
@@ -96,7 +98,7 @@ public class EditPatientContactInfoPageController {
 				InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
 				    ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName()));
 				
-				return "redirect:coreapps/patientdashboard/patientDashboard.page?patientId=" + patient.getPatientId();
+				return "redirect:" + returnUrl;
 			}
 			catch (Exception e) {
 				log.warn("Error occurred while saving patient's contact info", e);

@@ -21,6 +21,10 @@
             [label: ui.message("registrationapp.month.10"), value: 10],
             [label: ui.message("registrationapp.month.11"), value: 11],
             [label: ui.message("registrationapp.month.12"), value: 12] ]
+
+	if (!returnUrl) {
+		returnUrl = "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}"
+	}
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -33,7 +37,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }", link: "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}" },
+        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }", link: returnUrl },
         { label: "${ ui.message("registrationapp.editPatientContactInfo.label") }", link: "${ ui.pageLink("registrationapp", "editPatientContactInfo") }" }
     ];
 </script>
@@ -44,6 +48,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </h2>
 
     <form class="simple-form-ui" method="POST">
+		<input type="hidden" name="returnUrl" value="${returnUrl}" />
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value

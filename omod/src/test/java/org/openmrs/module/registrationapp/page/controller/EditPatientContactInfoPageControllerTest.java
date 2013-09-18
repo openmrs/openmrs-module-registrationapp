@@ -119,7 +119,7 @@ public class EditPatientContactInfoPageControllerTest {
 		final String newCountry = "Uganda";
 		newAddress.setCountry(newCountry);
 		
-		controller.post(uiSessionContext, null, patient, newAddress, patientService, app, null, request, null, null,
+		controller.post(uiSessionContext, null, patient, newAddress, patientService, app, "", null, request, null, null,
 		    patientValidator, ui);
 		assertSame(newAddress, patient.getPersonAddress());
 		assertEquals(newCountry, patient.getPersonAddress().getCountry());
@@ -147,7 +147,7 @@ public class EditPatientContactInfoPageControllerTest {
 		PersonAddress newAddress = new PersonAddress();
 		newAddress.setCountry(country);
 		
-		controller.post(uiSessionContext, null, patient, newAddress, patientService, app, null, request, null, null,
+		controller.post(uiSessionContext, null, patient, newAddress, patientService, app, "", null, request, null, null,
 		    patientValidator, ui);
 		
 		assertSame(address, patient.getPersonAddress());

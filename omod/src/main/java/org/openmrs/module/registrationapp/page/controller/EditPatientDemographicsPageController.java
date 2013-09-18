@@ -41,11 +41,13 @@ public class EditPatientDemographicsPageController {
 	protected final Log log = LogFactory.getLog(EditPatientDemographicsPageController.class);
 	
 	public void get(UiSessionContext sessionContext, PageModel model, @RequestParam("patientId") Patient patient,
+					@RequestParam(value = "returnUrl", required = false) String returnUrl,
 	                @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate) throws Exception {
 		
 		sessionContext.requireAuthentication();
 		model.addAttribute("patient", patient);
 		model.addAttribute("nameTemplate", nameTemplate);
+		model.addAttribute("returnUrl", returnUrl);
 	}
 	
 	/**
@@ -55,8 +57,8 @@ public class EditPatientDemographicsPageController {
 	public String post(UiSessionContext sessionContext, PageModel model,
 	                   @SpringBean("patientService") PatientService patientService,
 	                   @RequestParam("patientId") @BindParams Patient patient, @BindParams PersonName name,
-	                   @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate, HttpServletRequest request,
-	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
+					   @RequestParam("returnUrl") String returnUrl, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+					   HttpServletRequest request, @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
 	                   @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 		
 		sessionContext.requireAuthentication();
@@ -79,7 +81,7 @@ public class EditPatientDemographicsPageController {
 				InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
 				    ui.message("registrationapp.editDemographicsMessage.success", patient.getPersonName()));
 				
-				return "redirect:coreapps/patientdashboard/patientDashboard.page?patientId=" + patient.getPatientId();
+				return "redirect:" + returnUrl;
 			}
 			catch (Exception e) {
 				log.warn("Error occurred while saving patient demographics", e);

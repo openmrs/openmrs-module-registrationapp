@@ -94,7 +94,7 @@ public class EditPatientDemographicsPageControllerTest {
 		patient.addName(oldName);
 		
 		PersonName newName = new PersonName("newGivenName", null, familyName);
-		controller.post(uiSessionContext, null, patientService, patient, newName, null, request, null, null,
+		controller.post(uiSessionContext, null, patientService, patient, newName, "", null, request, null, null,
 		    patientValidator, ui);
 		
 		Assert.assertNotSame(oldName, patient.getPersonName());
@@ -120,7 +120,7 @@ public class EditPatientDemographicsPageControllerTest {
 		
 		//should be case insensitive
 		PersonName newName = new PersonName("givenName", null, "familyName");
-		controller.post(uiSessionContext, null, patientService, patient, newName, null, request, null, null,
+		controller.post(uiSessionContext, null, patientService, patient, newName, "", null, request, null, null,
 		    patientValidator, ui);
 		
 		Assert.assertSame(oldName, patient.getPersonName());
