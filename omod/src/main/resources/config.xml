@@ -47,5 +47,10 @@
 	</messages>
 	<!-- /Internationalization -->
 
+	<privilege>
+		<name>App: registrationapp.registerPatient</name>
+		<description>Able to access the register patient app</description>
+	</privilege>
+
 </module>
 
