@@ -68,13 +68,19 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
 			    
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-                <% nameTemplate.lineByLineFormat.each { name -> %>
+                <% nameTemplate.lineByLineFormat.each { name ->
+	                def initialNameFieldValue = ""
+	                    if(patient.personName && patient.personName[name]){
+	                        initialNameFieldValue = patient.personName[name]
+	                    }
+                %>
                     ${ ui.includeFragment("registrationapp", "field/personName", [
                             label: ui.message(nameTemplate.nameMappings[name]),
                             size: nameTemplate.sizeMappings[name],
                             formFieldName: name,
                             dataItems: 4,
                             left: true,
+                            initialValue: initialNameFieldValue,
                             classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
                     ])}
 
@@ -90,7 +96,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         formFieldName: "gender",
                         maximumSize: 3,
                         options: genderOptions,
-                        classes: ["required"]
+                        classes: ["required"],
+                        initialValue: patient.gender
                 ])}
             </fieldset>
 
@@ -101,7 +108,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         label: "",
                         formFieldName: "birthdate",
                         left: true,
-                        showEstimated: true
+                        showEstimated: true,
+                        estimated: patient.birthdateEstimated,
+                        initialValue: patient.birthdate
                   ])}
             </fieldset>
 
