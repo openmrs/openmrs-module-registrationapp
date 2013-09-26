@@ -104,6 +104,7 @@ public class EditPatientDemographicsPageController {
 		
 		model.addAttribute("patient", patient);
 		model.addAttribute("nameTemplate", nameTemplate);
+		model.addAttribute("returnUrl", returnUrl);
 		//redisplay the form
 		return null;
 	}

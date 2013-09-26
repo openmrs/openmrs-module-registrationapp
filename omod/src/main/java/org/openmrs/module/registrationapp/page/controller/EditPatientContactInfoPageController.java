@@ -52,8 +52,7 @@ public class EditPatientContactInfoPageController {
 		sessionContext.requireAuthentication();
 		
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
-		addModelAttributes(model, patient, formStructure, administrationService);
-		model.addAttribute("returnUrl", returnUrl);
+		addModelAttributes(model, patient, formStructure, administrationService, returnUrl);
 	}
 	
 	/**
@@ -119,14 +118,15 @@ public class EditPatientContactInfoPageController {
 			session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
 		}
 		
-		addModelAttributes(model, patient, formStructure, administrationService);
+		addModelAttributes(model, patient, formStructure, administrationService, returnUrl);
 		//redisplay the form
 		return null;
 	}
 	
 	private void addModelAttributes(PageModel model, Patient patient, NavigableFormStructure formStructure,
-	                                AdministrationService adminService) throws Exception {
+	                                AdministrationService adminService, String returnUrl) throws Exception {
 		
+		model.addAttribute("returnUrl", returnUrl);
 		model.put("uiUtils", new RegistrationAppUiUtils());
 		model.addAttribute("patient", patient);
 		model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
