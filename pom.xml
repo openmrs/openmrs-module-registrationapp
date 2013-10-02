@@ -39,7 +39,7 @@
         <appframeworkVersion>2.0</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
         <idgenVersion>2.5</idgenVersion>
-        <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
+        <uicommonsVersion>1.0</uicommonsVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <calculationVersion>1.0</calculationVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
