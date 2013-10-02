@@ -42,7 +42,6 @@
         <uicommonsVersion>1.0</uicommonsVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <calculationVersion>1.0</calculationVersion>
-        <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <providerManagementVersion>1.1.3</providerManagementVersion>
         <registrationcoreVersion>1.0-SNAPSHOT</registrationcoreVersion>
         <appuiVersion>1.0-SNAPSHOT</appuiVersion>
@@ -121,13 +120,6 @@
             <artifactId>calculation-api</artifactId>
             <version>${calculationVersion}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>paperrecord-api</artifactId>
-            <version>${paperrecordVersion}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
