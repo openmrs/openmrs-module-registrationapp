@@ -43,7 +43,7 @@
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <calculationVersion>1.0</calculationVersion>
         <providerManagementVersion>1.1.3</providerManagementVersion>
-        <registrationcoreVersion>1.0-SNAPSHOT</registrationcoreVersion>
+        <registrationcoreVersion>1.0</registrationcoreVersion>
         <appuiVersion>1.0-SNAPSHOT</appuiVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
