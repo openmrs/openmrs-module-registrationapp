@@ -45,6 +45,7 @@
         <registrationcoreVersion>1.0</registrationcoreVersion>
         <reportingModuleVersion>0.9.1</reportingModuleVersion>
         <appuiVersion>1.0</appuiVersion>
+        <serializationXstreamModuleVersion>0.2.7</serializationXstreamModuleVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -163,6 +164,13 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>reporting-api</artifactId>
             <version>${reportingModuleVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api</artifactId>
+            <version>${serializationXstreamModuleVersion}</version>
             <scope>test</scope>
         </dependency>
 
