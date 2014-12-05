@@ -1,12 +1,13 @@
 package org.openmrs.module.registrationapp.page.controller;
 
-import java.util.Calendar;
-
-import javax.servlet.http.HttpServletRequest;
-
+import org.joda.time.DateTimeComparator;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
@@ -31,6 +32,10 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Calendar;
+import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
+
 public class RegisterPatientPageController {
 
     private static final String REGISTRATION_SECTION_EXTENSION_POINT = "org.openmrs.module.registrationapp.section";
@@ -53,8 +58,11 @@ public class RegisterPatientPageController {
                        @ModelAttribute("personAddress") @BindParams PersonAddress address,
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                       @RequestParam(value="registrationDate", required = false) Date registrationDate,
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
-                       @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
+                       @SpringBean("messageSourceService") MessageSourceService messageSourceService,
+                       @SpringBean("encounterService") EncounterService encounterService,
+                       Session session,
                        @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
@@ -83,13 +91,12 @@ public class RegisterPatientPageController {
         RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(address, errors);
 
         if (errors.hasErrors()) {
-        	addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService);
+            addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService);
             return null;
         }
 
-        //TODO create encounters
-        
         try {
+            // note that this will only create an encounter if getRegistrationEncounter != null
         	patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
         }
         catch (Exception ex) {
@@ -101,6 +108,12 @@ public class RegisterPatientPageController {
         	}
         	addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService);
         	return null;
+        }
+
+        // now create the registration encounter, if configured to do so
+        Encounter registrationEncounter = buildRegistrationEncounter(patient, registrationDate, sessionContext, app, encounterService);
+        if (registrationEncounter != null) {
+            encounterService.saveEncounter(registrationEncounter);
         }
 
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
@@ -127,6 +140,70 @@ public class RegisterPatientPageController {
         addModelAttributes(model, patient, app, nameTemplate);
     }
 
+    private Encounter buildRegistrationEncounter(Patient patient, Date registrationDate, UiSessionContext sessionContext, AppDescriptor app, EncounterService encounterService) {
+
+        EncounterType registrationEncounterType = getRegistrationEncounterType(app, encounterService);
+        EncounterRole registrationEncounterRole = getRegistrationEncounteRole(app, encounterService);
+
+        // if no registration encounter type specified, we aren't configured to create an encounter
+        if (registrationEncounterType == null) {
+            return null;
+        }
+
+        // if date not specified, or date = current date, consider this a "real-time" entry, and set date to current time
+        if (DateTimeComparator.getDateOnlyInstance().compare(registrationDate, new Date()) == 0){
+            registrationDate = new Date();
+        }
+
+        // create the encounter
+        Encounter encounter = new Encounter();
+        encounter.setPatient(patient);
+        encounter.setEncounterType(registrationEncounterType);
+        encounter.setLocation(sessionContext.getSessionLocation());
+        encounter.setEncounterDatetime(registrationDate);
+
+       if (registrationEncounterRole != null) {
+           encounter.addProvider(registrationEncounterRole, sessionContext.getCurrentProvider());
+       }
+
+       return encounter;
+    }
+
+
+    private EncounterType getRegistrationEncounterType(AppDescriptor app, EncounterService encounterService) {
+
+        EncounterType registrationEncounterType = null;
+
+        if (app.getConfig().get("registrationEncounterType") != null) {
+
+            String encounterTypeUuid = app.getConfig().get("registrationEncounterType").getTextValue();
+            registrationEncounterType = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
+
+            if (registrationEncounterType == null) {
+                throw new IllegalArgumentException("Cannot find encounter type referenced by " + encounterTypeUuid);
+            }
+        }
+
+        return registrationEncounterType;
+    }
+
+    private EncounterRole getRegistrationEncounteRole(AppDescriptor app, EncounterService encounterService) {
+
+        EncounterRole registrationEncounterRole = null;
+
+        if (app.getConfig().get("registrationEncounterRole") != null) {
+
+            String encounterRoleUuid = app.getConfig().get("registrationEncounterRole").getTextValue();
+            registrationEncounterRole = encounterService.getEncounterRoleByUuid(encounterRoleUuid);
+
+            if (registrationEncounterRole == null) {
+                throw new IllegalArgumentException("Cannot find encounter type referenced by " + encounterRoleUuid);
+            }
+        }
+
+        return registrationEncounterRole;
+    }
+
     public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
@@ -139,6 +216,9 @@ public class RegisterPatientPageController {
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
+        model.addAttribute("showRegistrationDateSection", app.getConfig().get("registrationEncounterType") != null
+                && app.getConfig().get("allowRetrospectiveEntry") != null
+                && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }

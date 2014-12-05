@@ -61,6 +61,25 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 	
 
     <form class="simple-form-ui" id="registration" method="POST">
+
+        <% if (showRegistrationDateSection) { %>
+            <section id="registration-date">
+                <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
+
+                <fieldset class="multiple-input-date no-future-date date-required">
+                    <legend id="registrationDateLabel">${ui.message("registrationapp.registrationDate.label")}</legend>
+                    <h3>${ui.message("registrationapp.registrationDate.question")}</h3>
+                    ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
+                            label: "",
+                            formFieldName: "registrationDate",
+                            left: true,
+                            showEstimated: false,
+                            initialValue: new Date()
+                    ])}
+                </fieldset>
+            </section>
+        <% } %>
+
         <section id="demographics">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
