@@ -32,9 +32,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -48,7 +48,6 @@ public class RegisterPatientPageController {
         sessionContext.requireAuthentication();
         addModelAttributes(model, patient, app, nameTemplate);
     }
-
 
 
     public String post(UiSessionContext sessionContext, PageModel model, @RequestParam("appId") AppDescriptor app,
@@ -174,7 +173,7 @@ public class RegisterPatientPageController {
 
         EncounterType registrationEncounterType = null;
 
-        if (app.getConfig().get("registrationEncounterType") != null) {
+        if (!app.getConfig().get("registrationEncounterType").isNull()) {
 
             String encounterTypeUuid = app.getConfig().get("registrationEncounterType").getTextValue();
             registrationEncounterType = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
@@ -191,7 +190,7 @@ public class RegisterPatientPageController {
 
         EncounterRole registrationEncounterRole = null;
 
-        if (app.getConfig().get("registrationEncounterRole") != null) {
+        if (!app.getConfig().get("registrationEncounterRole").isNull()) {
 
             String encounterRoleUuid = app.getConfig().get("registrationEncounterRole").getTextValue();
             registrationEncounterRole = encounterService.getEncounterRoleByUuid(encounterRoleUuid);
@@ -216,10 +215,11 @@ public class RegisterPatientPageController {
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("showRegistrationDateSection", app.getConfig().get("registrationEncounterType") != null
-                && app.getConfig().get("allowRetrospectiveEntry") != null
+        model.addAttribute("showRegistrationDateSection", !app.getConfig().get("registrationEncounterType").isNull()
+                && !app.getConfig().get("allowRetrospectiveEntry").isNull()
                 && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
+
 }

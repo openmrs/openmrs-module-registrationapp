@@ -16,14 +16,13 @@
             {
                 "name": "registrationEncounterType",
                 "description": "Encounter type of registration encounter (optional--if not specified, no registration encounter created)",
-                "defaultValue": ""
+                "defaultValue": null
             },
             {
                 "name": "registrationEncounterRole",
                 "description": "Encounter role for provider of registration encounter (optional)",
-                "defaultValue": ""
+                "defaultValue": null
             },
-            ,
             {
                 "name": "allowRetrospectiveEntry",
                 "description": "True/false whether or not allow the registration encounter datetime to be backdated. Shows a datepicker for the registration encounter if encounter is configured, otherwise does nothing.",
