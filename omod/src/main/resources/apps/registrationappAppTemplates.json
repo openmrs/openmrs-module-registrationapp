@@ -14,13 +14,8 @@
                 "defaultValue": "/index.htm"
             },
             {
-                "name": "registrationEncounterType",
-                "description": "Encounter type of registration encounter (optional--if not specified, no registration encounter created)",
-                "defaultValue": null
-            },
-            {
-                "name": "registrationEncounterRole",
-                "description": "Encounter role for provider of registration encounter (optional)",
+                "name": "registrationEncounter",
+                "description": "Config object with uuid of encounter type and encounter role (optional--if not specified, no registration encounter created)",
                 "defaultValue": null
             },
             {

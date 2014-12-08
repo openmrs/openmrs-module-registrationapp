@@ -32,9 +32,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -142,7 +142,7 @@ public class RegisterPatientPageController {
     private Encounter buildRegistrationEncounter(Patient patient, Date registrationDate, UiSessionContext sessionContext, AppDescriptor app, EncounterService encounterService) {
 
         EncounterType registrationEncounterType = getRegistrationEncounterType(app, encounterService);
-        EncounterRole registrationEncounterRole = getRegistrationEncounteRole(app, encounterService);
+        EncounterRole registrationEncounterRole = getRegistrationEncounterRole(app, encounterService);
 
         // if no registration encounter type specified, we aren't configured to create an encounter
         if (registrationEncounterType == null) {
@@ -173,9 +173,10 @@ public class RegisterPatientPageController {
 
         EncounterType registrationEncounterType = null;
 
-        if (!app.getConfig().get("registrationEncounterType").isNull()) {
+        if (!app.getConfig().get(("registrationEncounter")) .isNull()
+                && !app.getConfig().get("registrationEncounter").get("encounterType").isNull()) {
 
-            String encounterTypeUuid = app.getConfig().get("registrationEncounterType").getTextValue();
+            String encounterTypeUuid =  app.getConfig().get("registrationEncounter").get("encounterType").getTextValue();
             registrationEncounterType = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
 
             if (registrationEncounterType == null) {
@@ -186,13 +187,14 @@ public class RegisterPatientPageController {
         return registrationEncounterType;
     }
 
-    private EncounterRole getRegistrationEncounteRole(AppDescriptor app, EncounterService encounterService) {
+    private EncounterRole getRegistrationEncounterRole(AppDescriptor app, EncounterService encounterService) {
 
         EncounterRole registrationEncounterRole = null;
 
-        if (!app.getConfig().get("registrationEncounterRole").isNull()) {
+        if (!app.getConfig().get(("registrationEncounter")) .isNull()
+                && !app.getConfig().get("registrationEncounter").get("encounterRole").isNull()) {
 
-            String encounterRoleUuid = app.getConfig().get("registrationEncounterRole").getTextValue();
+            String encounterRoleUuid = app.getConfig().get("registrationEncounter").get("encounterRole").getTextValue();
             registrationEncounterRole = encounterService.getEncounterRoleByUuid(encounterRoleUuid);
 
             if (registrationEncounterRole == null) {
@@ -215,7 +217,7 @@ public class RegisterPatientPageController {
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("showRegistrationDateSection", !app.getConfig().get("registrationEncounterType").isNull()
+        model.addAttribute("showRegistrationDateSection", !app.getConfig().get("registrationEncounter").isNull()
                 && !app.getConfig().get("allowRetrospectiveEntry").isNull()
                 && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
         model.addAttribute("enableOverrideOfAddressPortlet",
