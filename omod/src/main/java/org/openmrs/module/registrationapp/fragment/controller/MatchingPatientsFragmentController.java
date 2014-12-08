@@ -13,7 +13,11 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
@@ -29,10 +33,6 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 /**
  *
  */
@@ -45,12 +45,7 @@ public class MatchingPatientsFragmentController {
 	                                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
 	                                             HttpServletRequest request, UiUtils ui) throws Exception {
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
-
-        // don't do a query (ie return empty list) unless we at least have a name or a birth-date
-        if (patient.getBirthdate() == null && StringUtils.isBlank(name.getFullName())) {
-            return new ArrayList<SimpleObject>();
-        }
-
+		
 		patient.addName(name);
 		patient.addAddress(address);
 		
