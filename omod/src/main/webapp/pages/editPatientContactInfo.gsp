@@ -47,8 +47,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ ui.message("registrationapp.editPatientContactInfo.label") }
     </h2>
 
-    <form class="simple-form-ui" method="POST">
-		<input type="hidden" name="returnUrl" value="${returnUrl}" />
+    <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editPatientContactInfo.page?patientId=${patient.patientId}&returnUrl=${returnUrl}&appId=${app.id}">
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value

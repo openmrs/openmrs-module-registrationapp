@@ -34,8 +34,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ ui.message("registrationapp.editPatientDemographics.label") }
     </h2>
 
-    <form class="simple-form-ui" method="POST">
-		<input type="hidden" name="returnUrl" value="${returnUrl}" />
+    <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editPatientDemographics.page?patientId=${patient.patientId}&returnUrl=${returnUrl}">
         <section id="demographics">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
