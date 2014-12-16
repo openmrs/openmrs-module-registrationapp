@@ -1,5 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTimeComparator;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
@@ -15,6 +17,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
+import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
@@ -32,9 +35,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -113,6 +116,28 @@ public class RegisterPatientPageController {
         Encounter registrationEncounter = buildRegistrationEncounter(patient, registrationDate, sessionContext, app, encounterService);
         if (registrationEncounter != null) {
             encounterService.saveEncounter(registrationEncounter);
+        }
+
+        // run any AfterPatientCreated actions
+        // TODO wrap everything here in a single transaction
+        ArrayNode afterCreatedArray = (ArrayNode) app.getConfig().get("afterCreatedActions");
+        for (JsonNode actionNode : afterCreatedArray) {
+            String actionString = actionNode.getTextValue();
+            AfterPatientCreatedAction action;
+            if (actionString.startsWith("bean:")) {
+                String beanId = actionString.substring("bean:".length());
+                action = Context.getRegisteredComponent(beanId, AfterPatientCreatedAction.class);
+            }
+            else if (actionString.startsWith("class:")) {
+                String className = actionString.substring("class:".length());
+                Class<? extends AfterPatientCreatedAction> clazz = (Class<? extends AfterPatientCreatedAction>) Context.loadClass(className);
+                action = clazz.newInstance();
+            }
+            else {
+                throw new IllegalStateException("Invalid afterCreatedAction: " + actionString);
+            }
+
+            action.afterPatientCreated(patient, request.getParameterMap());
         }
 
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));

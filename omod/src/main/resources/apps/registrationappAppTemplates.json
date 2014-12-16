@@ -9,6 +9,11 @@
                 "defaultValue": [ ]
             },
             {
+                "name": "afterCreatedActions",
+                "description": "A list of 'bean:beanId' or 'class:fully.qualified.ClassName' that implement org.openmrs.module.registrationapp.action.AfterPatientCreatedAction and will be executed after creating the patient",
+                "defaultValue": [ ]
+            },
+            {
                 "name": "afterCreatedUrl",
                 "description": "What url to go to after successfully registering the patient. Supports {{patientId}}",
                 "defaultValue": "/index.htm"
