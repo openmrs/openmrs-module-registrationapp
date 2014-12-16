@@ -35,9 +35,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
 import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -121,23 +121,23 @@ public class RegisterPatientPageController {
         // run any AfterPatientCreated actions
         // TODO wrap everything here in a single transaction
         ArrayNode afterCreatedArray = (ArrayNode) app.getConfig().get("afterCreatedActions");
-        for (JsonNode actionNode : afterCreatedArray) {
-            String actionString = actionNode.getTextValue();
-            AfterPatientCreatedAction action;
-            if (actionString.startsWith("bean:")) {
-                String beanId = actionString.substring("bean:".length());
-                action = Context.getRegisteredComponent(beanId, AfterPatientCreatedAction.class);
-            }
-            else if (actionString.startsWith("class:")) {
-                String className = actionString.substring("class:".length());
-                Class<? extends AfterPatientCreatedAction> clazz = (Class<? extends AfterPatientCreatedAction>) Context.loadClass(className);
-                action = clazz.newInstance();
-            }
-            else {
-                throw new IllegalStateException("Invalid afterCreatedAction: " + actionString);
-            }
+        if (afterCreatedArray != null) {
+            for (JsonNode actionNode : afterCreatedArray) {
+                String actionString = actionNode.getTextValue();
+                AfterPatientCreatedAction action;
+                if (actionString.startsWith("bean:")) {
+                    String beanId = actionString.substring("bean:".length());
+                    action = Context.getRegisteredComponent(beanId, AfterPatientCreatedAction.class);
+                } else if (actionString.startsWith("class:")) {
+                    String className = actionString.substring("class:".length());
+                    Class<? extends AfterPatientCreatedAction> clazz = (Class<? extends AfterPatientCreatedAction>) Context.loadClass(className);
+                    action = clazz.newInstance();
+                } else {
+                    throw new IllegalStateException("Invalid afterCreatedAction: " + actionString);
+                }
 
-            action.afterPatientCreated(patient, request.getParameterMap());
+                action.afterPatientCreated(patient, request.getParameterMap());
+            }
         }
 
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
