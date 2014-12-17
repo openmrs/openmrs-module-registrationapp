@@ -16,8 +16,9 @@
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
+    var NavigatorController;
     jQuery(function() {
-        KeyboardController();
+        NavigatorController = KeyboardController();
     });
 </script>
 
@@ -134,6 +135,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </fieldset>
 
         </section>
+
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
@@ -144,7 +146,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
-                        <fieldset<% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>>
+                        <fieldset
+                            <% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>
+                            <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
+                        >
                             <legend id="${question.id}">${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
@@ -156,6 +161,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                         left: true,
                                         "classes": field.cssClasses
                                 ]
+                                if (field.widget.config) {
+                                    field.widget.config.fields.each {
+                                        configOptions[it.key] = it.value;
+                                    }
+                                }
                                 if(field.type == 'personAddress'){
                                     configOptions.addressTemplate = addressTemplate
                                 }
@@ -166,13 +176,20 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% } %>
             </section>
         <% } %>
+
         <div id="confirmation">
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                Confirm submission? <p style="display: inline"><input type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" /></p><p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" /></p>
+                ${ ui.message("registrationapp.confirm") }
+                <p style="display: inline">
+                    <input type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
+                </p>
+                <p style="display: inline">
+                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
+                </p>
             </div>
         </div>
     </form>

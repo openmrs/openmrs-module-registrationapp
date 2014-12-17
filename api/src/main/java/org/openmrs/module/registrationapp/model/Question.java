@@ -12,6 +12,12 @@ public class Question {
 
     @JsonProperty
     private String id;
+
+    @JsonProperty
+    private String fieldSeparator;
+
+    @JsonProperty
+    private String displayTemplate;
     
     @JsonProperty
     private List<Field> fields;
@@ -52,5 +58,21 @@ public class Question {
 	
     public void setId(String id) {
     	this.id = id;
+    }
+
+    public String getFieldSeparator() {
+        return fieldSeparator;
+    }
+
+    public void setFieldSeparator(String fieldSeparator) {
+        this.fieldSeparator = fieldSeparator;
+    }
+
+    public String getDisplayTemplate() {
+        return displayTemplate;
+    }
+
+    public void setDisplayTemplate(String displayTemplate) {
+        this.displayTemplate = displayTemplate;
     }
 }
