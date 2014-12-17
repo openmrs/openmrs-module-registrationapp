@@ -149,6 +149,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         <fieldset
                             <% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>
                             <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
+                            <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
                             <legend id="${question.id}">${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
