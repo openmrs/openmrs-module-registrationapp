@@ -1,15 +1,20 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTimeComparator;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
@@ -35,9 +40,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.List;
 
 public class RegisterPatientPageController {
 
@@ -64,6 +73,8 @@ public class RegisterPatientPageController {
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("encounterService") EncounterService encounterService,
+                       @SpringBean("obsService") ObsService obsService,
+                       @SpringBean("conceptService") ConceptService conceptService,
                        Session session,
                        @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
@@ -118,6 +129,34 @@ public class RegisterPatientPageController {
             encounterService.saveEncounter(registrationEncounter);
         }
 
+        // build any obs that are submitted
+        List<Obs> obsToCreate = new ArrayList<Obs>();
+        for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements(); ) {
+            String param = e.nextElement();
+            if (param.startsWith("obs.")) {
+                String conceptUuid = param.substring("obs.".length());
+                buildObs(conceptService, obsToCreate, conceptUuid, request.getParameterValues(param));
+            }
+        }
+        if (obsToCreate.size() > 0) {
+            if (registrationEncounter != null) {
+                for (Obs obs : obsToCreate) {
+                    registrationEncounter.addObs(obs);
+                }
+                encounterService.saveEncounter(registrationEncounter);
+            }
+            else {
+                Date datetime = registrationDate != null ? registrationDate : new Date();
+                for (Obs obs : obsToCreate) {
+                    // since we don't inherit anything from the Encounter, we need to specify these
+                    obs.setPerson(patient);
+                    obs.setLocation(sessionContext.getSessionLocation());
+                    obs.setObsDatetime(datetime);
+                    obsService.saveObs(obs, null);
+                }
+            }
+        }
+
         // run any AfterPatientCreated actions
         // TODO wrap everything here in a single transaction
         ArrayNode afterCreatedArray = (ArrayNode) app.getConfig().get("afterCreatedActions");
@@ -145,6 +184,21 @@ public class RegisterPatientPageController {
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
         redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getId().toString());
         return "redirect:" + redirectUrl;
+    }
+
+    private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptUuid, String[] parameterValues) throws ParseException {
+        Concept concept = conceptService.getConceptByUuid(conceptUuid);
+        if (concept == null) {
+            throw new IllegalArgumentException("Cannot find concept: " + conceptUuid);
+        }
+        for (String parameterValue : parameterValues) {
+            if (StringUtils.isNotEmpty(parameterValue)) {
+                Obs obs = new Obs();
+                obs.setConcept(concept);
+                obs.setValueAsString(parameterValue);
+                obsToCreate.add(obs);
+            }
+        }
     }
 
     private void addModelErrors(PageModel model, Patient patient, BindingResult errors, Session session, AppDescriptor app, NameTemplate nameTemplate, MessageSourceService messageSourceService) throws Exception {
@@ -198,9 +252,7 @@ public class RegisterPatientPageController {
 
         EncounterType registrationEncounterType = null;
 
-        if (!app.getConfig().get(("registrationEncounter")) .isNull()
-                && !app.getConfig().get("registrationEncounter").get("encounterType").isNull()) {
-
+        if (!app.getConfig().path("registrationEncounter").path("encounterType").isMissingNode()) {
             String encounterTypeUuid =  app.getConfig().get("registrationEncounter").get("encounterType").getTextValue();
             registrationEncounterType = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
 
@@ -216,9 +268,7 @@ public class RegisterPatientPageController {
 
         EncounterRole registrationEncounterRole = null;
 
-        if (!app.getConfig().get(("registrationEncounter")) .isNull()
-                && !app.getConfig().get("registrationEncounter").get("encounterRole").isNull()) {
-
+        if (!app.getConfig().path("registrationEncounter").path("encounterRole").isMissingNode()) {
             String encounterRoleUuid = app.getConfig().get("registrationEncounter").get("encounterRole").getTextValue();
             registrationEncounterRole = encounterService.getEncounterRoleByUuid(encounterRoleUuid);
 

@@ -13,6 +13,10 @@
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
+
+    def cleanup = {
+        return (it instanceof org.codehaus.jackson.node.TextNode) ? it.textValue : it;
+    }
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -165,7 +169,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 ]
                                 if (field.widget.config) {
                                     field.widget.config.fields.each {
-                                        configOptions[it.key] = it.value;
+                                        configOptions[it.key] = cleanup(it.value);
                                     }
                                 }
                                 if(field.type == 'personAddress'){
