@@ -4,7 +4,7 @@
 <div id="${ config.id }-container">
 
     <% if (config.shortcutFor) {
-        def shortcutDisplay = ui.message(addressTemplate.nameMappings[config.shortcutFor.textValue])
+        def shortcutDisplay = ui.message(addressTemplate.nameMappings[config.shortcutFor])
     %>
         <p>
             <label><em>(Optional) Quick search by ${ shortcutDisplay }</em></label>
