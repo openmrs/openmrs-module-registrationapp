@@ -183,11 +183,17 @@ $(function () {
                         var matches = _.filter(level.autocompleteOptions, function (item) {
                             return regex.test(item.name);
                         })
-                        response(_.map(matches, function (item) {
+                        var results = _.map(matches, function (item) {
                             return {
                                 label: item.name
                             }
-                        }));
+                        });
+                        // include an empty option if they haven't typed anything, so that just tabbing through doesn't
+                        // auto-select the first option
+                        if (request.term == '') {
+                            results.unshift({ label: '' });
+                        }
+                        response(results);
                     });
                 },
                 select: function(event, ui) {
@@ -207,6 +213,7 @@ $(function () {
                     element.focus();
                 })
             }).focus(function () {
+                $(this).select(); // selecting the entire field on focus makes this feel more like an autocomplete
                 $(this).data("autocomplete").search($(this).val());
             });
         }
