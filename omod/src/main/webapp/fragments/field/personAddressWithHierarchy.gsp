@@ -15,7 +15,7 @@
     <% levels.each { level -> %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="level required" type="text" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }"/>
+            <input class="level required" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
@@ -24,6 +24,9 @@
 <script type="text/javascript">
     personAddressWithHierarchy.id = '${ config.id }';
     personAddressWithHierarchy.container = jq('#${ config.id }-container');
+    <% if (config.shortcutFor) { %>
+        personAddressWithHierarchy.shortcutFor = '${ ui.escapeJs(config.shortcutFor) }';
+    <% } %>
     <% if (config.manualFields) { %>
         <% config.manualFields.each { %>
             personAddressWithHierarchy.manualFields.push(${ it }); // since this comes from json config, it's a jackson text node, so we don't put quotes

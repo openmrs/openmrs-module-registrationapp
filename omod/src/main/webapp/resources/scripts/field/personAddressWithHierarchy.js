@@ -18,15 +18,38 @@ $(function () {
         preloadLevels(levels[0]);
     });
 
+    // our usage of the jquery-ui autocomplete leads to lots of unnecessary queries for the same thing, so we use this
+    // to cache the results
+    var queryCache = {};
+
+    // uses the cache
+    function queryWithCallback(searchString, callback) {
+        if (searchString in queryCache) {
+            callback(queryCache[searchString]);
+            return null;
+        }
+        else {
+            return $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getChildAddressHierarchyEntries.form', {
+                searchString: searchString
+            }, function(result) {
+                queryCache[searchString] = result;
+                callback(result);
+            });
+        }
+    }
+
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
     function preloadLevels(level) {
-        loadOptionsFor(level).then(function () {
-            if (level.autocompleteOptions && level.autocompleteOptions.length == 1) {
-                setValue(level.addressField, level.autocompleteOptions[0].name);
-                preloadLevels(levelAfter(level.addressField));
-            }
-        });
+        var searchString = searchStringUntil(level.addressField);
+        if (searchString != null) {
+            queryWithCallback(searchString, function (result) {
+                if (result.length == 1) {
+                    setValue(level.addressField, result[0].name);
+                    preloadLevels(levelAfter(level.addressField));
+                }
+            });
+        }
     }
 
     function levelFor(addressField) {
@@ -39,6 +62,9 @@ $(function () {
 
     function setValue(addressField, value) {
         $('#' + personAddressWithHierarchy.id + '-' + addressField).val(value);
+        // when setting a field via a shortcut, do bookkeeping so that the autocompletes still work right
+        $('#' + personAddressWithHierarchy.id + '-' + addressField).data('legalValues', [ value ]);
+        levelFor(addressField).lastSelection = value;
     }
 
     function levelsBefore(addressField) {
@@ -91,39 +117,6 @@ $(function () {
         return somethingEmpty ? null : result;
     }
 
-    function clearOptionsFor(level) {
-        level.activeQuery = null;
-        level.autocompleteOptions = null;
-    }
-
-    function loadOptionsFor(level) {
-        if (level.activeQuery) {
-            return level.activeQuery;
-        }
-        else if (level.autocompleteOptions) {
-            return $.Deferred().resolve();
-        }
-        else {
-            level.autocompleteOptions = null;
-            var searchString = searchStringUntil(level.addressField);
-            if (searchString == null) {
-                // this means that we shouldn't be searching for this level now
-                level.activeQuery = null;
-                level.autocompleteOptions = null;
-                return $.Deferred().resolve();
-            }
-            level.activeQuery = $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getChildAddressHierarchyEntries.form', {
-                searchString: searchString
-            }, function (result) {
-                level.autocompleteOptions = result;
-            });
-            level.activeQuery.always(function() {
-                level.activeQuery = null;
-            });
-            return level.activeQuery;
-        }
-    }
-
     function formatShortcutResponse(item) {
         var asList = [];
         while (item) {
@@ -161,26 +154,30 @@ $(function () {
     }
 
     function clearLevelsAfter(addressField) {
-        console.log("clearing levels after: " + addressField);
         _.each(levelsAfter(addressField), function (level) {
             setValue(level.addressField, '');
-            clearOptionsFor(level);
         });
     }
 
     personAddressWithHierarchy.container.find('.level').each(function () {
         var element = $(this);
         var addressField = element.attr('name');
-        if (personAddressWithHierarchy.manualFields.indexOf(addressField) < 0) {
-            $(this).autocomplete({
+        if (!_.contains(personAddressWithHierarchy.manualFields, addressField)) {
+            element.autocomplete({
                 minLength: 0,
                 delay: 1,
                 autoFocus: true,
                 source: function (request, response) {
+                    if (element.xhr) {
+                        element.xhr.abort();
+                    }
                     var level = levelFor(addressField);
-                    loadOptionsFor(level).then(function () {
+                    var searchString = searchStringUntil(level.addressField);
+                    element.xhr = queryWithCallback(searchString, function (result) {
+                        element.xhr = null;
+                        element.data('legalValues', _.pluck(result, 'name'));
                         var regex = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i"); // case insensitive
-                        var matches = _.filter(level.autocompleteOptions, function (item) {
+                        var matches = _.filter(result, function (item) {
                             return regex.test(item.name);
                         })
                         var results = _.map(matches, function (item) {
@@ -197,21 +194,31 @@ $(function () {
                     });
                 },
                 select: function(event, ui) {
-                    if (ui.item.value != getValue(addressField)) {
+                    // Since the autocompletechange event doesn't behave as I would expect, instead we look for changes
+                    // here in a more roundabout way
+                    var level = levelFor(addressField);
+                    if (ui.item.value != level.lastSelection) {
                         clearLevelsAfter(addressField);
                     }
-                },
-                change: function (event, ui) {
-                    loadOptionsFor(levelAfter(addressField));
+                    level.lastSelection = ui.item.value;
                 }
-            }).change(function () {
-                // hitting here means they entered a free-text value (otherwise we'd get a change event in the autocomplete)
-                // we don't want to allow this, but the autocomplete widget doesn't have anything built in for this
-                setValue(addressField, '');
-                clearLevelsAfter(addressField);
-                setTimeout(function () {
-                    element.focus();
-                })
+            }).blur(function(event) {
+                // To make this behave like a autocomplete, where we don't allow invalid values, we need to check for
+                // invalid values upon exiting the field.
+                // (The autocompletechange event does not fire if you enter invalid values into it twice in a row, and
+                // it fires unwantedly when we go to the next screen, so we need to use a plain event on the text field
+                // for this.)
+                var legalValues = element.data('legalValues');
+                if (element.val() && !(legalValues && _.contains(legalValues, element.val()))) {
+                    element.val('');
+                    setTimeout(function () {
+                        element.focus();
+                    });
+                }
+                // There is no 'select' event when you clear the autocomplete, so handle that scenario here
+                if (element.val() == '') {
+                    clearLevelsAfter(addressField);
+                }
             }).focus(function () {
                 $(this).select(); // selecting the entire field on focus makes this feel more like an autocomplete
                 $(this).data("autocomplete").search($(this).val());
@@ -228,13 +235,13 @@ $(function () {
             var url = '/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getPossibleAddressHierarchyEntriesWithParents.form';
             $.getJSON(url, {
                 limit: 50,
-                addressField: 'address1',
+                addressField: personAddressWithHierarchy.shortcutFor,
                 searchString: request.term
             }, function (result) {
                 response(_.map(result, function (item) {
                     return {
                         label: formatShortcutResponse(item),
-                        data: shortcutResponseToLevels(item, 'address1')
+                        data: shortcutResponseToLevels(item, personAddressWithHierarchy.shortcutFor)
                     }
                 }));
             });
