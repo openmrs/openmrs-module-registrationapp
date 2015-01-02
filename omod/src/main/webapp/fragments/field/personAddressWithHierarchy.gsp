@@ -12,10 +12,15 @@
         </p>
     <% } %>
 
-    <% levels.each { level -> %>
+    <% levels.each { level ->
+        def classes = [ "level" ]
+        if (level.required) {
+            classes.add("required")
+        }
+    %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="level required" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }"/>
+            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
