@@ -64,10 +64,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset>
                 <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
-                ${ ui.includeFragment("uicommons", "field/radioButtons", [
+                ${ ui.includeFragment("uicommons", "field/dropDown", [
                         label: ui.message("registrationapp.patient.gender.question"),
+                        emptyOptionLabel: "uicommons.select",
                         formFieldName: "gender",
-                        maximumSize: 3,
                         options: genderOptions,
                         classes: ["required"],
                         initialValue: patient.gender
