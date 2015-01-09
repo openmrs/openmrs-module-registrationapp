@@ -25,6 +25,24 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     var NavigatorController;
     jQuery(function() {
         NavigatorController = KeyboardController();
+
+        // TODO: move this into registratina app js?
+        jq('#button-unknown-patient').click(function () {
+            // hide all questions & sections except gender
+            NavigatorController.getQuestionById('demographics-name').hide();
+            NavigatorController.getQuestionById('demographics-birthdate').hide();
+            <% formStructure.sections.each { structure ->
+                def section = structure.value;  %>
+                NavigatorController.getSectionById('${section.id}').hide();
+            <% } %>
+
+            // set unknown flag
+            jq('#demographics-unknown').val('true');
+
+            // step ahead to next question (gender)
+            NavigatorController.stepForward();
+        })
+
     });
 </script>
 
@@ -90,7 +108,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <section id="demographics">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
-            <fieldset>
+            <fieldset id="demographics-name">
+                <button id="button-unknown-patient" class="right" type="button">${ui.message("registrationapp.patient.demographics.unknown")}</button>
+
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
 			    
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
@@ -125,9 +145,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         classes: ["required"],
                         initialValue: patient.gender
                 ])}
+                <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
+                <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
             </fieldset>
 
-            <fieldset class="multiple-input-date no-future-date date-required">
+            <fieldset id="demographics-birthdate" class="multiple-input-date no-future-date date-required">
                 <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [

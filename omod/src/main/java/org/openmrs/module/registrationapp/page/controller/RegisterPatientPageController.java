@@ -11,6 +11,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -21,6 +22,7 @@ import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
@@ -40,13 +42,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -70,15 +72,24 @@ public class RegisterPatientPageController {
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                        @RequestParam(value="registrationDate", required = false) Date registrationDate,
+                       @RequestParam(value="unknown", required = false) Boolean unknown,
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("encounterService") EncounterService encounterService,
                        @SpringBean("obsService") ObsService obsService,
                        @SpringBean("conceptService") ConceptService conceptService,
+                       @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                        Session session,
                        @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+
+        if (unknown != null && unknown) {
+            // TODO should this be configurable?
+            name.setFamilyName("UNKNOWN");
+            name.setGivenName("UNKNOWN");
+            patient.addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
+        }
 
         patient.addName(name);
         patient.addAddress(address);

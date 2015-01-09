@@ -14,6 +14,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -21,10 +22,13 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.emrapi.EmrApiConstants;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
@@ -71,6 +75,9 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
     PatientService patientService;
 
     @Autowired
+    PersonService personService;
+
+    @Autowired
     private EncounterService encounterService;
 
     @Autowired
@@ -87,6 +94,9 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
 
     @Autowired @Qualifier("adminService")
     AdministrationService administrationService;
+
+    @Autowired
+    EmrApiProperties emrApiProperties;
 
     @Autowired
     private PatientValidator patientValidator;
@@ -118,6 +128,11 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         administrationService.saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_ADDRESS_TEMPLATE,
                 OpenmrsConstants.DEFAULT_ADDRESS_TEMPLATE));
 
+        PersonAttributeType pat = new PersonAttributeType();
+        pat.setName(EmrApiConstants.UNKNOWN_PATIENT_PERSON_ATTRIBUTE_TYPE_NAME);
+        pat.setDescription(EmrApiConstants.UNKNOWN_PATIENT_PERSON_ATTRIBUTE_TYPE_NAME);
+        personService.savePersonAttributeType(pat);
+
         // Normally RegistrationCoreService.registerPatient calls idgen to generate the patient's identifier, but
         // setting up a generator programmatically causes a lock, and I am having trouble configuring one via xml data
         // sets because of the non-hibernate-mapped next_sequence_value column.
@@ -147,8 +162,9 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
         
         String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, request,
-                null, messageSourceService, encounterService, obsService, conceptService, null, patientValidator, uiUtils);
+                patient, name, address, 30, null, null, null, request,
+                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                null, patientValidator, uiUtils);
 
         assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
@@ -170,8 +186,9 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, request,
-                null, messageSourceService, encounterService, obsService, conceptService, null, patientValidator, uiUtils);
+                patient, name, address, 30, null, null, null, request,
+                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                null, patientValidator, uiUtils);
 
         assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(1));
@@ -186,6 +203,23 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         assertThat(obs.getConcept().getUuid(), is(WEIGHT_CONCEPT_UUID));
         assertThat(obs.getValueNumeric(), is(70d));
         assertThat(obs.getEncounter(), is(enc));
+    }
+
+    @Test
+    public void testWithUnknownPatient() throws Exception {
+
+        name.setFamilyName(null);
+        name.setGivenName(null);
+
+        String result = controller.post(sessionContext, new PageModel(), app, registrationService,
+                patient, name, address, 30, null, null, true, request,
+                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                null, patientValidator, uiUtils);
+
+        assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
+        assertThat(patient.getAttribute(emrApiProperties.getUnknownPatientPersonAttributeType()).getValue(), is("true"));
+        assertThat(patient.getGivenName(), is("UNKNOWN"));
+        assertThat(patient.getFamilyName(), is("UNKNOWN"));
     }
 
 }
