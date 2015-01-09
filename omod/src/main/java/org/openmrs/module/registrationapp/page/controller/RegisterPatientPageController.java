@@ -94,12 +94,10 @@ public class RegisterPatientPageController {
         patient.addName(name);
         patient.addAddress(address);
 
-        if (patient.getBirthdate() == null) {
+        if (patient.getBirthdate() == null && birthdateYears != null) {
             patient.setBirthdateEstimated(true);
             Calendar calendar = Calendar.getInstance();
-            if (birthdateYears != null) {
-                calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - birthdateYears);
-            }
+            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - birthdateYears);
             if (birthdateMonths != null) {
                 calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - birthdateMonths);
             }
