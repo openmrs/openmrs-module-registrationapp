@@ -32,29 +32,48 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <% if (includeRegistrationDateSection) { %>
             // registration date option is hidden by default
             NavigatorController.getSectionById('registration-date').hide();
-            NavigatorController.getSectionById('demographics').click();
 
-            jq('#button-registration-date').click(function () {
-                NavigatorController.getSectionById('registration-date').show();
-                NavigatorController.getSectionById('registration-date').click();
+            jq('#checkbox-enable-registration-date').click(function () {
+                if(jq('#checkbox-enable-registration-date').is(':checked')) {
+                    NavigatorController.getSectionById('registration-date').show();
+                }
+                else {
+                    NavigatorController.getSectionById('registration-date').hide();
+                }
             });
-
         <% } %>
 
         // handle unknown patient functionality
-        jq('#button-unknown-patient').click(function () {
-            // hide all questions & sections except gender and registration date
-            NavigatorController.getQuestionById('demographics-name').hide();
-            NavigatorController.getQuestionById('demographics-birthdate').hide();
-            <% formStructure.sections.each { structure ->
-                def section = structure.value;  %>
-                NavigatorController.getSectionById('${section.id}').hide();
-            <% } %>
-            // set unknown flag
-            jq('#demographics-unknown').val('true');
-            NavigatorController.getQuestionById('demographics-gender').click();
-        })
+        jq('#checkbox-unknown-patient').click(function () {
 
+            if(jq('#checkbox-unknown-patient').is(':checked')) {
+                // hide all questions & sections except gender and registration date
+                NavigatorController.getQuestionById('demographics-name').disable();
+                NavigatorController.getQuestionById('demographics-birthdate').disable();
+                <% formStructure.sections.each { structure ->
+                    def section = structure.value;  %>
+                    NavigatorController.getSectionById('${section.id}').disable();
+                <% } %>
+                // set unknown flag
+                jq('#demographics-unknown').val('true');
+                NavigatorController.getSectionById('demographics').click();
+                NavigatorController.getQuestionById('demographics-gender').click();
+            }
+            else {
+                // re-enable all functionality
+                // hide all questions & sections except gender and registration date
+                NavigatorController.getQuestionById('demographics-name').enable();
+                NavigatorController.getQuestionById('demographics-birthdate').enable();
+                <% formStructure.sections.each { structure ->
+                    def section = structure.value;  %>
+                NavigatorController.getSectionById('${section.id}').enable();
+                <% } %>
+                // unset unknown flag
+                jq('#demographics-unknown').val('false');
+                NavigatorController.getSectionById('demographics').click();
+                NavigatorController.getQuestionById('demographics-name').click();
+            }
+        })
     });
 </script>
 
@@ -95,59 +114,44 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
 	</div>
-	
 
     <form class="simple-form-ui" id="registration" method="POST">
 
-        <% if (includeRegistrationDateSection) { %>
-            <section id="registration-date">
-                <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
+        <p class="right">
+            <input id="checkbox-unknown-patient" type="checkbox"/>${ui.message("registrationapp.patient.demographics.unknown")}
+        </p>
 
-                <fieldset class="multiple-input-date no-future-date date-required">
-                    <legend id="registrationDateLabel">${ui.message("registrationapp.registrationDate.label")}</legend>
-                    <h3>${ui.message("registrationapp.registrationDate.question")}</h3>
-                    ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
-                            label: "",
-                            formFieldName: "registrationDate",
-                            left: true,
-                            showEstimated: false,
-                            initialValue: new Date()
-                    ])}
-                </fieldset>
-            </section>
+        <% if (includeRegistrationDateSection) { %>
+        <p class="right">
+            <input id="checkbox-enable-registration-date" type="checkbox"/>${ui.message("registrationapp.patient.retroRegistration")}
+        </p>
         <% } %>
 
         <section id="demographics">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
             <fieldset id="demographics-name">
-                <button id="button-unknown-patient" class="right" type="button">${ui.message("registrationapp.patient.demographics.unknown")}</button>
-
-                <% if (includeRegistrationDateSection) { %>
-                    <button id="button-registration-date" class="right" type="button">${ui.message("registrationapp.patient.setRegistrationDate")}</button>
-                <% } %>
-
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
-			    
-                <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-                <% nameTemplate.lineByLineFormat.each { name ->
-	                def initialNameFieldValue = ""
-	                    if(patient.personName && patient.personName[name]){
-	                        initialNameFieldValue = patient.personName[name]
-	                    }
-                %>
-                    ${ ui.includeFragment("registrationapp", "field/personName", [
-                            label: ui.message(nameTemplate.nameMappings[name]),
-                            size: nameTemplate.sizeMappings[name],
-                            formFieldName: name,
-                            dataItems: 4,
-                            left: true,
-                            initialValue: initialNameFieldValue,
-                            classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
-                    ])}
 
-                <% } %>
-                <input type="hidden" name="preferred" value="true"/>
+                    <h3>${ui.message("registrationapp.patient.name.question")}</h3>
+                    <% nameTemplate.lineByLineFormat.each { name ->
+                        def initialNameFieldValue = ""
+                            if(patient.personName && patient.personName[name]){
+                                initialNameFieldValue = patient.personName[name]
+                            }
+                    %>
+                        ${ ui.includeFragment("registrationapp", "field/personName", [
+                                label: ui.message(nameTemplate.nameMappings[name]),
+                                size: nameTemplate.sizeMappings[name],
+                                formFieldName: name,
+                                dataItems: 4,
+                                left: true,
+                                initialValue: initialNameFieldValue,
+                                classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+                        ])}
+
+                    <% } %>
+                    <input type="hidden" name="preferred" value="true"/>
             </fieldset>
 
             <fieldset id="demographics-gender">
@@ -220,6 +224,24 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         </fieldset>
                     <% } %>
             </section>
+        <% } %>
+
+        <% if (includeRegistrationDateSection) { %>
+        <section id="registration-date">
+            <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
+
+            <fieldset class="multiple-input-date no-future-date date-required">
+                <legend id="registrationDateLabel">${ui.message("registrationapp.registrationDate.label")}</legend>
+                <h3>${ui.message("registrationapp.registrationDate.question")}</h3>
+                ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
+                        label: "",
+                        formFieldName: "registrationDate",
+                        left: true,
+                        showEstimated: false,
+                        initialValue: new Date()
+                ])}
+            </fieldset>
+        </section>
         <% } %>
 
         <div id="confirmation">
