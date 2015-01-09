@@ -26,7 +26,26 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     jQuery(function() {
         NavigatorController = KeyboardController();
 
-        // TODO: move this into registratina app js?
+        // TODO: move any of this into registration app js?
+
+        // handle registration date functionality
+        <% if (includeRegistrationDateSection) { %>
+            // registration date option is hidden by default
+            NavigatorController.getSectionById('registration-date').hide();
+            NavigatorController.stepForward();
+
+            jq('#button-registration-date').click(function () {
+                NavigatorController.getSectionById('registration-date').show();
+
+                // hack, add go-to-section function if it doesn't exist
+                NavigatorController.stepBackward();
+                NavigatorController.stepBackward();
+                NavigatorController.stepBackward();
+            });
+
+        <% } %>
+
+        // handle unknown patient functionality
         jq('#button-unknown-patient').click(function () {
             // hide all questions & sections except gender
             NavigatorController.getQuestionById('demographics-name').hide();
@@ -87,7 +106,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     <form class="simple-form-ui" id="registration" method="POST">
 
-        <% if (showRegistrationDateSection) { %>
+        <% if (includeRegistrationDateSection) { %>
             <section id="registration-date">
                 <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
 
@@ -110,6 +129,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
             <fieldset id="demographics-name">
                 <button id="button-unknown-patient" class="right" type="button">${ui.message("registrationapp.patient.demographics.unknown")}</button>
+
+                <% if (includeRegistrationDateSection) { %>
+                    <button id="button-registration-date" class="right" type="button">${ui.message("registrationapp.patient.setRegistrationDate")}</button>
+                <% } %>
 
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
 			    

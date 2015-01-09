@@ -303,7 +303,7 @@ public class RegisterPatientPageController {
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("showRegistrationDateSection", !app.getConfig().get("registrationEncounter").isNull()
+        model.addAttribute("includeRegistrationDateSection", !app.getConfig().get("registrationEncounter").isNull()
                 && !app.getConfig().get("allowRetrospectiveEntry").isNull()
                 && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
         model.addAttribute("enableOverrideOfAddressPortlet",
