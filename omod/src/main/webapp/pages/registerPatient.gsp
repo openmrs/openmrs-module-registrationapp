@@ -32,34 +32,27 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <% if (includeRegistrationDateSection) { %>
             // registration date option is hidden by default
             NavigatorController.getSectionById('registration-date').hide();
-            NavigatorController.stepForward();
+            NavigatorController.getSectionById('demographics').click();
 
             jq('#button-registration-date').click(function () {
                 NavigatorController.getSectionById('registration-date').show();
-
-                // hack, add go-to-section function if it doesn't exist
-                NavigatorController.stepBackward();
-                NavigatorController.stepBackward();
-                NavigatorController.stepBackward();
+                NavigatorController.getSectionById('registration-date').click();
             });
 
         <% } %>
 
         // handle unknown patient functionality
         jq('#button-unknown-patient').click(function () {
-            // hide all questions & sections except gender
+            // hide all questions & sections except gender and registration date
             NavigatorController.getQuestionById('demographics-name').hide();
             NavigatorController.getQuestionById('demographics-birthdate').hide();
             <% formStructure.sections.each { structure ->
                 def section = structure.value;  %>
                 NavigatorController.getSectionById('${section.id}').hide();
             <% } %>
-
             // set unknown flag
             jq('#demographics-unknown').val('true');
-
-            // step ahead to next question (gender)
-            NavigatorController.stepForward();
+            NavigatorController.getQuestionById('demographics-gender').click();
         })
 
     });
