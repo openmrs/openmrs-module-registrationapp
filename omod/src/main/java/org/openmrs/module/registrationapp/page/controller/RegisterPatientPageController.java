@@ -192,6 +192,9 @@ public class RegisterPatientPageController {
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
         redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getId().toString());
+        if (registrationEncounter != null) {
+            redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
+        }
         return "redirect:" + redirectUrl;
     }
 
