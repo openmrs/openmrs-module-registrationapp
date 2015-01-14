@@ -160,7 +160,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <section id="registration-info">
             <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
 
-            <fieldset id="registration-date" class="multiple-input-date no-future-date date-required">
+            <fieldset id="registration-date" class="multiple-input-date no-future-date">
                 <legend id="registrationDateLabel">${ui.message("registrationapp.registrationDate.label")}</legend>
                 <h3>${ui.message("registrationapp.registrationDate.question")}</h3>
 
@@ -173,6 +173,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         label: "",
                         formFieldName: "registrationDate",
                         left: true,
+                        classes: ['required'],
                         showEstimated: false,
                         initialValue: new Date()
                 ])}
