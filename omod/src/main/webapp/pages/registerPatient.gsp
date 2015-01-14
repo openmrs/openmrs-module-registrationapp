@@ -55,6 +55,19 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             });
         <% } %>
 
+        // handle patient identifier function
+        NavigatorController.getFieldById('patient-identifier').hide();
+
+        jq('#checkbox-autogenerate-identifier').click(function () {
+            if(jq('#checkbox-autogenerate-identifier').is(':checked')) {
+                NavigatorController.getFieldById('patient-identifier').hide();
+            }
+            else {
+                NavigatorController.getFieldById('patient-identifier').show();
+                NavigatorController.getFieldById('patient-identifier').click();
+            }
+        })
+
         // handle unknown patient functionality
         jq('#checkbox-unknown-patient').click(function () {
 
@@ -71,7 +84,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
                 <% formStructure.sections.each { structure ->
                     def section = structure.value;  %>
-                    NavigatorController.getSectionById('${section.id}').disable();
+                NavigatorController.getSectionById('${section.id}').disable();
                 <% } %>
 
                 // set unknown flag
@@ -92,7 +105,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 NavigatorController.getQuestionById('demographics-birthdate').enable();
                 <% formStructure.sections.each { structure ->
                     def section = structure.value;  %>
-                    NavigatorController.getSectionById('${section.id}').enable();
+                NavigatorController.getSectionById('${section.id}').enable();
                 <% } %>
 
                 // unset unknown flag
@@ -270,6 +283,26 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% } %>
             </section>
         <% } %>
+
+        <section id="patient-identification-section">
+            <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
+
+            <fieldset id="patient-identifier-question">
+                <legend id="patientIdentifierLabel">${ui.format(primaryIdentifierType)}</legend>
+                <h3>${ui.message("registrationapp.patient.identifier.question", ui.format(primaryIdentifierType))}</h3>
+
+                <p>
+                    <input id="checkbox-autogenerate-identifier" type="checkbox" checked/>
+                    <label for="checkbox-autogenerate-identifier">${ui.message("registrationapp.patient.identifier.autogenerate.label")}</label>
+                </p>
+
+                <p>
+                    <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
+                    <input id="patient-identifier" name="patientIdentifier"/>
+                </p>
+
+            </fieldset>
+        </section>
 
         <div id="confirmation">
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>

@@ -139,7 +139,7 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         // To simplify, we just mock that call so it just creates the patient, since we are not interested in testing
         // the internals of RegistrationCoreService here anyway.
         registrationService = mock(RegistrationCoreService.class);
-        when(registrationService.registerPatient(patient, null, location)).thenAnswer(new Answer<Patient>() {
+        when(registrationService.registerPatient(patient, null, null, location)).thenAnswer(new Answer<Patient>() {
             @Override
             public Patient answer(InvocationOnMock invocationOnMock) throws Throwable {
                 return patientService.savePatient((Patient) invocationOnMock.getArguments()[0]);
@@ -162,7 +162,7 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
         
         String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, null, request,
+                patient, name, address, 30, null, null, null, null, request,
                 null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
                 null, patientValidator, uiUtils);
 
@@ -186,7 +186,7 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, null, request,
+                patient, name, address, 30, null, null, null, null, request,
                 null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
                 null, patientValidator, uiUtils);
 
@@ -212,7 +212,7 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         name.setGivenName(null);
 
         String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, true, request,
+                patient, name, address, 30, null, null, true, null, request,
                 null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
                 null, patientValidator, uiUtils);
 

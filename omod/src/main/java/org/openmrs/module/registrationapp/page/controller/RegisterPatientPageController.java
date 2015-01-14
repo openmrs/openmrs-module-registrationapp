@@ -10,12 +10,16 @@ import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameTemplate;
@@ -38,6 +42,7 @@ import org.openmrs.ui.framework.session.Session;
 import org.openmrs.validator.PatientValidator;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,10 +62,11 @@ public class RegisterPatientPageController {
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app, @ModelAttribute("patient") @BindParams Patient patient,
-                    @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate) throws Exception {
+                    @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+                    @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, nameTemplate);
+        addModelAttributes(model, patient, app, nameTemplate, emrApiProperties.getPrimaryIdentifierType());
     }
 
 
@@ -73,6 +79,7 @@ public class RegisterPatientPageController {
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                        @RequestParam(value="registrationDate", required = false) Date registrationDate,
                        @RequestParam(value="unknown", required = false) Boolean unknown,
+                       @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
                        HttpServletRequest request, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                        @SpringBean("encounterService") EncounterService encounterService,
@@ -113,22 +120,25 @@ public class RegisterPatientPageController {
         RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(address, errors);
 
         if (errors.hasErrors()) {
-            addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService);
+            addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService, emrApiProperties);
             return null;
         }
 
         try {
-            // note that this will only create an encounter if getRegistrationEncounter != null
-        	patient = registrationService.registerPatient(patient, null, sessionContext.getSessionLocation());
+            // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
+        	patient = registrationService.registerPatient(patient, null, patientIdentifier, sessionContext.getSessionLocation());
         }
         catch (Exception ex) {
-        	//TODO I remember getting into trouble if i called this validator before the above save method.
-        	//Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
+
+        	// TODO I remember getting into trouble if i called this validator before the above save method.
+        	// TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
         	patientValidator.validate(patient, errors);
-        	if (!errors.hasErrors()) {
+            checkForIdentifierExceptions(ex, errors);
+
+            if (!errors.hasErrors()) {
         		errors.reject(ex.getMessage());
         	}
-        	addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService);
+        	addModelErrors(model, patient, errors, session, app, nameTemplate, messageSourceService, emrApiProperties);
         	return null;
         }
 
@@ -213,7 +223,7 @@ public class RegisterPatientPageController {
         }
     }
 
-    private void addModelErrors(PageModel model, Patient patient, BindingResult errors, Session session, AppDescriptor app, NameTemplate nameTemplate, MessageSourceService messageSourceService) throws Exception {
+    private void addModelErrors(PageModel model, Patient patient, BindingResult errors, Session session, AppDescriptor app, NameTemplate nameTemplate, MessageSourceService messageSourceService, EmrApiProperties emrApiProperties) throws Exception {
     	model.addAttribute("errors", errors);
         StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation"));
         errorMessage.append("<ul>");
@@ -227,7 +237,7 @@ public class RegisterPatientPageController {
         session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
 
         //send the user back to the form to fix errors
-        addModelAttributes(model, patient, app, nameTemplate);
+        addModelAttributes(model, patient, app, nameTemplate, emrApiProperties.getPrimaryIdentifierType());
     }
 
     private Encounter buildRegistrationEncounter(Patient patient, Date registrationDate, UiSessionContext sessionContext, AppDescriptor app, EncounterService encounterService) {
@@ -292,7 +302,22 @@ public class RegisterPatientPageController {
         return registrationEncounterRole;
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, NameTemplate nameTemplate) throws Exception {
+    private void checkForIdentifierExceptions(Exception ex, Errors errors) {
+        // add any patient identifier validation exceptions
+        if (ex instanceof PatientIdentifierException) {
+            if (ex instanceof InvalidCheckDigitException) {
+                errors.reject("registrationapp.error.identifier.invalidCheckDigit");
+            }
+            else if (ex instanceof DuplicateIdentifierException) {
+                errors.reject("registrationapp.error.identifier.duplicate");
+            }
+            else {
+                errors.reject("registrationapp.error.identifier.general");
+            }
+        }
+    }
+
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, NameTemplate nameTemplate, PatientIdentifierType primaryIdentifierType) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
@@ -300,6 +325,7 @@ public class RegisterPatientPageController {
         }
         
         model.addAttribute("patient", patient);
+        model.addAttribute("primaryIdentifierType", primaryIdentifierType);
         model.addAttribute("appId", app.getId());
         model.addAttribute("formStructure", formStructure);
         model.addAttribute("nameTemplate", nameTemplate);
