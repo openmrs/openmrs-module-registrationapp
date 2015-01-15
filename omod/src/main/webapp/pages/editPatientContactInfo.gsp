@@ -63,8 +63,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <% questions.each { question ->
                 def fields=question.fields
             %>
-            <fieldset>
-                <legend>${ ui.message(question.legend)}</legend>
+            <fieldset
+                <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
+                <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
+            >
+            <legend>${ ui.message(question.legend)}</legend>
                 <% fields.each { field ->
                     def configOptions = [
                             label:ui.message(field.label),
