@@ -17,7 +17,9 @@ $(function () {
 
         if (personAddressWithHierarchy.initialValue) {
             for (var key in personAddressWithHierarchy.initialValue) {
-                setValue(key, personAddressWithHierarchy.initialValue[key]);
+                if (personAddressWithHierarchy.initialValue[key]) {
+                    setValue(key, personAddressWithHierarchy.initialValue[key]);
+                }
             }
         } else {
             preloadLevels(levels[0]);
