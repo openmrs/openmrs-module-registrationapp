@@ -21,7 +21,7 @@
         if (initialValue) {
             // setting this as "value" on the input is not sufficient to set the js state, but we do it anyway
             // so that these values are immediately visible on page load
-            levelInitial = initialValue[level.addressField.name]
+            levelInitial = initialValue[level.addressField.name] ?: ""
         }
     %>
         <p>
