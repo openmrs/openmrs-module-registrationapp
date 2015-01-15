@@ -25,12 +25,17 @@
 	if (!returnUrl) {
 		returnUrl = "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}"
 	}
+
+    def cleanup = {
+        return (it instanceof org.codehaus.jackson.node.TextNode) ? it.textValue : it;
+    }
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
+    var NavigatorController;
     jQuery(function() {
-        KeyboardController();
+        NavigatorController = KeyboardController();
     });
 </script>
 
@@ -65,6 +70,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             label:ui.message(field.label),
                             formFieldName: field.formFieldName,
                             left: true]
+                    if (field.widget.config) {
+                        field.widget.config.fields.each {
+                            configOptions[it.key] = cleanup(it.value);
+                        }
+                    }
                     if(field.type == 'personAddress'){
                         configOptions.addressTemplate = addressTemplate
                         configOptions.initialValue = patient.personAddress;
@@ -85,7 +95,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
             <div id="confirmationQuestion">
-                ${ui.message("registrationapp.confirm")} <p style="display: inline"><input type="submit" class="confirm" value="${ui.message("general.yes")}" /></p> or <p style="display: inline"><input id="cancelSubmission" class="cancel" type="button" value="${ui.message("general.no")}" /></p>
+                ${ui.message("registrationapp.confirm")}
+                <p style="display: inline">
+                    <input type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
+                </p>
+                <p style="display: inline">
+                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
+                </p>
             </div>
         </div>
     </form>

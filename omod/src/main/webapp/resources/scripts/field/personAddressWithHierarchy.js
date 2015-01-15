@@ -15,7 +15,13 @@ $(function () {
             item.index = index;
         });
 
-        preloadLevels(levels[0]);
+        if (personAddressWithHierarchy.initialValue) {
+            for (var key in personAddressWithHierarchy.initialValue) {
+                setValue(key, personAddressWithHierarchy.initialValue[key]);
+            }
+        } else {
+            preloadLevels(levels[0]);
+        }
     });
 
     // our usage of the jquery-ui autocomplete leads to lots of unnecessary queries for the same thing, so we use this

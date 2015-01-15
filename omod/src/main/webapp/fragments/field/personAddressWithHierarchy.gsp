@@ -17,10 +17,16 @@
         if (level.required) {
             classes.add("required")
         }
+        def levelInitial = ""
+        if (initialValue) {
+            // setting this as "value" on the input is not sufficient to set the js state, but we do it anyway
+            // so that these values are immediately visible on page load
+            levelInitial = initialValue[level.addressField.name]
+        }
     %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }"/>
+            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
@@ -36,5 +42,8 @@
         <% config.manualFields.each { %>
             personAddressWithHierarchy.manualFields.push(${ it }); // since this comes from json config, it's a jackson text node, so we don't put quotes
         <% } %>
+    <% } %>
+    <% if (initialValue) { %>
+        personAddressWithHierarchy.initialValue = ${ ui.toJson(initialValue) };
     <% } %>
 </script>
