@@ -56,7 +56,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editPatientContactInfo.page?patientId=${patient.patientId}&returnUrl=${returnUrl}&appId=${app.id}">
         <!-- read configurable sections from the json config file-->
-        <% formStructure.sections.each { structure ->
+        <% formStructure.sections.findAll{ it.value.id == 'contactInfo' }.each { structure ->
             def section = structure.value
             def questions=section.questions
         %>
