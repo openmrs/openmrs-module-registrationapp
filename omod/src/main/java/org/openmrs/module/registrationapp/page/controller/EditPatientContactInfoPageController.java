@@ -70,16 +70,21 @@ public class EditPatientContactInfoPageController {
 	                   @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 		
 		sessionContext.requireAuthentication();
-		
-		if (patient.getPersonAddress() != null && address != null) {
+
+		if (address != null) {
 			PersonAddress currentAddress = patient.getPersonAddress();
-			if (!currentAddress.equalsContent(address)) {
-				//void the old address and replace it with the new one
+			if (currentAddress != null) {
+				if (!currentAddress.equalsContent(address)) {
+					//void the old address and replace it with the new one
+					patient.addAddress(address);
+					currentAddress.setVoided(true);
+				}
+			}
+			else {
 				patient.addAddress(address);
-				currentAddress.setVoided(true);
 			}
 		}
-		
+
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 		
 		BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
