@@ -25,8 +25,18 @@
             },
             {
                 "name": "allowRetrospectiveEntry",
-                "description": "True/false whether or not allow the registration encounter datetime to be backdated. Shows a datepicker for the registration encounter if encounter is configured, otherwise does nothing.",
+                "description": "True/false whether or not to allow the registration encounter datetime to be backdated. Shows a datepicker for the registration encounter if encounter is configured, otherwise does nothing.",
                 "defaultValue": false
+            },
+            {
+                "name": "allowUnknownPatients",
+                "description": "True/false whether or not to allow the user to create an unknown patient, with no name or age (e.g. arriving unconscious to the ER)",
+                "defaultValue": true
+            },
+            {
+                "name": "allowManualIdentifier",
+                "description": "True/false whether or not to allow the user to manually specify the primary identifier (instead of auto-generating it)",
+                "defaultValue": true
             }
         ]
     }

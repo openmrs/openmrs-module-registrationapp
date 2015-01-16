@@ -47,13 +47,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientPageController {
 
@@ -333,6 +333,8 @@ public class RegisterPatientPageController {
         model.addAttribute("includeRegistrationDateSection", !app.getConfig().get("registrationEncounter").isNull()
                 && !app.getConfig().get("allowRetrospectiveEntry").isNull()
                 && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
+        model.addAttribute("allowUnknownPatients", app.getConfig().get("allowUnknownPatients").getBooleanValue());
+        model.addAttribute("allowManualIdentifier", app.getConfig().get("allowManualIdentifier").getBooleanValue());
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }

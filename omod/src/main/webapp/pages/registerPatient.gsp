@@ -58,61 +58,65 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         // handle patient identifier function
         NavigatorController.getFieldById('patient-identifier').hide();
 
-        jq('#checkbox-autogenerate-identifier').click(function () {
-            if(jq('#checkbox-autogenerate-identifier').is(':checked')) {
-                NavigatorController.getFieldById('patient-identifier').hide();
-            }
-            else {
-                NavigatorController.getFieldById('patient-identifier').show();
-                NavigatorController.getFieldById('patient-identifier').click();
-            }
-        })
+        <% if (allowManualIdentifier) { %>
+            jq('#checkbox-autogenerate-identifier').click(function () {
+                if(jq('#checkbox-autogenerate-identifier').is(':checked')) {
+                    NavigatorController.getFieldById('patient-identifier').hide();
+                }
+                else {
+                    NavigatorController.getFieldById('patient-identifier').show();
+                    NavigatorController.getFieldById('patient-identifier').click();
+                }
+            })
+        <% } %>
 
         // handle unknown patient functionality
-        jq('#checkbox-unknown-patient').click(function () {
+        <% if (allowUnknownPatients) { %>
+            jq('#checkbox-unknown-patient').click(function () {
 
-            if(jq('#checkbox-unknown-patient').is(':checked')) {
+                if(jq('#checkbox-unknown-patient').is(':checked')) {
 
-                // hide all questions & sections except gender and registration date
-                _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
-                    if (field.id != 'checkbox-unknown-patient') {
-                        field.disable();
-                    }
-                });
+                    // hide all questions & sections except gender and registration date
+                    _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
+                        if (field.id != 'checkbox-unknown-patient') {
+                            field.disable();
+                        }
+                    });
 
-                NavigatorController.getQuestionById('demographics-birthdate').disable();
+                    NavigatorController.getQuestionById('demographics-birthdate').disable();
 
-                <% formStructure.sections.each { structure ->
-                    def section = structure.value;  %>
-                NavigatorController.getSectionById('${section.id}').disable();
-                <% } %>
+                    <% formStructure.sections.each { structure ->
+                        def section = structure.value;  %>
+                    NavigatorController.getSectionById('${section.id}').disable();
+                    <% } %>
 
-                // set unknown flag
-                jq('#demographics-unknown').val('true');
+                    // set unknown flag
+                    jq('#demographics-unknown').val('true');
 
-                // jump ahead to gender
-                NavigatorController.getQuestionById('demographics-gender').click();
-            }
-            else {
-                // re-enable all functionality
-                // hide all questions & sections except gender and registration date
-                _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
-                    if (field.id != 'checkbox-unknown-patient') {
-                        field.enable();
-                    }
-                });
+                    // jump ahead to gender
+                    NavigatorController.getQuestionById('demographics-gender').click();
+                }
+                else {
+                    // re-enable all functionality
+                    // hide all questions & sections except gender and registration date
+                    _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
+                        if (field.id != 'checkbox-unknown-patient') {
+                            field.enable();
+                        }
+                    });
 
-                NavigatorController.getQuestionById('demographics-birthdate').enable();
-                <% formStructure.sections.each { structure ->
-                    def section = structure.value;  %>
-                NavigatorController.getSectionById('${section.id}').enable();
-                <% } %>
+                    NavigatorController.getQuestionById('demographics-birthdate').enable();
+                    <% formStructure.sections.each { structure ->
+                        def section = structure.value;  %>
+                    NavigatorController.getSectionById('${section.id}').enable();
+                    <% } %>
 
-                // unset unknown flag
-                jq('#demographics-unknown').val('false');
-                NavigatorController.getQuestionById('demographics-name').fields[0].click();
-            }
-        })
+                    // unset unknown flag
+                    jq('#demographics-unknown').val('false');
+                    NavigatorController.getQuestionById('demographics-name').fields[0].click();
+                }
+            });
+        <% } %>
     });
 </script>
 
@@ -125,8 +129,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     var testFormStructure = "${formStructure}";
     
     var patientDashboardLink = '${ui.pageLink("coreapps", "clinicianfacing/patient")}';
-    var getSimilarPatientsLink = '${ ui.actionLink("registrationapp", "matchingPatients", "getSimilarPatients") }&appId=${appId}';
-    
+    var appId = '${ui.escapeJs(appId)}';
+
 </script>
 
 <div id="reviewSimilarPatients" class="dialog" style="display: none">
@@ -206,9 +210,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
                     <% } %>
 
-                    <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
-                    <input id="checkbox-unknown-patient" name="test-me" type="checkbox"/>
-                    <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
+                    <% if (allowUnknownPatients) { %>
+                        <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
+                        <input id="checkbox-unknown-patient" name="test-me" type="checkbox"/>
+                        <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
+                    <% } %>
 
                     <input type="hidden" name="preferred" value="true"/>
             </fieldset>
@@ -285,31 +291,36 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
 
-        <section id="patient-identification-section">
-            <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
+        <% if (allowManualIdentifier) { %>
+            <section id="patient-identification-section">
+                <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
-            <fieldset id="patient-identifier-question">
-                <legend id="patientIdentifierLabel">${ui.format(primaryIdentifierType)}</legend>
-                <h3>${ui.message("registrationapp.patient.identifier.question", ui.format(primaryIdentifierType))}</h3>
+                <fieldset id="patient-identifier-question">
+                    <legend id="patientIdentifierLabel">${ui.format(primaryIdentifierType)}</legend>
+                    <h3>${ui.message("registrationapp.patient.identifier.question", ui.format(primaryIdentifierType))}</h3>
 
-                <p>
-                    <input id="checkbox-autogenerate-identifier" type="checkbox" checked/>
-                    <label for="checkbox-autogenerate-identifier">${ui.message("registrationapp.patient.identifier.autogenerate.label")}</label>
-                </p>
+                    <p>
+                        <input id="checkbox-autogenerate-identifier" type="checkbox" checked/>
+                        <label for="checkbox-autogenerate-identifier">${ui.message("registrationapp.patient.identifier.autogenerate.label")}</label>
+                    </p>
 
-                <p>
-                    <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
-                    <input id="patient-identifier" name="patientIdentifier"/>
-                </p>
+                    <p>
+                        <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
+                        <input id="patient-identifier" name="patientIdentifier"/>
+                    </p>
 
-            </fieldset>
-        </section>
+                </fieldset>
+            </section>
+        <% } %>
 
         <div id="confirmation">
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
+            <div id="exact-matches" style="display: none">
+                There seems to be a patient in the database that exactly matches this one. Pleave review before confirming:
+            </div>
             <div id="confirmationQuestion">
                 ${ ui.message("registrationapp.confirm") }
                 <p style="display: inline">
