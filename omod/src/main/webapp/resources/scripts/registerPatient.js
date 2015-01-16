@@ -19,7 +19,7 @@ jq(function() {
         jq('.date-component').trigger('blur');
 
 		var formData = jq('#registration').serialize();
-		jq.getJSON(getSimilarPatientsLink, formData)
+		jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", { appId: appId }), formData)
 	    .success(function(data) {
 	    	if (data.length == 0) {
 	    		jq("#similarPatients").hide();
@@ -48,4 +48,20 @@ jq(function() {
 	jq('input').change(getSimilarPatients);
     jq('select').change(getSimilarPatients);
 
+    $("#confirmation").on('select', function(confSection) {
+        var submitButton = $('#confirmationQuestion .submitButton');
+        submitButton.prop('disabled', true);
+        var formData = jq('#registration').serialize();
+
+        $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: appId }), formData)
+            .success(function(response) {
+                console.log(response);
+                if (response.length == 0) {
+                    $('#exact-matches').hide();
+                } else {
+                    $('#exact-matches').show();
+                }
+                submitButton.prop('disabled', false);
+            });
+    });
 });
