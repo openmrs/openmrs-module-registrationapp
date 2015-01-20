@@ -55,10 +55,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             });
         <% } %>
 
-        // handle patient identifier function
-        NavigatorController.getFieldById('patient-identifier').hide();
-
         <% if (allowManualIdentifier) { %>
+            // handle patient identifier function
+            NavigatorController.getFieldById('patient-identifier').hide();
+
             jq('#checkbox-autogenerate-identifier').click(function () {
                 if(jq('#checkbox-autogenerate-identifier').is(':checked')) {
                     NavigatorController.getFieldById('patient-identifier').hide();
