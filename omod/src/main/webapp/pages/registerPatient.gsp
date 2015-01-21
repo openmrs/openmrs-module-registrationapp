@@ -41,7 +41,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 url:  '${ ui.actionLink("registrationapp", "registerPatient", "submit") }&appId=${appId}',
                 data: registrationForm.serialize(),
                 success: function( response ) {
-                    window.location = '/${contextPath}/' + response.message;
+                    emr.navigateTo({"applicationUrl": response.message})
                 },
                 error: function ( response ) {
                     jq('#validation-errors-content').html(jq.parseJSON(response.responseText).globalErrors);
