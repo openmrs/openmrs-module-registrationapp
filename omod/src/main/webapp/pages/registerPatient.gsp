@@ -21,17 +21,6 @@
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
-<script type="text/javascript">
-    jQuery(function() {
-       // hack to create the sections variable used by the unknown patient handler in registerPatient.js
-        var sections =  [];
-        <% formStructure.sections.each { structure ->
-            def section = structure.value;  %>
-            sections.push(section);
-        <% } %>
-        setSections(sections);
-    });
-</script>
 
 <script type="text/javascript">
     var breadcrumbs = [
@@ -40,9 +29,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     ];
 
     var testFormStructure = "${formStructure}";
-    
     var patientDashboardLink = '${ui.pageLink("coreapps", "clinicianfacing/patient")}';
     var appId = '${ui.escapeJs(appId)}';
+
+    // hack to create the sections variable used by the unknown patient handler in registerPatient.js
+    var sections =  [];
+    <% formStructure.sections.each { structure ->
+            def section = structure.value;  %>
+            sections.push('${section.id}');
+    <% } %>
 
 </script>
 
