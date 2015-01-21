@@ -22,126 +22,14 @@
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
-    var NavigatorController;
     jQuery(function() {
-        NavigatorController = KeyboardController();
-
-        // TODO: refactor some/most of this into registrationapp.js
-        // TODO: use emr.js has shortcut to handle submit
-
-        var registrationForm = jq('#registration');
-
-        jq('#registration').submit(function(e) {
-            e.preventDefault();
-            jq('#submit').attr('disabled','disabled');
-            jq('#cancelSubmission').attr('disabled','disabled');
-            jq('#validation-errors').hide();
-            jq.ajax( {
-                dataType: 'json',
-                url:  '${ ui.actionLink("registrationapp", "registerPatient", "submit") }&appId=${appId}',
-                data: registrationForm.serialize(),
-                success: function( response ) {
-                    emr.navigateTo({"applicationUrl": response.message})
-                },
-                error: function ( response ) {
-                    jq('#validation-errors-content').html(jq.parseJSON(response.responseText).globalErrors);
-                    jq('#validation-errors').show();
-                    jq('#submit').removeAttr('disabled');
-                    jq('#cancelSubmission').removeAttr('disabled');
-                }
-            } );
-        });
-
-
-        // handle registration date functionality
-        <% if (includeRegistrationDateSection) { %>
-            // registration fields are is disabled by default
-            _.each(NavigatorController.getQuestionById('registration-date').fields, function(field) {
-                if (field.id != 'checkbox-enable-registration-date') {
-                    field.hide();
-                }
-            });
-
-            jq('#checkbox-enable-registration-date').click(function () {
-                if(jq('#checkbox-enable-registration-date').is(':checked')) {
-                    _.each(NavigatorController.getQuestionById('registration-date').fields, function(field) {
-                        if (field.id != 'checkbox-enable-registration-date') {
-                            field.hide();
-                        }
-                    });
-                }
-                else {
-                    _.each(NavigatorController.getQuestionById('registration-date').fields, function(field) {
-                        if (field.id != 'checkbox-enable-registration-date') {
-                            field.show();
-                        }
-                    });
-                }
-            });
+       // hack to create the sections variable used by the unknown patient handler in registerPatient.js
+        var sections =  [];
+        <% formStructure.sections.each { structure ->
+            def section = structure.value;  %>
+            sections.push(section);
         <% } %>
-
-        <% if (allowManualIdentifier) { %>
-            // handle patient identifier function
-            NavigatorController.getFieldById('patient-identifier').hide();
-
-            jq('#checkbox-autogenerate-identifier').click(function () {
-                if(jq('#checkbox-autogenerate-identifier').is(':checked')) {
-                    NavigatorController.getFieldById('patient-identifier').hide();
-                }
-                else {
-                    NavigatorController.getFieldById('patient-identifier').show();
-                    NavigatorController.getFieldById('patient-identifier').click();
-                }
-            })
-        <% } %>
-
-        // handle unknown patient functionality
-        <% if (allowUnknownPatients) { %>
-            jq('#checkbox-unknown-patient').click(function () {
-
-                if(jq('#checkbox-unknown-patient').is(':checked')) {
-
-                    // hide all questions & sections except gender and registration date
-                    _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
-                        if (field.id != 'checkbox-unknown-patient') {
-                            field.disable();
-                        }
-                    });
-
-                    NavigatorController.getQuestionById('demographics-birthdate').disable();
-
-                    <% formStructure.sections.each { structure ->
-                        def section = structure.value;  %>
-                    NavigatorController.getSectionById('${section.id}').disable();
-                    <% } %>
-
-                    // set unknown flag
-                    jq('#demographics-unknown').val('true');
-
-                    // jump ahead to gender
-                    NavigatorController.getQuestionById('demographics-gender').click();
-                }
-                else {
-                    // re-enable all functionality
-                    // hide all questions & sections except gender and registration date
-                    _.each(NavigatorController.getQuestionById('demographics-name').fields, function(field) {
-                        if (field.id != 'checkbox-unknown-patient') {
-                            field.enable();
-                        }
-                    });
-
-                    NavigatorController.getQuestionById('demographics-birthdate').enable();
-                    <% formStructure.sections.each { structure ->
-                        def section = structure.value;  %>
-                    NavigatorController.getSectionById('${section.id}').enable();
-                    <% } %>
-
-                    // unset unknown flag
-                    jq('#demographics-unknown').val('false');
-                    NavigatorController.getQuestionById('demographics-name').fields[0].click();
-                }
-            });
-        <% } %>
+        setSections(sections);
     });
 </script>
 

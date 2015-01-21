@@ -76,7 +76,7 @@ public class RegisterPatientFragmentController {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (unknown != null && unknown) {
-            // TODO should this be configurable?
+            // TODO make "UNKNOWN" be configurable
             name.setFamilyName("UNKNOWN");
             name.setGivenName("UNKNOWN");
             patient.addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
