@@ -1,4 +1,4 @@
-package org.openmrs.module.registrationapp.page.controller;
+package org.openmrs.module.registrationapp.fragment.controller;
 
 import org.apache.struts.mock.MockHttpServletRequest;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -31,7 +31,8 @@ import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
@@ -41,18 +42,19 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensitiveTest {
+public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextSensitiveTest {
 
     public static final String ENCOUNTER_TYPE_UUID = "61ae96f4-6afe-4351-b6f8-cd4fc383cce1";
     public static final String ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
     public static final String WEIGHT_CONCEPT_UUID = "c607c80f-1ea9-4da3-bb88-6276ce8868dd";
 
-    private RegisterPatientPageController controller;
+    private RegisterPatientFragmentController controller;
 
     private AppDescriptor app;
 
@@ -109,7 +111,7 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         config.putArray("afterCreatedActions");
         config.put("allowRetrospectiveEntry", false);
 
-        controller = new RegisterPatientPageController();
+        controller = new RegisterPatientFragmentController();
         app = new AppDescriptor();
         app.setConfig(config);
 
@@ -160,13 +162,14 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
     @Test
     public void testPostWithObs() throws Exception {
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
-        
-        String result = controller.post(sessionContext, new PageModel(), app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
-                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
-                null, patientValidator, uiUtils);
 
-        assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+                patient, name, address, 30, null, null, null, null, request,
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -185,12 +188,13 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
 
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
-        String result = controller.post(sessionContext, new PageModel(), app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
-                null, patientValidator, uiUtils);
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
 
-        assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(1));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -211,12 +215,13 @@ public class RegisterPatientPageControllerTest extends BaseModuleWebContextSensi
         name.setFamilyName(null);
         name.setGivenName(null);
 
-        String result = controller.post(sessionContext, new PageModel(), app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                null, messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
-                null, patientValidator, uiUtils);
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
 
-        assertThat(result, is("redirect:url.html?patient=" + patient.getId()));
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
         assertThat(patient.getAttribute(emrApiProperties.getUnknownPatientPersonAttributeType()).getValue(), is("true"));
         assertThat(patient.getGivenName(), is("UNKNOWN"));
         assertThat(patient.getFamilyName(), is("UNKNOWN"));

@@ -26,7 +26,32 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     jQuery(function() {
         NavigatorController = KeyboardController();
 
-        // TODO: move any of this into registration app js?
+        // TODO: refactor some/most of this into registrationapp.js
+        // TODO: use emr.js has shortcut to handle submit
+
+        var registrationForm = jq('#registration');
+
+        jq('#registration').submit(function(e) {
+            e.preventDefault();
+            jq('#submit').attr('disabled','disabled');
+            jq('#cancelSubmission').attr('disabled','disabled');
+            jq('#validation-errors').hide();
+            jq.ajax( {
+                dataType: 'json',
+                url:  '${ ui.actionLink("registrationapp", "registerPatient", "submit") }&appId=${appId}',
+                data: registrationForm.serialize(),
+                success: function( response ) {
+                    window.location = '/${contextPath}/' + response.message;
+                },
+                error: function ( response ) {
+                    jq('#validation-errors-content').html(jq.parseJSON(response.responseText).globalErrors);
+                    jq('#validation-errors').show();
+                    jq('#submit').removeAttr('disabled');
+                    jq('#cancelSubmission').removeAttr('disabled');
+                }
+            } );
+        });
+
 
         // handle registration date functionality
         <% if (includeRegistrationDateSection) { %>
@@ -148,6 +173,14 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </div>
 </div>
 
+<div id="validation-errors" class="note-container" style="display: none" >
+    <div class="note error">
+        <div id="validation-errors-content" class="text">
+
+        </div>
+    </div>
+</div>
+
 <div id="content" class="container">
     <h2>
         ${ ui.message("registrationapp.registration.label") }
@@ -187,6 +220,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
         <section id="demographics">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
+
 
             <fieldset id="demographics-name">
 
@@ -324,7 +358,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="confirmationQuestion">
                 ${ ui.message("registrationapp.confirm") }
                 <p style="display: inline">
-                    <input type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
+                    <input id="submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
                 </p>
                 <p style="display: inline">
                     <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
