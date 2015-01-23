@@ -168,6 +168,11 @@ jq(function() {
 
             NavigatorController.getQuestionById('demographics-birthdate').enable();
 
+            // TODO sections variable is currently hackily defined in registerPatient.gsp
+            _.each(sections, function(section) {
+                NavigatorController.getSectionById(section).enable();
+            });
+
             // unset unknown flag
             jq('#demographics-unknown').val('false');
             NavigatorController.getQuestionById('demographics-name').fields[0].click();
