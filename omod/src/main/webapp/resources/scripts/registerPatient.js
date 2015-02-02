@@ -23,6 +23,7 @@ jq(function() {
     });
 
     getSimilarPatients = function (field) {
+        var focusedField = $(':focus');
         jq('.date-component').trigger('blur');
 
         var formData = jq('#registration').serialize();
@@ -50,6 +51,7 @@ jq(function() {
             .error(function (xhr, status, err) {
                 alert('AJAX error ' + err);
             });
+        focusedField.focus();
     };
 
     jq('input').change(getSimilarPatients);
