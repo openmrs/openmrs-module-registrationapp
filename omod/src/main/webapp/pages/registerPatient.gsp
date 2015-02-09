@@ -77,7 +77,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <form class="simple-form-ui" id="registration" method="POST">
 
         <% if (includeRegistrationDateSection) { %>
-        <section id="registration-info">
+        <section id="registration-info" class="nonCollapsible">
             <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
 
             <fieldset id="registration-date" class="multiple-input-date no-future-date">
@@ -101,7 +101,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         </section>
         <% } %>
 
-        <section id="demographics">
+        <section id="demographics" class="nonCollapsible">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
 
@@ -171,7 +171,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def section = structure.value
             def questions=section.questions
         %>
-            <section id="${section.id}">
+            <section id="${section.id}" class="nonCollapsible">
                 <span id="${section.id}_label" class="title">${ui.message(section.label)}</span>
                     <% questions.each { question ->
                         def fields=question.fields
@@ -209,7 +209,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <% } %>
 
         <% if (allowManualIdentifier) { %>
-            <section id="patient-identification-section">
+            <section id="patient-identification-section" class="nonCollapsible">
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
                 <fieldset id="patient-identifier-question">
