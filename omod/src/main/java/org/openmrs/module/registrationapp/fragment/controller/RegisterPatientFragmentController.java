@@ -1,6 +1,8 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTimeComparator;
@@ -44,15 +46,17 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientFragmentController {
+
+    private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
@@ -200,7 +204,16 @@ public class RegisterPatientFragmentController {
             if (StringUtils.isNotEmpty(parameterValue)) {
                 Obs obs = new Obs();
                 obs.setConcept(concept);
-                obs.setValueAsString(parameterValue);
+                if (concept.getDatatype().isCoded()) {
+                    Concept valueCoded = conceptService.getConceptByUuid(parameterValue);
+                    if (valueCoded == null) {
+                        log.error("Submitted a coded obs whose value we can't interpret: " + parameterValue);
+                    }
+                    obs.setValueCoded(valueCoded);
+                }
+                else {
+                    obs.setValueAsString(parameterValue);
+                }
                 obsToCreate.add(obs);
             }
         }

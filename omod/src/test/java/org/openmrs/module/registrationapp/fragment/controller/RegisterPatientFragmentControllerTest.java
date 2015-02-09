@@ -53,6 +53,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
     public static final String ENCOUNTER_TYPE_UUID = "61ae96f4-6afe-4351-b6f8-cd4fc383cce1";
     public static final String ENCOUNTER_ROLE_UUID = "a0b03050-c99b-11e0-9572-0800200c9a66";
     public static final String WEIGHT_CONCEPT_UUID = "c607c80f-1ea9-4da3-bb88-6276ce8868dd";
+    public static final String CIVIL_STATUS_CONCEPT_UUID = "89ca642a-dab6-4f20-b712-e12ca4fc6d36";
+    public static final String MARRIED_CONCEPT_UUID = "92afda7c-78c9-47bd-a841-0de0817027d4";
 
     private RegisterPatientFragmentController controller;
 
@@ -176,6 +178,27 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         Obs obs = obsService.getObservationsByPerson(patient).get(0);
         assertThat(obs.getConcept().getUuid(), is(WEIGHT_CONCEPT_UUID));
         assertThat(obs.getValueNumeric(), is(70d));
+        assertThat(obs.getLocation(), is(location));
+        assertNull(obs.getEncounter());
+    }
+
+    @Test
+    public void testPostWithCodedObs() throws Exception {
+        request.addParameter("obs." + CIVIL_STATUS_CONCEPT_UUID, MARRIED_CONCEPT_UUID);
+
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+                patient, name, address, 30, null, null, null, null, request,
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
+        assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
+        assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
+
+        Obs obs = obsService.getObservationsByPerson(patient).get(0);
+        assertThat(obs.getConcept().getUuid(), is(CIVIL_STATUS_CONCEPT_UUID));
+        assertThat(obs.getValueCoded().getUuid(), is(MARRIED_CONCEPT_UUID));
         assertThat(obs.getLocation(), is(location));
         assertNull(obs.getEncounter());
     }
