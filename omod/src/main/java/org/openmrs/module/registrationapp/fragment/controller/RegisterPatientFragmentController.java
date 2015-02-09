@@ -46,13 +46,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientFragmentController {
 
@@ -223,10 +223,12 @@ public class RegisterPatientFragmentController {
         StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation") + ":");
         errorMessage.append("<ul>");
         for (ObjectError error : errors.getAllErrors()) {
-            errorMessage.append("<li>");
-            errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
-                    error.getDefaultMessage(), null));
-            errorMessage.append("</li>");
+            if (!isPreferredIdentifierErrorMessage(error)) {
+                errorMessage.append("<li>");
+                errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
+                        error.getDefaultMessage(), null));
+                errorMessage.append("</li>");
+            }
         }
         errorMessage.append("</ul>");
         return errorMessage.toString();
@@ -307,5 +309,14 @@ public class RegisterPatientFragmentController {
                 errors.reject("registrationapp.error.identifier.general");
             }
         }
+    }
+
+    private boolean isPreferredIdentifierErrorMessage(ObjectError error) {
+        for (String code : error.getCodes()) {
+            if (code.equals("error.preferredIdentifier")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
