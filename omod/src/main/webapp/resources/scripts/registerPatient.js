@@ -17,20 +17,6 @@ jq(function() {
         }
     });
 
-    confirmRegistration = emr.setupConfirmationDialog({
-        selector: '#confirmRegistration',
-        actions: {
-            confirm: function () {
-                confirmRegistration.close();
-                submitPatient();
-            },
-
-            cancel: function () {
-                confirmRegistration.close();
-            }
-        }
-    });
-
     jq('#reviewSimilarPatientsButton').click(function () {
         reviewSimilarPatients.show();
         return false;
@@ -98,7 +84,9 @@ jq(function() {
             });
     });
 
-    var submitPatient = function() {
+    /* Submit functionality */
+    jq('#registration').submit(function (e) {
+        e.preventDefault();
         jq('#submit').attr('disabled', 'disabled');
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
@@ -113,15 +101,6 @@ jq(function() {
                 jq('#submit').removeAttr('disabled');
                 jq('#cancelSubmission').removeAttr('disabled');
         });
-    }
-
-    jq('#registration').submit(function (e) {
-        e.preventDefault();
-        if($('#exact-matches').is(":visible")) {
-            confirmRegistration.show();
-        } else {
-            submitPatient();
-        }
     });
 
     /* Registration date functionality */
