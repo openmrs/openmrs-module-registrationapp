@@ -17,6 +17,20 @@ jq(function() {
         }
     });
 
+    confirmRegistration = emr.setupConfirmationDialog({
+        selector: '#confirmRegistration',
+        actions: {
+            confirm: function () {
+                confirmRegistration.close();
+                submitPatient();
+            },
+
+            cancel: function () {
+                confirmRegistration.close();
+            }
+        }
+    });
+
     jq('#reviewSimilarPatientsButton').click(function () {
         reviewSimilarPatients.show();
         return false;
@@ -63,21 +77,28 @@ jq(function() {
         submitButton.prop('disabled', true);
         var formData = jq('#registration').serialize();
 
+        $('#exact-matches').hide();
         $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: appId }), formData)
             .success(function (response) {
-                console.log(response);
-                if (response.length == 0) {
-                    $('#exact-matches').hide();
-                } else {
+                if (!jq('#checkbox-unknown-patient').is(':checked') && response.length > 0) {
                     $('#exact-matches').show();
+                    var exactPatientsSelect = jq('#exactPatientsSelect');
+                    exactPatientsSelect.empty();
+                    for (index in response) {
+                        var item = response[index];
+                        var link = patientDashboardLink;
+                        link += '?patientId=' + item.patientId;
+                        var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
+                        row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+                        row += '</li>';
+                        exactPatientsSelect.append(row);
+                    }
+                    submitButton.prop('disabled', false);
                 }
-                submitButton.prop('disabled', false);
             });
     });
 
-    /* Submit functionality */
-    jq('#registration').submit(function (e) {
-        e.preventDefault();
+    var submitPatient = function() {
         jq('#submit').attr('disabled', 'disabled');
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
@@ -92,8 +113,16 @@ jq(function() {
                 jq('#submit').removeAttr('disabled');
                 jq('#cancelSubmission').removeAttr('disabled');
         });
-    });
+    }
 
+    jq('#registration').submit(function (e) {
+        e.preventDefault();
+        if($('#exact-matches').is(":visible")) {
+            confirmRegistration.show();
+        } else {
+            submitPatient();
+        }
+    });
 
     /* Registration date functionality */
     if (NavigatorController.getQuestionById('registration-date') != null) {  // if retro entry configured
