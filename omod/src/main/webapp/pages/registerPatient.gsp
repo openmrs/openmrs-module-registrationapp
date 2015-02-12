@@ -56,21 +56,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </div>
 </div>
 
-<div id="confirmRegistration" class="dialog" style="display: none">
-    <div class="dialog-header">
-      <h3>${ ui.message("registrationapp.exactPatientConfirmationDialog.header")}</h3>
-    </div>
-    <div class="dialog-content">
-        <p class="spaced">
-        	<em>${ ui.message("registrationapp.exactPatientConfirmationDialog.content") }</em>
-        </p>
-
-        <span class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
-        <span class="button confirm right"> ${ ui.message("registrationapp.patient.confirm.label") } </span>
-
-    </div>
-</div>
-
 <div id="validation-errors" class="note-container" style="display: none" >
     <div class="note error">
         <div id="validation-errors-content" class="text">
