@@ -16,11 +16,14 @@ package org.openmrs.module.registrationapp.page.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -56,10 +59,14 @@ public class EditPatientDemographicsPageController {
 	 */
 	public String post(UiSessionContext sessionContext, PageModel model,
 	                   @SpringBean("patientService") PatientService patientService,
-	                   @RequestParam("patientId") @BindParams Patient patient, @BindParams PersonName name,
-					   @RequestParam("returnUrl") String returnUrl, @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
-					   HttpServletRequest request, @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
-	                   @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
+	                   @RequestParam("patientId") @BindParams Patient patient,
+	                   @BindParams PersonName name,
+	                   @RequestParam("returnUrl") String returnUrl,
+	                   @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService,
+	                   @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
+	                   @SpringBean("patientValidator") PatientValidator patientValidator,
+	                   HttpServletRequest request, Session session, UiUtils ui) throws Exception {
 		
 		sessionContext.requireAuthentication();
 		
@@ -77,6 +84,12 @@ public class EditPatientDemographicsPageController {
 		
 		if (!errors.hasErrors()) {
 			try {
+				PersonAttributeType unknownPatientAttributeType = emrApiProperties.getUnknownPatientPersonAttributeType();
+				for (PersonAttribute pa : patient.getAttributes()) {
+					if (pa.getAttributeType().equals(unknownPatientAttributeType)) {
+						patient.removeAttribute(pa);
+					}
+				}
 				patientService.savePatient(patient);
 				InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
 				    ui.message("registrationapp.editDemographicsMessage.success", patient.getPersonName()));
