@@ -38,6 +38,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 
 public class EditPatientDemographicsPageController {
 	
@@ -60,7 +61,9 @@ public class EditPatientDemographicsPageController {
 	public String post(UiSessionContext sessionContext, PageModel model,
 	                   @SpringBean("patientService") PatientService patientService,
 	                   @RequestParam("patientId") @BindParams Patient patient,
-	                   @BindParams PersonName name,
+                       @BindParams PersonName name,
+                       @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
+                       @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
 	                   @RequestParam("returnUrl") String returnUrl,
 	                   @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
 	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService,
@@ -78,6 +81,15 @@ public class EditPatientDemographicsPageController {
 				currentName.setVoided(true);
 			}
 		}
+        if (patient.getBirthdate() == null && birthdateYears != null) {
+            patient.setBirthdateEstimated(true);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - birthdateYears);
+            if (birthdateMonths != null) {
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - birthdateMonths);
+            }
+            patient.setBirthdate(calendar.getTime());
+        }
 		
 		BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
 		patientValidator.validate(patient, errors);

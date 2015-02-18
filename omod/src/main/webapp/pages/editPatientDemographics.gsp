@@ -1,9 +1,11 @@
 <%
     ui.decorateWith("appui", "standardEmrPage")
+    ui.includeJavascript("uicommons", "handlebars/handlebars.min.js", Integer.MAX_VALUE - 1);
     ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
     ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
     ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
+    ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
 
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
@@ -17,7 +19,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
     jQuery(function() {
-        KeyboardController();
+       KeyboardController();
     });
 </script>
 
@@ -35,10 +37,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </h2>
 
     <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editPatientDemographics.page?patientId=${patient.patientId}&returnUrl=${returnUrl}">
-        <section id="demographics">
+        <section id="demographics" class="non-collapsible">
             <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
 
-            <fieldset>
+            <fieldset id="demographics-name">
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
                 <% nameTemplate.lineByLineFormat.each { name ->
@@ -62,7 +64,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <input type="hidden" name="preferred" value="true"/>
             </fieldset>
 
-            <fieldset>
+            <fieldset id="demographics-gender">
                 <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
                 ${ ui.includeFragment("uicommons", "field/dropDown", [
                         label: ui.message("registrationapp.patient.gender.question"),
@@ -74,19 +76,18 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 ])}
             </fieldset>
 
-            <fieldset class="multiple-input-date no-future-date">
-                <legend>${ui.message("registrationapp.patient.birthdate.label")}</legend>
+            <fieldset id="demographics-birthdate" class="multiple-input-date no-future-date date-required">
+                <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                         label: "",
                         formFieldName: "birthdate",
                         left: true,
-                        classes: ["required"],
+                        showEstimated: true,
                         estimated: patient.birthdateEstimated,
                         initialValue: patient.birthdate
                 ])}
             </fieldset>
-
         </section>
 
         <div id="confirmation">
