@@ -92,9 +92,9 @@ public class RegisterPatientFragmentController {
         if (patient.getBirthdate() == null && birthdateYears != null) {
             patient.setBirthdateEstimated(true);
             Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - birthdateYears);
+            calendar.add(Calendar.YEAR, -birthdateYears);
             if (birthdateMonths != null) {
-                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - birthdateMonths);
+                calendar.add(Calendar.MONTH, -birthdateMonths);
             }
             patient.setBirthdate(calendar.getTime());
         }
