@@ -18,6 +18,11 @@
     def cleanup = {
         return (it instanceof org.codehaus.jackson.node.TextNode) ? it.textValue : it;
     }
+
+    Calendar cal = Calendar.getInstance()
+    def maxAgeYear = cal.get(Calendar.YEAR)
+    def minAgeYear = maxAgeYear - 120
+
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -160,7 +165,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         left: true,
                         showEstimated: true,
                         estimated: patient.birthdateEstimated,
-                        initialValue: patient.birthdate
+                        initialValue: patient.birthdate,
+                        minYear: minAgeYear,
+                        maxYear: maxAgeYear
                   ])}
             </fieldset>
 

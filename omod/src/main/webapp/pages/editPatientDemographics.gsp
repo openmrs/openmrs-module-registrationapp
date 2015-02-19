@@ -11,6 +11,10 @@
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
             [label: ui.message("emr.gender.F"), value: 'F'] ]
 
+    Calendar cal = Calendar.getInstance()
+    def maxAgeYear = cal.get(Calendar.YEAR)
+    def minAgeYear = maxAgeYear - 120
+
 	if (!returnUrl) {
 		returnUrl = "/${contextPath}/coreapps/patientdashboard/patientDashboard.page?patientId=${patient.patientId}"
 	}
@@ -85,7 +89,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         left: true,
                         showEstimated: true,
                         estimated: patient.birthdateEstimated,
-                        initialValue: patient.birthdate
+                        initialValue: patient.birthdate,
+                        minYear: minAgeYear,
+                        maxYear: maxAgeYear
                 ])}
             </fieldset>
         </section>
