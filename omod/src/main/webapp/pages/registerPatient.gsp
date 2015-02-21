@@ -22,6 +22,7 @@
     Calendar cal = Calendar.getInstance()
     def maxAgeYear = cal.get(Calendar.YEAR)
     def minAgeYear = maxAgeYear - 120
+    def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -100,7 +101,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         left: true,
                         classes: ['required'],
                         showEstimated: false,
-                        initialValue: new Date()
+                        initialValue: new Date(),
+                        minYear: minRegistrationAgeYear,
+                        maxYear: maxAgeYear,
                 ])}
             </fieldset>
         </section>
@@ -156,7 +159,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
             </fieldset>
 
-            <fieldset id="demographics-birthdate" class="multiple-input-date no-future-date date-required">
+            <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
                 <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
                 <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                 ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
