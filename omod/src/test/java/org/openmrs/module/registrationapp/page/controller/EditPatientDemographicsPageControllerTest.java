@@ -110,7 +110,7 @@ public class EditPatientDemographicsPageControllerTest {
 	 *      org.openmrs.layout.web.name.NameTemplate, org.openmrs.messagesource.MessageSourceService,
 	 *      org.openmrs.validator.PatientValidator, javax.servlet.http.HttpServletRequest,
 	 *      org.openmrs.ui.framework.session.Session, org.openmrs.ui.framework.UiUtils)
-	 * @verifies void the old person name and replace it with a new one when it is edited
+	 * @verifies not void the existing name if there are no changes in the name
 	 */
 	@Test
 	public void post_shouldNotVoidTheExistingNameIfThereAreNoChangesInTheName() throws Exception {
