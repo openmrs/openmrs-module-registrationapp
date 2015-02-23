@@ -16,14 +16,11 @@ package org.openmrs.module.registrationapp.page.controller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appui.UiSessionContext;
-import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -67,10 +64,9 @@ public class EditPatientDemographicsPageController {
 	                   @RequestParam("returnUrl") String returnUrl,
 	                   @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
 	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService,
-	                   @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
 	                   @SpringBean("patientValidator") PatientValidator patientValidator,
 	                   HttpServletRequest request, Session session, UiUtils ui) throws Exception {
-		
+
 		sessionContext.requireAuthentication();
 		
 		if (patient.getPersonName() != null && name != null) {
@@ -96,12 +92,6 @@ public class EditPatientDemographicsPageController {
 		
 		if (!errors.hasErrors()) {
 			try {
-				PersonAttributeType unknownPatientAttributeType = emrApiProperties.getUnknownPatientPersonAttributeType();
-				for (PersonAttribute pa : patient.getAttributes()) {
-					if (pa.getAttributeType().equals(unknownPatientAttributeType)) {
-						patient.removeAttribute(pa);
-					}
-				}
 				patientService.savePatient(patient);
 				InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
 				    ui.message("registrationapp.editDemographicsMessage.success", patient.getPersonName()));

@@ -29,7 +29,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.module.appui.UiSessionContext;
-import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.validator.PatientValidator;
@@ -61,9 +60,6 @@ public class EditPatientDemographicsPageControllerTest {
 	@Mock
 	private UiSessionContext uiSessionContext;
 
-	@Mock
-	private EmrApiProperties emrApiProperties;
-
 	@Before
 	public void setUpMockUserContext() throws Exception {
 		UserContext userContext = Mockito.mock(UserContext.class);
@@ -84,8 +80,8 @@ public class EditPatientDemographicsPageControllerTest {
 	/**
 	 * @see EditPatientDemographicsPageController#post(org.openmrs.module.appui.UiSessionContext,
 	 *      org.openmrs.ui.framework.page.PageModel, org.openmrs.api.PatientService,
-	 *      org.openmrs.Patient, org.openmrs.PersonName, String, org.openmrs.layout.web.name.NameTemplate,
-	 *      org.openmrs.messagesource.MessageSourceService, org.openmrs.module.emrapi.EmrApiProperties,
+	 *      org.openmrs.Patient, org.openmrs.PersonName, Integer, Integer, String,
+	 *      org.openmrs.layout.web.name.NameTemplate, org.openmrs.messagesource.MessageSourceService,
 	 *      org.openmrs.validator.PatientValidator, javax.servlet.http.HttpServletRequest,
 	 *      org.openmrs.ui.framework.session.Session, org.openmrs.ui.framework.UiUtils)
 	 * @verifies void the old person name and replace it with a new one when it is edited
@@ -96,11 +92,11 @@ public class EditPatientDemographicsPageControllerTest {
 		PersonName oldName = new PersonName("oldGivenName", null, familyName);
 		Patient patient = new Patient();
 		patient.addName(oldName);
-		
+
 		PersonName newName = new PersonName("newGivenName", null, familyName);
-		controller.post(uiSessionContext, null, patientService, patient, newName, null, null, "", null, null, emrApiProperties,
-		    patientValidator, request, null, ui);
-		
+		controller.post(uiSessionContext, null, patientService, patient, newName, null, null, "", null, null,
+				patientValidator, request, null, ui);
+
 		Assert.assertNotSame(oldName, patient.getPersonName());
 		Assert.assertSame(newName, patient.getPersonName());
 		Assert.assertEquals(true, oldName.isVoided());
@@ -110,11 +106,11 @@ public class EditPatientDemographicsPageControllerTest {
 	/**
 	 * @see EditPatientDemographicsPageController#post(org.openmrs.module.appui.UiSessionContext,
 	 *      org.openmrs.ui.framework.page.PageModel, org.openmrs.api.PatientService,
-	 *      org.openmrs.Patient, org.openmrs.PersonName, String, org.openmrs.layout.web.name.NameTemplate,
-	 *      org.openmrs.messagesource.MessageSourceService, org.openmrs.module.emrapi.EmrApiProperties,
+	 *      org.openmrs.Patient, org.openmrs.PersonName, Integer, Integer, String,
+	 *      org.openmrs.layout.web.name.NameTemplate, org.openmrs.messagesource.MessageSourceService,
 	 *      org.openmrs.validator.PatientValidator, javax.servlet.http.HttpServletRequest,
 	 *      org.openmrs.ui.framework.session.Session, org.openmrs.ui.framework.UiUtils)
-	 * @verifies not void the existing name if there are no changes in the name
+	 * @verifies void the old person name and replace it with a new one when it is edited
 	 */
 	@Test
 	public void post_shouldNotVoidTheExistingNameIfThereAreNoChangesInTheName() throws Exception {
@@ -124,7 +120,7 @@ public class EditPatientDemographicsPageControllerTest {
 		
 		//should be case insensitive
 		PersonName newName = new PersonName("givenName", null, "familyName");
-		controller.post(uiSessionContext, null, patientService, patient, newName, null, null, "", null, null, emrApiProperties,
+		controller.post(uiSessionContext, null, patientService, patient, newName, null, null, "", null, null,
 				patientValidator, request, null, ui);
 		
 		Assert.assertSame(oldName, patient.getPersonName());
