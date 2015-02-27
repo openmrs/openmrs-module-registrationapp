@@ -36,7 +36,7 @@
             {
                 "name": "allowManualIdentifier",
                 "description": "True/false whether or not to allow the user to manually specify the primary identifier (instead of auto-generating it)",
-                "defaultValue": true
+                "defaultValue": false
             }
         ]
     }
