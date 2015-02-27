@@ -1,0 +1,97 @@
+<%
+    if (sessionContext.authenticated && !sessionContext.currentProvider) {
+        throw new IllegalStateException("Logged-in user is not a Provider")
+    }
+    ui.decorateWith("appui", "standardEmrPage")
+
+%>
+${ ui.includeFragment("uicommons", "validationMessages")}
+
+<script type="text/javascript">
+    var breadcrumbs = [
+        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        { label: "${ ui.message("registrationapp.app.registerPatient.label") }", link: "${ ui.pageLink("registration", "findPatient") }" }
+    ];
+
+    jq(function() {
+        jq('#patient-search').focus();
+
+        jq('#registerPatient').click(function(){
+            emr.navigateTo({
+                provider: "registrationapp",
+                page: "registerPatient",
+                query: {
+                    appId: "${ appId }"
+                }
+            });
+        });
+
+    });
+
+</script>
+
+
+<h1>
+    ${ ui.message("registrationapp.app.registerPatient.label") }
+</h1>
+
+${ ui.message("coreapps.searchPatientHeading") }
+${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
+        [ afterSelectedUrl: '/coreapps/clinicianfacing/patient.page?patientId={{patientId}}',
+          showLastViewedPatients: 'false' ])}
+<input id="registerPatient" type="button" value="Register New Patient">
+
+<div class="container">
+
+    <div id="encounters-list">
+        <h3>${ ui.message("Previous patients registered at this location") }</h3>
+        <table id="encounters-table">
+            <thead>
+            <tr>
+                <th>${ ui.message("coreapps.patient.identifier") }</th>
+                <th>${ ui.message("coreapps.person.name") }</th>
+                <th>${ ui.message("coreapps.gender") }</th>
+                <th>${ ui.message("coreapps.birthdate") }</th>
+                <th>${ ui.message("coreapps.patientDashBoard.date") }</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% if ( (appEncounters == null)
+                    || (appEncounters!= null && appEncounters.size() == 0)) { %>
+            <tr>
+                <td colspan="5">${ ui.message("uicommons.dataTable.emptyTable") }</td>
+            </tr>
+            <% } %>
+            <% appEncounters.sort{ it.encounterDatetime }.reverse().each { encounter ->
+                // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
+            %>
+            <tr>
+                <td>${ ui.format(encounter.patient.patientIdentifier) }</td>
+                <td>
+                    <a href="${ ui.pageLink("coreapps", "clinicianfacing/patient", [ patientId: encounter.patient.patientId ]) }">
+                    ${ ui.format((encounter.patient.givenName ? encounter.patient.givenName : '') + " "
+                        + (encounter.patient.familyName ? encounter.patient.familyName : '')) }
+                </td>
+                <td>${ ui.format( encounter.patient.gender) }</td>
+                <td>${ ui.format( encounter.patient.birthdate) }</td>
+                <td>${ ui.format(encounter.encounterDatetime) }</td>
+            </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<% if (appEncounters !=null && appEncounters.size() > 0) { %>
+${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#encounters-table",
+                                                         options: [
+                                                                 bFilter: true,
+                                                                 bJQueryUI: true,
+                                                                 bLengthChange: false,
+                                                                 iDisplayLength: 10,
+                                                                 sPaginationType: '\"full_numbers\"',
+                                                                 bSort: false,
+                                                                 sDom: '\'ft<\"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg \"ip>\''
+                                                         ]
+]) }
+<% } %>
