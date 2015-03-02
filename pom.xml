@@ -50,6 +50,21 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>rubygems</groupId>
+                <artifactId>sass</artifactId>
+                <version>3.2.10</version>
+                <type>gem</type>
+                <scope>provided</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
     <dependencies>
 
         <!-- Begin OpenMRS core -->
