@@ -3,6 +3,7 @@
         throw new IllegalStateException("Logged-in user is not a Provider")
     }
     ui.decorateWith("appui", "standardEmrPage")
+    ui.includeCss("registrationapp", "findPatient.css")
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -15,18 +16,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     jq(function() {
         jq('#patient-search').focus();
-
-        jq('#registerPatient').click(function(){
-            emr.navigateTo({
-                provider: "registrationapp",
-                page: "registerPatient",
-                query: {
-                    appId: "${ appId }"
-                }
-            });
-        });
-
-    });
+        
+     });
 
 </script>
 
@@ -36,10 +27,21 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 </h1>
 
 ${ ui.message("coreapps.searchPatientHeading") }
+<div class="container">
+    <div id="search-patient-div" class="search-div">
 ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
         [ afterSelectedUrl: '/coreapps/clinicianfacing/patient.page?patientId={{patientId}}',
           showLastViewedPatients: 'false' ])}
-<input id="registerPatient" type="button" value="Register New Patient">
+    </div>
+    <div id="register-patient-div" class="search-div">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId]) }">
+            <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
+        </a>
+    </div>
+</div>
+
+<br>
+<br>
 
 <div class="container">
 
