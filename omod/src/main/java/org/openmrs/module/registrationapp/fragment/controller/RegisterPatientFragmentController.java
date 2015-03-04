@@ -27,6 +27,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
+import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -195,17 +196,17 @@ public class RegisterPatientFragmentController {
         return new SuccessResult(redirectUrl);
     }
 
-    private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptUuid, String[] parameterValues) throws ParseException {
-        Concept concept = conceptService.getConceptByUuid(conceptUuid);
+    private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptId, String[] parameterValues) throws ParseException {
+        Concept concept = RegistrationAppUtils.getConcept(conceptId, conceptService);
         if (concept == null) {
-            throw new IllegalArgumentException("Cannot find concept: " + conceptUuid);
+            throw new IllegalArgumentException("Cannot find concept: " + conceptId);
         }
         for (String parameterValue : parameterValues) {
             if (StringUtils.isNotEmpty(parameterValue)) {
                 Obs obs = new Obs();
                 obs.setConcept(concept);
                 if (concept.getDatatype().isCoded()) {
-                    Concept valueCoded = conceptService.getConceptByUuid(parameterValue);
+                    Concept valueCoded = RegistrationAppUtils.getConcept(parameterValue, conceptService);
                     if (valueCoded == null) {
                         log.error("Submitted a coded obs whose value we can't interpret: " + parameterValue);
                     }
