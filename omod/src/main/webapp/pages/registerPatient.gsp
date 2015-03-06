@@ -116,30 +116,41 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <fieldset id="demographics-name">
 
                 <legend>${ui.message("registrationapp.patient.name.label")}</legend>
+                    <div>
                     <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-                    <% nameTemplate.lineByLineFormat.each { name ->
-                        def initialNameFieldValue = ""
-                            if(patient.personName && patient.personName[name]){
-                                initialNameFieldValue = patient.personName[name]
-                            }
-                    %>
-                        ${ ui.includeFragment("registrationapp", "field/personName", [
-                                label: ui.message(nameTemplate.nameMappings[name]),
-                                size: nameTemplate.sizeMappings[name],
-                                formFieldName: name,
-                                dataItems: 4,
-                                left: true,
-                                initialValue: initialNameFieldValue,
-                                classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
-                        ])}
 
-                    <% } %>
+                        <% nameTemplate.lineByLineFormat.each { name ->
+                            def initialNameFieldValue = ""
+                                if(patient.personName && patient.personName[name]){
+                                    initialNameFieldValue = patient.personName[name]
+                                }
+                        %>
+                            ${ ui.includeFragment("registrationapp", "field/personName", [
+                                    label: ui.message(nameTemplate.nameMappings[name]),
+                                    size: nameTemplate.sizeMappings[name],
+                                    formFieldName: name,
+                                    dataItems: 4,
+                                    left: true,
+                                    initialValue: initialNameFieldValue,
+                                    classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+                            ])}
+
+                        <% } %>
+                    </div>
 
                     <% if (allowUnknownPatients) { %>
+
+                     <!-- TODO: fix this horrible method of making this line up properly -->
+                     <div style="display:inline-block">
                         <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
-                        <input id="checkbox-unknown-patient" name="test-me" type="checkbox"/>
-                        <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
-                    <% } %>
+                        <nobr>
+                            <input id="checkbox-unknown-patient" type="checkbox"/>
+                            <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
+                        </nobr>
+                    </div>
+
+                <% } %>
+
 
                     <input type="hidden" name="preferred" value="true"/>
             </fieldset>
