@@ -5,6 +5,8 @@
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeCss("registrationapp", "findPatient.css")
 
+    def returnUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
+
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -16,7 +18,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     jq(function() {
         jq('#patient-search').focus();
-        
+
      });
 
 </script>
@@ -30,7 +32,7 @@ ${ ui.message("coreapps.searchPatientHeading") }
 <div class="container">
     <div id="search-patient-div" class="search-div">
 ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
-        [ afterSelectedUrl: '/coreapps/clinicianfacing/patient.page?patientId={{patientId}}',
+        [ afterSelectedUrl: returnUrl,
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
@@ -70,7 +72,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
             <tr>
                 <td>${ ui.format(encounter.patient.patientIdentifier) }</td>
                 <td>
-                    <a href="${ ui.pageLink("coreapps", "clinicianfacing/patient", [ patientId: encounter.patient.patientId ]) }">
+                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
                     ${ ui.format((encounter.patient.givenName ? encounter.patient.givenName : '') + " "
                         + (encounter.patient.familyName ? encounter.patient.familyName : '')) }
                 </td>
