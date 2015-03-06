@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
+import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appui.UiSessionContext;
@@ -34,8 +35,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import javax.servlet.http.HttpServletRequest;
 
 public class EditPatientDemographicsPageController {
 	
@@ -43,11 +44,11 @@ public class EditPatientDemographicsPageController {
 	
 	public void get(UiSessionContext sessionContext, PageModel model, @RequestParam("patientId") Patient patient,
 					@RequestParam(value = "returnUrl", required = false) String returnUrl,
-	                @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate) throws Exception {
+	                @SpringBean("nameSupport") NameSupport nameSupport) throws Exception {
 		
 		sessionContext.requireAuthentication();
 		model.addAttribute("patient", patient);
-		model.addAttribute("nameTemplate", nameTemplate);
+		model.addAttribute("nameTemplate", nameSupport.getDefaultLayoutTemplate());
 		model.addAttribute("returnUrl", returnUrl);
 	}
 	

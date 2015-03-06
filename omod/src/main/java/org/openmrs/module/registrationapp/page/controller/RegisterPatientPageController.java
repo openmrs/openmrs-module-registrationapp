@@ -4,6 +4,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.context.Context;
 import org.openmrs.layout.web.address.AddressSupport;
+import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -20,25 +21,27 @@ public class RegisterPatientPageController {
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app, @ModelAttribute("patient") @BindParams Patient patient,
-                    @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+                    @SpringBean("nameSupport") NameSupport nameSupport,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, nameTemplate, emrApiProperties.getPrimaryIdentifierType());
+        addModelAttributes(model, patient, app, nameSupport, emrApiProperties.getPrimaryIdentifierType());
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, NameTemplate nameTemplate, PatientIdentifierType primaryIdentifierType) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, NameSupport nameSupport, PatientIdentifierType primaryIdentifierType) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
         	patient = new Patient();
         }
-        
+
+        NameTemplate nameTemplate = nameSupport.getDefaultLayoutTemplate();
+
         model.addAttribute("patient", patient);
         model.addAttribute("primaryIdentifierType", primaryIdentifierType);
         model.addAttribute("appId", app.getId());
         model.addAttribute("formStructure", formStructure);
-        model.addAttribute("nameTemplate", nameTemplate);
+        model.addAttribute("nameTemplate", nameSupport.getDefaultLayoutTemplate());
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
         model.addAttribute("includeRegistrationDateSection", !app.getConfig().get("registrationEncounter").isNull()
                 && !app.getConfig().get("allowRetrospectiveEntry").isNull()
