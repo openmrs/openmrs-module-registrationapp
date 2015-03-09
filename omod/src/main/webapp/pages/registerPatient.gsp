@@ -109,91 +109,90 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         </section>
         <% } %>
 
-        <section id="demographics" class="non-collapsible">
-            <span class="title">${ui.message("registrationapp.patient.demographics.label")}</span>
-
-
-            <fieldset id="demographics-name">
-
-                <legend>${ui.message("registrationapp.patient.name.label")}</legend>
-                    <div>
-                    <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-
-                        <% nameTemplate.lineByLineFormat.each { name ->
-                            def initialNameFieldValue = ""
-                                if(patient.personName && patient.personName[name]){
-                                    initialNameFieldValue = patient.personName[name]
-                                }
-                        %>
-                            ${ ui.includeFragment("registrationapp", "field/personName", [
-                                    label: ui.message(nameTemplate.nameMappings[name]),
-                                    size: nameTemplate.sizeMappings[name],
-                                    formFieldName: name,
-                                    dataItems: 4,
-                                    left: true,
-                                    initialValue: initialNameFieldValue,
-                                    classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
-                            ])}
-
-                        <% } %>
-                    </div>
-
-                    <% if (allowUnknownPatients) { %>
-
-                     <!-- TODO: fix this horrible method of making this line up properly -->
-                     <div style="display:inline-block">
-                        <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
-                        <nobr>
-                            <input id="checkbox-unknown-patient" type="checkbox"/>
-                            <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
-                        </nobr>
-                    </div>
-
-                <% } %>
-
-
-                    <input type="hidden" name="preferred" value="true"/>
-            </fieldset>
-
-            <fieldset id="demographics-gender">
-                <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
-                <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
-                ${ ui.includeFragment("uicommons", "field/dropDown", [
-                        id: "gender",
-                        emptyOptionLabel: "uicommons.select",
-                        formFieldName: "gender",
-                        options: genderOptions,
-                        classes: ["required"],
-                        initialValue: patient.gender
-                ])}
-                <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
-                <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
-            </fieldset>
-
-            <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
-                <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
-                <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
-                ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
-                        label: "",
-                        formFieldName: "birthdate",
-                        left: true,
-                        showEstimated: true,
-                        estimated: patient.birthdateEstimated,
-                        initialValue: patient.birthdate,
-                        minYear: minAgeYear,
-                        maxYear: maxAgeYear
-                  ])}
-            </fieldset>
-
-        </section>
-
         <!-- read configurable sections from the json config file-->
         <% formStructure.sections.each { structure ->
             def section = structure.value
-            def questions=section.questions
+            def questions = section.questions
         %>
             <section id="${section.id}" class="non-collapsible">
-                <span id="${section.id}_label" class="title">${ui.message(section.label)}</span>
+                <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
+
+                    <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
+                    <% if (section.id == 'demographics') { %>
+
+                        <fieldset id="demographics-name">
+
+                            <legend>${ui.message("registrationapp.patient.name.label")}</legend>
+                            <div>
+                                <h3>${ui.message("registrationapp.patient.name.question")}</h3>
+
+                                <% nameTemplate.lineByLineFormat.each { name ->
+                                    def initialNameFieldValue = ""
+                                    if(patient.personName && patient.personName[name]){
+                                        initialNameFieldValue = patient.personName[name]
+                                    }
+                                %>
+                                ${ ui.includeFragment("registrationapp", "field/personName", [
+                                        label: ui.message(nameTemplate.nameMappings[name]),
+                                        size: nameTemplate.sizeMappings[name],
+                                        formFieldName: name,
+                                        dataItems: 4,
+                                        left: true,
+                                        initialValue: initialNameFieldValue,
+                                        classes: [(name == "givenName" || name == "familyName") ? "required" : ""]
+                                ])}
+
+                                <% } %>
+                            </div>
+
+                            <% if (allowUnknownPatients) { %>
+
+                            <!-- TODO: fix this horrible method of making this line up properly -->
+                            <div style="display:inline-block">
+                                <!-- note that we are deliberately not including this in a p tag because we don't want the handler to pick it up as an actual field -->
+                                <nobr>
+                                    <input id="checkbox-unknown-patient" type="checkbox"/>
+                                    <label for="checkbox-unknown-patient">${ui.message("registrationapp.patient.demographics.unknown")}</label>
+                                </nobr>
+                            </div>
+
+                            <% } %>
+
+
+                            <input type="hidden" name="preferred" value="true"/>
+                        </fieldset>
+
+                        <fieldset id="demographics-gender">
+                            <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
+                            <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
+                            ${ ui.includeFragment("uicommons", "field/dropDown", [
+                                    id: "gender",
+                                    emptyOptionLabel: "uicommons.select",
+                                    formFieldName: "gender",
+                                    options: genderOptions,
+                                    classes: ["required"],
+                                    initialValue: patient.gender
+                            ])}
+                            <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
+                            <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
+                        </fieldset>
+
+                        <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
+                            <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
+                            <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
+                            ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
+                                    label: "",
+                                    formFieldName: "birthdate",
+                                    left: true,
+                                    showEstimated: true,
+                                    estimated: patient.birthdateEstimated,
+                                    initialValue: patient.birthdate,
+                                    minYear: minAgeYear,
+                                    maxYear: maxAgeYear
+                            ])}
+                        </fieldset>
+                    <% } %>
+
                     <% questions.each { question ->
                         def fields=question.fields
                     %>

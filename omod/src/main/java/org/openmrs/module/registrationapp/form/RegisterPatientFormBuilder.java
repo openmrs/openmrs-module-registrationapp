@@ -13,10 +13,6 @@
  */
 package org.openmrs.module.registrationapp.form;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -33,6 +29,10 @@ import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Builds a registration form structure from the app configuration.
  */
@@ -40,7 +40,13 @@ public class RegisterPatientFormBuilder {
 	
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
-		
+
+        // preload the demographics section; if there is a user-specified demographics section, it will override this, but remain at the front by rules of a LinkedHashMap
+        Section demographics = new Section();
+        demographics.setId("demographics");
+        formStructure.addSection(demographics);
+
+
 		ArrayNode sections = (ArrayNode) app.getConfig().get("sections");
 		for (JsonNode i : sections) {
 			ObjectNode config = (ObjectNode) i;
@@ -64,7 +70,7 @@ public class RegisterPatientFormBuilder {
 			
 			formStructure.addSection(section);
 		}
-		
+
 		return formStructure;
 	}
 	

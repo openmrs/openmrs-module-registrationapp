@@ -1,7 +1,6 @@
 package org.openmrs.module.registrationapp.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,7 @@ public class NavigableFormStructure {
     private Map<String, Section> sections;
 
     public NavigableFormStructure() {
-        sections = new HashMap<String, Section>();
+        sections = new LinkedHashMap<String, Section>();
     }
 
     public Map<String, Section> getSections() {
