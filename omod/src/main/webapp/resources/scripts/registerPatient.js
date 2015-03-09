@@ -154,11 +154,17 @@ jq(function() {
                 }
             });
 
-            NavigatorController.getQuestionById('demographics-birthdate').disable();
+            _.each(NavigatorController.getSectionById('demographics').questions, function(question) {
+                if (question.id != 'demographics-gender' && question.id != 'demographics-name') {
+                    question.disable();
+                }
+            })
 
             // TODO sections variable is currently hackily defined in registerPatient.gsp
             _.each(sections, function(section) {
-                NavigatorController.getSectionById(section).disable();
+                if (section != 'demographics') {
+                    NavigatorController.getSectionById(section).disable();
+                }
             });
 
             // set unknown flag
