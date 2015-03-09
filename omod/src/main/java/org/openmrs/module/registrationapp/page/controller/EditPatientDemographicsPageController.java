@@ -19,7 +19,6 @@ import org.openmrs.Patient;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.layout.web.name.NameSupport;
-import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.uicommons.UiCommonsConstants;
@@ -63,7 +62,7 @@ public class EditPatientDemographicsPageController {
                        @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                        @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
 	                   @RequestParam("returnUrl") String returnUrl,
-	                   @SpringBean("nameTemplateGivenFamily") NameTemplate nameTemplate,
+                       @SpringBean("nameSupport") NameSupport nameSupport,
 	                   @SpringBean("messageSourceService") MessageSourceService messageSourceService,
 	                   @SpringBean("patientValidator") PatientValidator patientValidator,
 	                   HttpServletRequest request, Session session, UiUtils ui) throws Exception {
@@ -119,7 +118,7 @@ public class EditPatientDemographicsPageController {
 		}
 		
 		model.addAttribute("patient", patient);
-		model.addAttribute("nameTemplate", nameTemplate);
+		model.addAttribute("nameTemplate", nameSupport.getDefaultLayoutTemplate());
 		model.addAttribute("returnUrl", returnUrl);
 		//redisplay the form
 		return null;
