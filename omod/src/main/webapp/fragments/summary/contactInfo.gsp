@@ -10,7 +10,8 @@
     <div class="info-header">
         <i class="icon-home"></i>
         <h3>${ ui.message("coreapps.patientDashBoard.contactinfo").toUpperCase() }</h3>
-        <i class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }" onclick="location.href='${ui.pageLink("registrationapp", "editPatientContactInfo", [patientId: patient.patient.id, appId: appId, returnUrl: returnUrl])}#visits';"></i>
+        <i class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }"
+           onclick="location.href='${ui.pageLink("registrationapp", "editSection", [patientId: patient.patient.id, sectionId: 'contactInfo', appId: appId, returnUrl: returnUrl])}#visits';"></i>
 
     </div>
     <div class="info-body">

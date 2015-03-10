@@ -4,6 +4,6 @@
         "extensionPointId": "patientHeader.editPatientContactInfo",
         "type": "link",
         "label": "general.edit",
-        "url": "registrationapp/editPatientContactInfo.page?patientId={{patient.patientId}}&appId=referenceapplication.registrationapp.registerPatient"
+        "url": "registrationapp/editSection.page?patientId={{patient.patientId}}&sectionId=contactInfo&appId=referenceapplication.registrationapp.registerPatient"
     }
 ]

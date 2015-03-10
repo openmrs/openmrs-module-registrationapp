@@ -1,5 +1,7 @@
 <%
     def patient = config.patient
+    def appId  = config.appId
+
     def  nameTemplate = config.nameTemplate
 
 
@@ -11,7 +13,8 @@
     <div class="info-header">
         <i class="icon-user"></i>
         <h3>${ ui.message("registrationapp.patient.demographics.label").toUpperCase() }</h3>
-        <i class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }" onclick="location.href='${ui.pageLink("registrationapp", "editPatientDemographics", [patientId: patient.patient.id, returnUrl: returnUrl])}#visits';"></i>
+        <i class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }"
+           onclick="location.href='${ui.pageLink("registrationapp", "editSection", [patientId: patient.patient.id, returnUrl: returnUrl, sectionId: 'demographics', appId: appId ])}#visits';"></i>
 
     </div>
     <div class="info-body">

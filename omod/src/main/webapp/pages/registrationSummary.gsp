@@ -28,7 +28,7 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient, a
                     ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId ])}
             <% }
             } %>
-            ${ ui.includeFragment("registrationapp", "summary/demographics", [patient: patient]) }
+            ${ ui.includeFragment("registrationapp", "summary/demographics", [patient: patient, appId: "registrationapp.registerPatient"]) }
         </div>
 
         <div class="info-container column">
