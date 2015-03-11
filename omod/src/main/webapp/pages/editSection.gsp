@@ -68,7 +68,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 <fieldset id="demographics-name">
                     <legend>${ui.message("registrationapp.patient.name.label")}</legend>
                     <h3>${ui.message("registrationapp.patient.name.question")}</h3>
-                    <% nameTemplate.lineByLineFormat.each { name ->
+                    <% nameTemplate.lines.each { line ->
+                        // go through each line in the template and find the first name token; assumption is there is only one name token per line
+                        def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
                         def initialNameFieldValue = ""
                         if(patient.personName && patient.personName[name]){
                             initialNameFieldValue = patient.personName[name]
