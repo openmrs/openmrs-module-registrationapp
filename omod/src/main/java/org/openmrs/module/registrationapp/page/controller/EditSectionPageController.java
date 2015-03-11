@@ -10,7 +10,6 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameSupport;
-import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -43,14 +42,13 @@ public class EditSectionPageController {
                     @RequestParam("appId") AppDescriptor app,
                     @RequestParam(value = "returnUrl", required = false) String returnUrl,
                     @RequestParam("sectionId") String sectionId,
-                    @SpringBean("adminService") AdministrationService administrationService,
-                    @SpringBean("nameSupport") NameSupport nameSupport) throws Exception {
+                    @SpringBean("adminService") AdministrationService administrationService) throws Exception {
 
         sessionContext.requireAuthentication();
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
         addModelAttributes(model, patient, formStructure.getSections().get(sectionId), administrationService, returnUrl,
-                app, nameSupport.getDefaultLayoutTemplate());
+                app);
     }
 
     /**
@@ -68,7 +66,6 @@ public class EditSectionPageController {
                        @RequestParam("sectionId") String sectionId,
                        @RequestParam("returnUrl") String returnUrl,
                        @SpringBean("patientService") PatientService patientService,
-                       @SpringBean("nameSupport") NameSupport nameSupport,
                        @SpringBean("adminService") AdministrationService administrationService, HttpServletRequest request,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
@@ -151,7 +148,7 @@ public class EditSectionPageController {
         }
 
         addModelAttributes(model, patient, formStructure.getSections().get(sectionId), administrationService, returnUrl,
-                app, nameSupport.getDefaultLayoutTemplate());
+                app);
         //redisplay the form
         return null;
     }
@@ -159,14 +156,14 @@ public class EditSectionPageController {
 
     private void addModelAttributes(PageModel model, Patient patient, Section section,
                                     AdministrationService adminService, String returnUrl,
-                                    AppDescriptor app, NameTemplate nameTemplate) throws Exception {
+                                    AppDescriptor app) throws Exception {
 
         model.addAttribute("app", app);
         model.addAttribute("returnUrl", returnUrl);
         model.put("uiUtils", new RegistrationAppUiUtils());
         model.addAttribute("patient", patient);
         model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("nameTemplate", nameTemplate);
+        model.addAttribute("nameTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
         model.addAttribute("section", section);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 adminService.getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
