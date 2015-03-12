@@ -40,11 +40,6 @@ public class RegistrationSummaryPageController {
 
         Location visitLocation = sessionContext.getSessionLocation();
 
-        List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("patientDashboard.includeFragments");
-        Collections.sort(includeFragments);
-        model.addAttribute("includeFragments", includeFragments);
-
-
         List<Extension> registrationFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments");
         Collections.sort(registrationFragments);
         model.addAttribute("registrationFragments", registrationFragments);

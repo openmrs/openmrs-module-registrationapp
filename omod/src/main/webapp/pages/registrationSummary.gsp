@@ -5,6 +5,8 @@
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeCss("registrationapp", "summary.css")
 
+    def returnUrl = "/${contextPath}/registrationapp/registrationSummary.page?patientId=${patient.patient.id}"
+
 %>
 
 <script type="text/javascript">
@@ -25,7 +27,7 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient, a
         <div class="info-container column">
             <% if (registrationFragments) {
                 registrationFragments.each { %>
-                    ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId ])}
+                    ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId, returnUrl: returnUrl ])}
             <% }
             } %>
             ${ ui.includeFragment("registrationapp", "summary/demographics", [patient: patient, appId: "registrationapp.registerPatient"]) }
