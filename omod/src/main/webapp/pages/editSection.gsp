@@ -42,6 +42,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     var NavigatorController;
     jQuery(function() {
         NavigatorController = KeyboardController();
+        jq('#cancelSubmission').unbind(); // unbind the functionality built into the navigator to return to top of the form
+        jq('#cancelSubmission').click(function(event){
+            window.location='${returnUrl}';
+        })
     });
 </script>
 

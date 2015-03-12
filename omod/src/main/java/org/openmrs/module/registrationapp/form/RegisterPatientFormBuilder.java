@@ -44,6 +44,7 @@ public class RegisterPatientFormBuilder {
         // preload the demographics section; if there is a user-specified demographics section, it will override this, but remain at the front by rules of a LinkedHashMap
         Section demographics = new Section();
         demographics.setId("demographics");
+        demographics.setLabel("registrationapp.patient.demographics.label");
         formStructure.addSection(demographics);
 
 
