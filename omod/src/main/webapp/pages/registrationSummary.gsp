@@ -25,12 +25,13 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient, a
 <div class="container">
     <div class="dashboard clear">
         <div class="info-container column">
+            ${ ui.includeFragment("registrationapp", "summary/demographics", [patient: patient, appId: "registrationapp.registerPatient"]) }
+
             <% if (registrationFragments) {
                 registrationFragments.each { %>
                     ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId, returnUrl: returnUrl ])}
             <% }
             } %>
-            ${ ui.includeFragment("registrationapp", "summary/demographics", [patient: patient, appId: "registrationapp.registerPatient"]) }
         </div>
 
         <div class="info-container column">
