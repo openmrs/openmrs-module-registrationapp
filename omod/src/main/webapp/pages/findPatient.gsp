@@ -73,8 +73,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <td>${ ui.format(encounter.patient.patientIdentifier) }</td>
                 <td>
                     <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
-                    ${ ui.format((encounter.patient.givenName ? encounter.patient.givenName : '') + " "
-                        + (encounter.patient.familyName ? encounter.patient.familyName : '')) }
+                    ${ ui.format((encounter.patient)) }
                 </td>
                 <td>${ ui.format( encounter.patient.gender) }</td>
                 <td>${ ui.format( encounter.patient.birthdate) }</td>
