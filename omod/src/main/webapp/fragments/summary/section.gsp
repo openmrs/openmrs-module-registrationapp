@@ -74,7 +74,7 @@
                             }
                             // TODO support other types besides personAttribute and personAddress
                         %>
-                            ${ displayValue }&nbsp;
+                            ${ displayValue ?: ''}&nbsp;
                         <% } %>
                         </span>
                     </div>
