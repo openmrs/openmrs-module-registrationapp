@@ -14,72 +14,65 @@
            onclick="location.href='${ui.pageLink("registrationapp", "editSection", [patientId: patient.patient.id, returnUrl: returnUrl, sectionId: section.id, appId: appId ])}#visits';"></i>
 
     </div>
-    <div class="info-body">
-
-        <ul>
-            <!-- display basic baked-in demographics information if demographics section -->
-            <% if (section.id == 'demographics') { %>
-                <% nameTemplate.lines.each { line ->
-                    // go through each line in the template and find the first name token; assumption is there is only one name token per line
-                    def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
-                    def initialNameFieldValue = ""
-                    if(patient.personName && patient.personName[name]){
-                        initialNameFieldValue = patient.personName[name]
-                    }
-                %>
-                <li class="clear">
-                    <strong>${ ui.message(nameTemplate.nameMappings[name]) }: </strong>
-                    <div class="summary-tag">
-                        ${ ui.message(initialNameFieldValue) }
-                    </div>
-                </li>
-                <% } %>
-
-                <li class="clear">
-                    <strong>${ ui.message("emr.gender") }:</strong>
-                    <div class="summary-tag">
-                        <span>${ui.message("coreapps.gender." + patient.gender)}&nbsp;</span>
-                    </div>
-                </li>
-
-                <li class="clear">
-                    <strong>${ui.message("registrationapp.patient.birthdate.label")}:</strong>
-                    <div class="summary-tag">
-                        <span>
-                            <% if (patient.birthdate) { %>
-                            <% if (patient.birthdateEstimated) { %>~<% } %>${ ui.formatDatePretty(patient.birthdate) }
-                            <% } else { %>
-                            ${ui.message("coreapps.unknownAge")}
-                            <% } %>
-                        </span>
-                    </div>
-                </li>
+    <div class="info-body summary-section">
+        <!-- display basic baked-in demographics information if demographics section -->
+        <% if (section.id == 'demographics') { %>
+            <% nameTemplate.lines.each { line ->
+                // go through each line in the template and find the first name token; assumption is there is only one name token per line
+                def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
+                def initialNameFieldValue = ""
+                if(patient.personName && patient.personName[name]){
+                    initialNameFieldValue = patient.personName[name]
+                }
+            %>
+            <div>
+                <h3>${ ui.message(nameTemplate.nameMappings[name]) } </h3>
+                <p class="left">
+                    ${ ui.message(initialNameFieldValue) }
+                </p>
+            </div>
             <% } %>
 
-            <!-- display other fields -->
-            <% section.questions.each { question ->
-                // TODO do we want to display any labels for questions?
-                def fields = question.fields %>
-                <li class="clear">
-                    <strong>${ ui.message(question.legend) }:</strong>
-                    <div class="summary-tag">
-                        <span>
-                        <% fields.each { field ->
-                            def displayValue = "";
-                            if (field.type == 'personAttribute') {
-                                displayValue = uiUtils.getAttribute(patient.patient, field.uuid);
-                            }
-                            else if (field.type == 'personAddress') {
-                                displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
-                            }
-                            // TODO support other types besides personAttribute and personAddress
-                        %>
-                            ${ displayValue ?: ''}&nbsp;
-                        <% } %>
-                        </span>
-                    </div>
-                </li>
-            <% } %>
-        </ul>
+            <div>
+                <h3>${ ui.message("emr.gender") }:</h3>
+                <p class="left">
+                    ${ui.message("coreapps.gender." + patient.gender)}&nbsp;
+                </p>
+            </div>
+
+            <div>
+                <h3>${ui.message("registrationapp.patient.birthdate.label")}</h3>
+                <p class="left">
+                    <% if (patient.birthdate) { %>
+                    <% if (patient.birthdateEstimated) { %>~<% } %>${ ui.formatDatePretty(patient.birthdate) }
+                    <% } else { %>
+                        ${ui.message("coreapps.unknownAge")}
+                    <% } %>
+                </p>
+            </div>
+        <% } %>
+
+        <!-- display other fields -->
+        <% section.questions.each { question ->
+            // TODO do we want to display any labels for questions?
+            def fields = question.fields %>
+            <div>
+                <h3>${ ui.message(question.legend) }</h3>
+                <p class="left">
+                    <% fields.each { field ->
+                        def displayValue = "";
+                        if (field.type == 'personAttribute') {
+                            displayValue = uiUtils.getAttribute(patient.patient, field.uuid);
+                        }
+                        else if (field.type == 'personAddress') {
+                            displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
+                        }
+                        // TODO support other types besides personAttribute and personAddress
+                    %>
+                        ${ displayValue ?: ''}&nbsp;
+                    <% } %>
+                </p>
+            </div>
+        <% } %>
     </div>
 </div>
