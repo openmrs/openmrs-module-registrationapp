@@ -70,7 +70,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
             %>
             <tr>
-                <td>${ ui.format(encounter.patient.patientIdentifier) }</td>
+                <td>${ encounter.patient.patientIdentifier }</td>
                 <td>
                     <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
                     ${ ui.format((encounter.patient)) }
@@ -91,7 +91,7 @@ ${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#encounters-ta
                                                                  bFilter: true,
                                                                  bJQueryUI: true,
                                                                  bLengthChange: false,
-                                                                 iDisplayLength: 10,
+                                                                 iDisplayLength: 5,
                                                                  sPaginationType: '\"full_numbers\"',
                                                                  bSort: false,
                                                                  sDom: '\'ft<\"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg \"ip>\''
