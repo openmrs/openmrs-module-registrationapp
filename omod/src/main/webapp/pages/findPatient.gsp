@@ -70,7 +70,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
             %>
             <tr>
-                <td>${ ui.format(encounter.patient.patientIdentifier) }</td>
+                <td>${ encounter.patient.patientIdentifier }</td>
                 <td>
                     <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
                     ${ ui.format((encounter.patient)) }
