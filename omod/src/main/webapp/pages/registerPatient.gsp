@@ -24,15 +24,27 @@
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
+    def breadcrumbOverride = breadcrumbOverride ?: ""
+
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 
 <script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+
+
+
+    <% if (breadcrumbOverride) { %>
+    var breadcrumbs = _.flatten([
+        ${ breadcrumbOverride },
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
-    ];
+    ] );
+    <% } else { %>
+        var breadcrumbs = [
+            { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+            { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
+        ];
+    <% } %>
 
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${ui.pageLink("coreapps", "clinicianfacing/patient")}';

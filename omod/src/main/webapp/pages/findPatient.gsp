@@ -6,6 +6,7 @@
     ui.includeCss("registrationapp", "findPatient.css")
 
     def returnUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
+    def breadcrumbOverride = breadcrumbOverride ?: ""
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -13,7 +14,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("registrationapp.app.registerPatient.label") }", link: "${ ui.pageLink("registration", "findPatient") }" }
+        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registration", "findPatient") }" }
     ];
 
     jq(function() {
@@ -36,7 +37,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
-        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId]) }">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId, breadcrumbOverride: breadcrumbOverride]) }">
             <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
         </a>
     </div>
@@ -72,7 +73,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
             <tr>
                 <td>${ encounter.patient.patientIdentifier }</td>
                 <td>
-                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
+                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, breadcrumbOverride:  breadcrumbOverride]) }">
                     ${ ui.format((encounter.patient)) }
                 </td>
                 <td>${ ui.format( encounter.patient.gender) }</td>

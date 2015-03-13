@@ -66,7 +66,9 @@ public class FindPatientPageController {
         }
 
         SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.escapeJs(ui.message("mirebalais.checkin.title"))) ;
-        model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb)));
+        SimpleObject patientPageBreadcrumb = SimpleObject.create("label", ui.escapeJs(ui.message("Patient.find")), "link", ui.thisUrlWithContextPath());
+
+        model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb, patientPageBreadcrumb)));
 
         model.addAttribute("appEncounters", encounters);
 
