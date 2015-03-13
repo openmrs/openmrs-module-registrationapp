@@ -88,7 +88,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
 <% if (appEncounters !=null && appEncounters.size() > 0) { %>
 ${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#encounters-table",
                                                          options: [
-                                                                 bFilter: true,
+                                                                 bFilter: false,
                                                                  bJQueryUI: true,
                                                                  bLengthChange: false,
                                                                  iDisplayLength: 5,

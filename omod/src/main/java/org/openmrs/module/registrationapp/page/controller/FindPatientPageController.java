@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -50,6 +52,18 @@ public class FindPatientPageController {
                 , null, null, null
                 , false);
 
+
+        if (encounters != null && encounters.size() > 5) {
+            Collections.sort(encounters, new Comparator<Encounter>() {
+                @Override
+                public int compare(Encounter o1, Encounter o2) {
+                    Date o1Date = o1.getEncounterDatetime();
+                    Date o2Date = o2.getEncounterDatetime();
+                    return o2Date.compareTo(o1Date);
+                }
+            });
+            encounters = encounters.subList(0,5);
+        }
 
         SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.escapeJs(ui.message("mirebalais.checkin.title"))) ;
         model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb)));
