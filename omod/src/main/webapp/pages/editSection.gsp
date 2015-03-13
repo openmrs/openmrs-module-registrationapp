@@ -103,7 +103,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             formFieldName: "gender",
                             options: genderOptions,
                             classes: ["required"],
-                            initialValue: patient.gender
+                            initialValue: patient.gender,
+                            hideEmptyLabel: true,
+                            expanded: true
                     ])}
                 </fieldset>
 

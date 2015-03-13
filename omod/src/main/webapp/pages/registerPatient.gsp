@@ -169,11 +169,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
-                                    emptyOptionLabel: "uicommons.select",
                                     formFieldName: "gender",
                                     options: genderOptions,
                                     classes: ["required"],
-                                    initialValue: patient.gender
+                                    initialValue: patient.gender,
+                                    hideEmptyLabel: true,
+                                    expanded: true
                             ])}
                             <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
                             <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
