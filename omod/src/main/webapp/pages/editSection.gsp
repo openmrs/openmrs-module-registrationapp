@@ -8,6 +8,8 @@
     ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
 
+    ui.includeCss("registrationapp", "editSection.css")
+
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
 
@@ -61,6 +63,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <h2>
         ${ ui.message(section.label)  }
     </h2>
+
+    <% if (returnUrl) { %>
+    <div id="exit-form-container">
+        <a href="${ ui.escapeAttribute(returnUrl) }">
+            <i class="icon-signout small"></i>
+            ${ ui.message("htmlformentryui.exitForm") }
+        </a>
+    </div>
+    <% } %>
 
     <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${returnUrl}&appId=${app.id}&sectionId=${section.id}">
         <!-- read configurable sections from the json config file-->
