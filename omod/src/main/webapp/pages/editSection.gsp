@@ -148,7 +148,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         def configOptions = [
                                 label:ui.message(field.label),
                                 formFieldName: field.formFieldName,
-                                left: true]
+                                left: true,
+                                "classes": field.cssClasses
+                        ]
                         if (field.widget.config) {
                             field.widget.config.fields.each {
                                 configOptions[it.key] = cleanup(it.value);
