@@ -25,6 +25,7 @@
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
     def breadcrumbOverride = breadcrumbOverride ?: ""
+    def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -47,7 +48,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <% } %>
 
     var testFormStructure = "${formStructure}";
-    var patientDashboardLink = '${ui.pageLink("coreapps", "clinicianfacing/patient")}';
+    var patientDashboardLink = '${patientDashboardLink}';
     var appId = '${ui.escapeJs(appId)}';
 
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js

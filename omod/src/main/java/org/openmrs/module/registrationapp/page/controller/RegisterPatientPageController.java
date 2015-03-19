@@ -47,6 +47,8 @@ public class RegisterPatientPageController {
                 && app.getConfig().get("allowRetrospectiveEntry").getBooleanValue() );
         model.addAttribute("allowUnknownPatients", app.getConfig().get("allowUnknownPatients").getBooleanValue());
         model.addAttribute("allowManualIdentifier", app.getConfig().get("allowManualIdentifier").getBooleanValue());
+        model.addAttribute("patientDashboardLink", app.getConfig().get("patientDashboardLink") !=null ?
+                app.getConfig().get("patientDashboardLink").getTextValue() : null);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
     }
