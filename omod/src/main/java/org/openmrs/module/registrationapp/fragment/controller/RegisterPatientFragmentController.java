@@ -26,6 +26,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.idgen.EmptyIdentifierPoolException;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
@@ -224,7 +225,7 @@ public class RegisterPatientFragmentController {
         StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation") + ":");
         errorMessage.append("<ul>");
         for (ObjectError error : errors.getAllErrors()) {
-            if (!isPreferredIdentifierErrorMessage(error)) {
+            if (!isPreferredIdentifierErrorMessage(error) || errors.getErrorCount() == 1) {
                 errorMessage.append("<li>");
                 errorMessage.append(messageSourceService.getMessage(error.getCode(), error.getArguments(),
                         error.getDefaultMessage(), null));
@@ -309,6 +310,9 @@ public class RegisterPatientFragmentController {
             else {
                 errors.reject("registrationapp.error.identifier.general");
             }
+        }
+        else if (ex instanceof EmptyIdentifierPoolException) {
+            errors.reject("registrationapp.error.identifier.emptyIdentifierPool");
         }
     }
 
