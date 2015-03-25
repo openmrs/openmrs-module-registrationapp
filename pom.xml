@@ -45,6 +45,7 @@
         <registrationcoreVersion>1.1.2</registrationcoreVersion>
         <reportingModuleVersion>0.9.1</reportingModuleVersion>
         <addresshierarchyVersion>2.4</addresshierarchyVersion>
+        <htmlformentryVersion>2.5</htmlformentryVersion>
         <appuiVersion>1.0</appuiVersion>
         <coreappsVersion>1.6-SNAPSHOT</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.7</serializationXstreamModuleVersion>
@@ -204,6 +205,15 @@
             <version>${serializationXstreamModuleVersion}</version>
             <scope>test</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlformentry-api</artifactId>
+            <version>${htmlformentryVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- End OpenMRS modules -->
 
