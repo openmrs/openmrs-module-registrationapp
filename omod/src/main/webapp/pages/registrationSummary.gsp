@@ -16,6 +16,11 @@
     var patient = { id: ${ patient.id } };
 </script>
 
+<% if (includeFragments) {
+    includeFragments.each { %>
+        ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment) }
+<%  }
+} %>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient, activeVisit: null, appContextModel: null ]) }
 
