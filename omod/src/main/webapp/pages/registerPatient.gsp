@@ -33,17 +33,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
 
-    <% if (breadcrumbOverride) { %>
-        var breadcrumbs = _.flatten([
-            ${ breadcrumbOverride },
-            { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
-        ] );
-    <% } else { %>
-        var breadcrumbs = [
-            { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-            { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
-        ];
-    <% } %>
+    var breadcrumbs = [
+        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
+    ];
 
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';

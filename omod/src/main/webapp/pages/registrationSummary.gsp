@@ -9,21 +9,15 @@
 
 <script type="text/javascript">
 
-    <% if (breadcrumbOverride) { %>
-        var breadcrumbs = _.flatten([
-            ${ breadcrumbOverride },
-            { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
-                link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
-        ] );
-    <% } else { %>
-        var breadcrumbs = [
-            { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-            { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
-                link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
-        ]
-    <% } %>
+    var breadcrumbs = [
+        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient", [ appId: "registrationapp.registerPatient" ]) }" },
+        { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
+            link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
+    ]
 
     var patient = { id: ${ patient.id } };
+
 </script>
 
 <% if (includeFragments) {

@@ -20,13 +20,11 @@ public class RegisterPatientPageController {
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
-                    @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties) throws Exception {
 
         sessionContext.requireAuthentication();
         addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType());
-        model.addAttribute("breadcrumbOverride", breadcrumbOverride);
     }
 
     public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType) throws Exception {

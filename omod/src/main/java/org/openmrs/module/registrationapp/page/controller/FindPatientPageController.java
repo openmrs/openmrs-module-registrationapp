@@ -10,14 +10,12 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -65,13 +63,7 @@ public class FindPatientPageController {
             encounters = encounters.subList(0,5);
         }
 
-        SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.escapeJs(ui.message("registrationapp.header.label"))) ;
-        SimpleObject patientPageBreadcrumb = SimpleObject.create("label", ui.escapeJs(ui.message("Patient.find")), "link", ui.thisUrlWithContextPath());
-
-        model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb, patientPageBreadcrumb)));
-
         model.addAttribute("appEncounters", encounters);
-
         model.addAttribute("appId", app.getId());
     }
 }
