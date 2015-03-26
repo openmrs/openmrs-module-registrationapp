@@ -5,17 +5,25 @@
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeCss("registrationapp", "findPatient.css")
 
-    def returnUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
+    def afterSelectedUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
     def breadcrumbOverride = breadcrumbOverride ?: ""
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
-    var breadcrumbs = [
-        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registration", "findPatient") }" }
-    ];
+
+    <% if (breadcrumbOverride) { %>
+        var breadcrumbs = _.flatten([
+            ${ breadcrumbOverride },
+            { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient") }" }
+        ] );
+    <% } else { %>
+        var breadcrumbs = [
+            { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+            { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient") }" }
+        ];
+    <% } %>
 
     jq(function() {
         jq('#patient-search').focus();
@@ -33,7 +41,7 @@ ${ ui.message("coreapps.searchPatientHeading") }
 <div class="container">
     <div id="search-patient-div" class="search-div">
 ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
-        [ afterSelectedUrl: returnUrl,
+        [ afterSelectedUrl: afterSelectedUrl,
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
