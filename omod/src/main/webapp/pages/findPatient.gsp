@@ -37,7 +37,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
-        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId ) }">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId ]) }">
             <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
         </a>
     </div>
