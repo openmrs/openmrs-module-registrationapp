@@ -14,6 +14,8 @@
 package org.openmrs.module.registrationapp.form;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -37,7 +39,9 @@ import java.util.Map;
  * Builds a registration form structure from the app configuration.
  */
 public class RegisterPatientFormBuilder {
-	
+
+    protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
+
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
@@ -76,24 +80,26 @@ public class RegisterPatientFormBuilder {
 	}
 	
 	public static void resolvePersonAttributeFields(NavigableFormStructure form, Person person,
-	                                                Map<String, String[]> personAttributes) {
+	                                                Map<String, String[]> parameterMap) {
 		List<Field> fields = form.getFields();
 		if (fields != null && fields.size() > 0) {
 			for (Field field : fields) {
-				String[] parameterValues = personAttributes.get(field.getFormFieldName());
-				if (parameterValues != null) {
-					for (String parameterValue : parameterValues) {
-						if (StringUtils.isNotBlank(parameterValue)) {
-							if (StringUtils.equals(field.getType(), "personAttribute")) {
-								PersonAttributeType personAttributeByUuid = Context.getPersonService()
-								        .getPersonAttributeTypeByUuid(field.getUuid());
-								if (personAttributeByUuid != null) {
-									PersonAttribute attribute = new PersonAttribute(personAttributeByUuid, parameterValue);
-									person.addAttribute(attribute);
-								}
-							}
-						}
-					}
+				String[] parameterValues = parameterMap.get(field.getFormFieldName());
+				if (parameterValues != null && parameterValues.length > 0) {
+                    if (parameterValues.length > 1) {
+                        log.warn("Multiple values for a single person attribute type not supported, ignoring extra values");
+                    }
+					String parameterValue = parameterValues[0];
+                    if (parameterValue != null) {
+                        if (StringUtils.equals(field.getType(), "personAttribute")) {
+                            PersonAttributeType personAttributeByUuid = Context.getPersonService()
+                                    .getPersonAttributeTypeByUuid(field.getUuid());
+                            if (personAttributeByUuid != null) {
+                                PersonAttribute attribute = new PersonAttribute(personAttributeByUuid, parameterValue);
+                                person.addAttribute(attribute);
+                            }
+                        }
+                    }
 				}
 			}
 		}
