@@ -6,7 +6,6 @@
     ui.includeCss("registrationapp", "findPatient.css")
 
     def afterSelectedUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
-    def breadcrumbOverride = breadcrumbOverride ?: ""
 
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -38,7 +37,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
-        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId, breadcrumbOverride: breadcrumbOverride]) }">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [appId: appId ) }">
             <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
         </a>
     </div>
@@ -74,7 +73,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
             <tr>
                 <td>${ encounter.patient.patientIdentifier }</td>
                 <td>
-                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, breadcrumbOverride:  breadcrumbOverride]) }">
+                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
                     ${ ui.format((encounter.patient)) }
                 </td>
                 <td>${ ui.format( encounter.patient.gender) }</td>

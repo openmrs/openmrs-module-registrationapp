@@ -24,7 +24,6 @@
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
-    def breadcrumbOverride = breadcrumbOverride ?: ""
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
 
 %>
