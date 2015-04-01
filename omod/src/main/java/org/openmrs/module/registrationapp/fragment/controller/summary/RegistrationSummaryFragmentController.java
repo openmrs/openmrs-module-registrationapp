@@ -13,6 +13,7 @@ import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,7 @@ public class RegistrationSummaryFragmentController {
                            FragmentModel model,
                            @SpringBean AppFrameworkService appFrameworkService,
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
+                           @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
                            ) {
 
@@ -37,6 +39,7 @@ public class RegistrationSummaryFragmentController {
             patientDomainWrapper = (PatientDomainWrapper) patient;
             appContextModel.put("patient", new PatientContextModel(((PatientDomainWrapper) patient).getPatient()));
         }
+        appContextModel.put("search", search); // TODO consider putting all request params in the module in some structured way
         model.addAttribute("patient", patientDomainWrapper);
         model.addAttribute("appContextModel", appContextModel);
 
