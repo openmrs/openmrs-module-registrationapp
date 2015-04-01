@@ -5,6 +5,7 @@
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeCss("registrationapp", "findPatient.css")
 
+    def baseUrl = ui.pageLink("registrationapp", "findPatient", [appId: appId])
     def afterSelectedUrl = '/registrationapp/registrationSummary.page?patientId={{patientId}}&appId=' + appId
 
 %>
@@ -19,8 +20,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     jq(function() {
         jq('#patient-search').focus();
+    });
 
-     });
+    var selectPatientHandler = {
+        handle: function (row, widgetData) {
+            var query = widgetData.lastQuery;
+            history.replaceState({ query: query }, "", "${baseUrl}&search=" + query);
+            location.href = emr.pageLink("registrationapp", "registrationSummary", { patientId: row.uuid, appId: '${appId}', search: query});
+        }
+    }
 
 </script>
 
@@ -34,6 +42,8 @@ ${ ui.message("coreapps.searchPatientHeading") }
     <div id="search-patient-div" class="search-div">
 ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
         [ afterSelectedUrl: afterSelectedUrl,
+          rowSelectionHandler: "selectPatientHandler",
+          initialSearchFromParameter: "search",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">

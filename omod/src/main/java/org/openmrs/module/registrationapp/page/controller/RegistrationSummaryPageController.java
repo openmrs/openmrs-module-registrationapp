@@ -21,6 +21,7 @@ public class RegistrationSummaryPageController {
 
     public Object controller(@RequestParam("patientId") Patient patient, PageModel model,
                              @RequestParam(value="appId", required = false) AppDescriptor app,
+                             @RequestParam(value="search", required = false) String search,
                              @InjectBeans PatientDomainWrapper patientDomainWrapper,
                              @SpringBean AppFrameworkService appFrameworkService,
                              @SpringBean("applicationEventService") ApplicationEventService applicationEventService,
@@ -33,6 +34,7 @@ public class RegistrationSummaryPageController {
         patientDomainWrapper.setPatient(patient);
         model.addAttribute("patient", patientDomainWrapper);
         model.addAttribute("appId", app !=null ? app.getId() : null);
+        model.addAttribute("search", search);
 
         applicationEventService.patientViewed(patient, sessionContext.getCurrentUser());
 
