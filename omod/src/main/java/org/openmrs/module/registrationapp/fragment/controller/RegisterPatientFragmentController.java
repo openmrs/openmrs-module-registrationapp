@@ -53,12 +53,43 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientFragmentController {
 
     private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
+
+    class ObsGroupItem {
+        String obsConcept = null;
+        String[] obsValues = null;
+
+        ObsGroupItem(){};
+
+        ObsGroupItem(String obsConcept, String[] obsValues) {
+            this.obsConcept = obsConcept;
+            this.obsValues = obsValues;
+        }
+
+        public String getObsConcept() {
+            return obsConcept;
+        }
+
+        public void setObsConcept(String obsConcept) {
+            this.obsConcept = obsConcept;
+        }
+
+        public String[] getObsValues() {
+            return obsValues;
+        }
+
+        public void setObsValue(String[] obsValues) {
+            this.obsValues = obsValues;
+        }
+    }
+
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
@@ -136,14 +167,22 @@ public class RegisterPatientFragmentController {
             encounterService.saveEncounter(registrationEncounter);
         }
 
+        Map<String, List<ObsGroupItem>> obsGroupMap = new LinkedHashMap<String, List<ObsGroupItem>>();
         // build any obs that are submitted
         List<Obs> obsToCreate = new ArrayList<Obs>();
         for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements(); ) {
             String param = e.nextElement();
-            if (param.startsWith("obs.")) {
+            if (param.startsWith("obsgroup.")) {
+                parseObsGroup(obsGroupMap, param, request.getParameterValues(param));
+
+            } else if (param.startsWith("obs.")) {
                 String conceptUuid = param.substring("obs.".length());
                 buildObs(conceptService, obsToCreate, conceptUuid, request.getParameterValues(param));
             }
+        }
+
+        if (obsGroupMap.size() > 0 ){
+            buildGroupObs(conceptService, obsToCreate, obsGroupMap);
         }
         if (obsToCreate.size() > 0) {
             if (registrationEncounter != null) {
@@ -197,6 +236,47 @@ public class RegisterPatientFragmentController {
         return new SuccessResult(redirectUrl);
     }
 
+    private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {
+        int obsIndex = param.indexOf(".obs.");
+        if (obsIndex > 0 ) {
+            String conceptObsGroup = param.substring("obsgroup.".length(), obsIndex);
+            if (StringUtils.isNotBlank(conceptObsGroup)) {
+                String conceptUuid = param.substring(obsIndex + ".obs.".length());
+                if (StringUtils.isNotBlank(conceptUuid)) {
+                    ObsGroupItem obsGroupItem = new ObsGroupItem(conceptUuid, parameterValues);
+                    List<ObsGroupItem> obsGroupItems = obsGroupMap.get(conceptObsGroup);
+                    if (obsGroupItems == null) {
+                        obsGroupItems = new ArrayList<ObsGroupItem>();
+                    }
+                    obsGroupItems.add(obsGroupItem);
+                    obsGroupMap.put(conceptObsGroup, obsGroupItems);
+                }
+            }
+        }
+    }
+
+    private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate, Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
+        if (obsGroupMap != null && obsGroupMap.size() > 0 ) {
+            for (String groupConceptUuid : obsGroupMap.keySet()) {
+                Concept groupConcept = RegistrationAppUtils.getConcept(groupConceptUuid, conceptService);
+                if (groupConcept == null) {
+                    throw new IllegalArgumentException("Cannot find concept: " + groupConceptUuid);
+                }
+                Obs groupObs = new Obs();
+                groupObs.setConcept(groupConcept);
+                List<Obs> groupObsToCreate = new ArrayList<Obs>();
+                List<ObsGroupItem> obsGroupItems = obsGroupMap.get(groupConceptUuid);
+                for (ObsGroupItem obsGroupItem : obsGroupItems) {
+                    buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
+                }
+                for (Obs obs : groupObsToCreate) {
+                    groupObs.addGroupMember(obs);
+                }
+                obsToCreate.add(groupObs);
+            }
+        }
+    }
+
     private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptId, String[] parameterValues) throws ParseException {
         Concept concept = RegistrationAppUtils.getConcept(conceptId, conceptService);
         if (concept == null) {
@@ -220,6 +300,7 @@ public class RegisterPatientFragmentController {
             }
         }
     }
+
 
     private String createErrorMessage(BindingResult errors, MessageSourceService messageSourceService) throws Exception {
         StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation") + ":");
