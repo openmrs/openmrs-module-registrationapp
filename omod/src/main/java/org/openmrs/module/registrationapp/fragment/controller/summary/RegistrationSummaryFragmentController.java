@@ -53,6 +53,9 @@ public class RegistrationSummaryFragmentController {
         Collections.sort(registrationFragments);
         model.addAttribute("registrationFragments", registrationFragments);
 
+        List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments");
+        Collections.sort(secondColumnFragments);
+        model.addAttribute("secondColumnFragments", secondColumnFragments);
 
         List<Extension> overallActions = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.overallActions");
         Collections.sort(overallActions);
