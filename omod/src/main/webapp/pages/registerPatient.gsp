@@ -271,7 +271,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <input id="submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
                 </p>
                 <p style="display: inline">
-                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}"  onkeydown="if(event.keyCode == 9) { event.preventDefault(); document.getElementById('submit').focus(); }"/>
+                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
                 </p>
             </div>
         </div>
