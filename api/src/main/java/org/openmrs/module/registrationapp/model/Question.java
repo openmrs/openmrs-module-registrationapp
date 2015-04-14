@@ -22,6 +22,9 @@ public class Question {
     @JsonProperty
     private List<Field> fields;
 
+    @JsonProperty
+    private String header;
+
     public Question() {
     }
 
@@ -34,6 +37,13 @@ public class Question {
     	this.fields = fields;
     	this.legend = legend;
     	this.id = id;
+    }
+
+    public Question(List<Field> fields, String legend, String header, String id) {
+        this.fields = fields;
+        this.legend = legend;
+        this.header = header;
+        this.id = id;
     }
     
     public List<Field> getFields() {
@@ -51,6 +61,10 @@ public class Question {
     public void setLegend(String legend) {
         this.legend = legend;
     }
+
+    public String getHeader() { return header; }
+
+    public void setHeader(String header) { this.header = header; }
 
     public String getId() {
     	return id;
