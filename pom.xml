@@ -47,7 +47,7 @@
         <addresshierarchyVersion>2.4</addresshierarchyVersion>
         <htmlformentryVersion>2.5</htmlformentryVersion>
         <appuiVersion>1.0</appuiVersion>
-        <coreappsVersion>1.6-SNAPSHOT</coreappsVersion>
+        <coreappsVersion>1.6</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.7</serializationXstreamModuleVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
