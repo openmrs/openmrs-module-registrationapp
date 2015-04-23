@@ -25,7 +25,7 @@
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
-
+    def identifierSectionFound = false
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -199,6 +199,16 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         </fieldset>
                     <% } %>
 
+                    <!-- allow customization of additional question in the patient identification section, if it is included -->
+                    <% if (section.id == 'patient-identification-section') {
+                        identifierSectionFound = true; %>
+                        <% if (allowManualIdentifier) { %>
+                            ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
+                                    identifierTypeName: ui.format(primaryIdentifierType)
+                            ])}
+                        <% } %>
+                    <% } %>
+
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
@@ -239,25 +249,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
 
-        <% if (allowManualIdentifier) { %>
+        <% if (allowManualIdentifier && !identifierSectionFound) { %>
             <section id="patient-identification-section" class="non-collapsible">
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
-                <fieldset id="patient-identifier-question">
-                    <legend id="patientIdentifierLabel">${ui.format(primaryIdentifierType)}</legend>
-                    <h3>${ui.message("registrationapp.patient.identifier.question", ui.format(primaryIdentifierType))}</h3>
-
-                    <p>
-                        <input id="checkbox-autogenerate-identifier" type="checkbox" checked/>
-                        <label for="checkbox-autogenerate-identifier">${ui.message("registrationapp.patient.identifier.autogenerate.label")}</label>
-                    </p>
-
-                    <p>
-                        <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
-                        <input id="patient-identifier" name="patientIdentifier"/>
-                    </p>
-
-                </fieldset>
+                ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
+                        identifierTypeName: ui.format(primaryIdentifierType)
+                ])}
             </section>
         <% } %>
 
