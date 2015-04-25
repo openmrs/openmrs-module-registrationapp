@@ -2,6 +2,7 @@ package org.openmrs.module.registrationapp.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Section {
@@ -35,6 +36,13 @@ public class Section {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public void addQuestion(Question question) {
+        if (questions == null) {
+            questions = new ArrayList<Question>();
+        }
+        questions.add(question);
     }
 
     public String getId() {

@@ -3,6 +3,7 @@ package org.openmrs.module.registrationapp.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
@@ -52,6 +53,13 @@ public class Question {
 
     public void setFields(List<Field> fields) {
         this.fields = fields;
+    }
+
+    public void addField(Field field) {
+        if (fields == null) {
+            fields = new ArrayList<Field>();
+        }
+        fields.add(field);
     }
 
     public String getLegend() {
