@@ -1,0 +1,8 @@
+{
+    "providerName": "registrationapp",
+    "fragmentId": "field/personAddressWithHierarchy",
+    "config" : {
+        "shortcutFor": "address1",
+        "manualFields": ["address2"]
+    }
+}
