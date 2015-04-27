@@ -28,6 +28,9 @@ public class RegistrationAppConfig {
     @JsonProperty
     private List<Section> sections;
 
+    @JsonProperty
+    private List<String> afterCreatedActions;
+
     public RegistrationAppConfig() {
     }
 
@@ -96,6 +99,21 @@ public class RegistrationAppConfig {
             sections = new ArrayList<Section>();
         }
         sections.add(section);
+    }
+
+    public List<String> getAfterCreatedActions() {
+        return afterCreatedActions;
+    }
+
+    public void setAfterCreatedActions(List<String> afterCreatedActions) {
+        this.afterCreatedActions = afterCreatedActions;
+    }
+
+    public void addAfterCreatedAction(String afterCreatedAction) {
+        if (afterCreatedActions == null) {
+            afterCreatedActions = new ArrayList<String>();
+        }
+        afterCreatedActions.add(afterCreatedAction);
     }
 
     public static class RegistrationEncounter {
