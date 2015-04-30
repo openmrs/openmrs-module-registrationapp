@@ -283,7 +283,7 @@ public class RegisterPatientFragmentController {
             throw new IllegalArgumentException("Cannot find concept: " + conceptId);
         }
         for (String parameterValue : parameterValues) {
-            if (StringUtils.isNotEmpty(parameterValue)) {
+            if (StringUtils.isNotBlank(parameterValue)) {
                 Obs obs = new Obs();
                 obs.setConcept(concept);
                 if (concept.getDatatype().isCoded()) {
