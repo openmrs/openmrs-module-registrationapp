@@ -269,10 +269,12 @@ public class RegisterPatientFragmentController {
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
                     buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
                 }
-                for (Obs obs : groupObsToCreate) {
-                    groupObs.addGroupMember(obs);
+                if (groupObsToCreate.size() > 0) {
+                    for (Obs obs : groupObsToCreate) {
+                        groupObs.addGroupMember(obs);
+                    }
+                    obsToCreate.add(groupObs);
                 }
-                obsToCreate.add(groupObs);
             }
         }
     }
