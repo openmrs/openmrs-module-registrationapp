@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FindPatientPageController {
 
@@ -51,19 +53,35 @@ public class FindPatientPageController {
                 , false);
 
 
-        if (encounters != null && encounters.size() > 5) {
+        List<Encounter> registrationEncounters = new ArrayList<Encounter>();
+
+        if (encounters != null && encounters.size() > 0) {
             Collections.sort(encounters, new Comparator<Encounter>() {
                 @Override
                 public int compare(Encounter o1, Encounter o2) {
-                    Date o1Date = o1.getEncounterDatetime();
-                    Date o2Date = o2.getEncounterDatetime();
+                    Date o1Date = o1.getDateCreated();
+                    Date o2Date = o2.getDateCreated();
                     return o2Date.compareTo(o1Date);
                 }
             });
-            encounters = encounters.subList(0,5);
+
+            //display last 5 registration encounters only for distinct patients
+            Set<Integer> patientIds = new HashSet<Integer>();
+            for (Encounter encounter : encounters) {
+                Integer patientId = encounter.getPatient().getId();
+                if (!encounter.getPatient().isVoided() && !patientIds.contains(patientId)){
+                    patientIds.add(patientId);
+                    if (registrationEncounters.size() < 5 ) {
+                        registrationEncounters.add(encounter);
+                    } else {
+                        break;
+                    }
+                }
+            }
+
         }
 
-        model.addAttribute("appEncounters", encounters);
+        model.addAttribute("appEncounters", registrationEncounters);
         model.addAttribute("appId", app.getId());
     }
 }
