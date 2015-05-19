@@ -1,14 +1,8 @@
-// currently we only support having one of these per page. eventually refactor so that the fragment can create an
-// instance of this. For now, all these properties must be populated from the GSP/HTML that includes this JS.
-var personAddressWithHierarchy = {
-    id: null,
-    container: null,
-    manualFields: []
-};
 
-$(function () {
+function PersonAddressWithHierarchy(personAddressWithHierarchy) {
 
     var levels;
+
     $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getOrderedAddressHierarchyLevels.form', {}, function (result) {
         levels = result;
         _.each(levels, function (item, index) {
@@ -278,4 +272,4 @@ $(function () {
             personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").val('');
         }
     });
-});
+}

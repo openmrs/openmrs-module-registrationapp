@@ -19,6 +19,8 @@ public class PersonAddressWithHierarchyWidgetTest {
         assertThat(parsed.getConfig().getShortcutFor(), is("address1"));
         assertThat(parsed.getConfig().getManualFields().size(), is(1));
         assertThat(parsed.getConfig().getManualFields().get(0), is("address2"));
+        assertThat(parsed.getConfig().getFieldMappings().get("address1"), is("obs.CIEL:1234"));
+        assertThat(parsed.getConfig().getFieldMappings().get("address2"), is("obs.CIEL:5678"));
     }
 
 }

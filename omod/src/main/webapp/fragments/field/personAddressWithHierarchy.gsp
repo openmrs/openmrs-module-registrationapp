@@ -26,13 +26,22 @@
     %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
+            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ config.fieldMappings?.get(level.addressField.name)?.getTextValue() ?: level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
 </div>
 
 <script type="text/javascript">
+
+    var personAddressWithHierarchy = {
+        id: null,
+        container: null,
+        initialValue: null,
+        shortcutFor: null,
+        manualFields: []
+    }
+
     personAddressWithHierarchy.id = '${ config.id }';
     personAddressWithHierarchy.container = jq('#${ config.id }-container');
     <% if (config.shortcutFor) { %>
@@ -46,4 +55,7 @@
     <% if (initialValue) { %>
         personAddressWithHierarchy.initialValue = ${ ui.toJson(initialValue) };
     <% } %>
+
+    PersonAddressWithHierarchy(personAddressWithHierarchy);
+
 </script>
