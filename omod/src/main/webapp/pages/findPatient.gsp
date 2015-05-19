@@ -78,7 +78,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <td colspan="5">${ ui.message("uicommons.dataTable.emptyTable") }</td>
             </tr>
             <% } %>
-            <% appEncounters.sort{ it.encounterDatetime }.reverse().each { encounter ->
+            <% appEncounters.sort{ it.dateCreated }.reverse().each { encounter ->
                 // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
             %>
             <tr>
