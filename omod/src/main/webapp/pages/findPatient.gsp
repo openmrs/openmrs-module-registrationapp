@@ -67,7 +67,8 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <th>${ ui.message("coreapps.person.name") }</th>
                 <th>${ ui.message("coreapps.gender") }</th>
                 <th>${ ui.message("coreapps.birthdate") }</th>
-                <th>${ ui.message("coreapps.patientDashBoard.date") }</th>
+                <th>${ ui.message("Encounter.datetime") }</th>
+                <th>${ ui.message("general.dateCreated") }</th>
             </tr>
             </thead>
             <tbody>
@@ -89,6 +90,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <td>${ ui.format( encounter.patient.gender) }</td>
                 <td>${ ui.format( encounter.patient.birthdate) }</td>
                 <td>${ ui.format(encounter.encounterDatetime) }</td>
+                <td>${ ui.format(encounter.dateCreated) }</td>
             </tr>
             <% } %>
             </tbody>
