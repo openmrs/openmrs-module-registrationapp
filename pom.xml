@@ -33,7 +33,7 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.9.9-SNAPSHOT</openMRSVersion>
+		<openMRSVersion>1.9.9</openMRSVersion>
         <uiframeworkVersion>3.0</uiframeworkVersion>
         <appframeworkVersion>2.1</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
