@@ -38,6 +38,9 @@ public class PersonAddressWithHierarchyWidget extends Widget {
         @JsonProperty
         private Map<String, String> fieldMappings;
 
+        @JsonProperty
+        private Boolean required;
+
         public Config() {
         }
 
@@ -77,6 +80,14 @@ public class PersonAddressWithHierarchyWidget extends Widget {
                 fieldMappings = new HashMap<String, String>();
             }
             fieldMappings.put(key, value);
+        }
+
+        public Boolean getRequired() {
+            return required;
+        }
+
+        public void setRequired(Boolean required) {
+            this.required = required;
         }
     }
 }

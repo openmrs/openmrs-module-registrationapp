@@ -14,7 +14,7 @@
 
     <% levels.each { level ->
         def classes = [ "level" ]
-        if (level.required) {
+        if (config.required && level.required) {
             classes.add("required")
         }
         def levelInitial = ""
