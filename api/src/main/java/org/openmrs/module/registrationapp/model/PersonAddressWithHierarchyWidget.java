@@ -13,7 +13,7 @@ public class PersonAddressWithHierarchyWidget extends Widget {
     private Config config = new Config();
 
     public PersonAddressWithHierarchyWidget() {
-        super("registrationapp", "field/personAddressWithHierarchy");
+        super("uicommons", "field/personAddressWithHierarchy");
     }
 
     public Config getConfig() {
