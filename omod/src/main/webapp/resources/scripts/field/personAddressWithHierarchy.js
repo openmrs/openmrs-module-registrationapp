@@ -190,6 +190,9 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     }
                     var level = levelFor(addressField);
                     var searchString = searchStringUntil(level.addressField);
+                    if(!searchString && level.index != 0) {
+                        return; // only allow empty string searches at the top level, to prevent UHM-1983
+                    }
                     element.xhr = queryWithCallback(searchString, function (result) {
                         element.xhr = null;
                         element.data('legalValues', _.pluck(result, 'name'));
