@@ -1,5 +1,15 @@
 <%
     ui.includeJavascript("registrationapp", "field/personAddressWithHierarchy.js")
+
+    def parseAsBoolean = {
+        if (it instanceof org.codehaus.jackson.node.BooleanNode) {
+            return it.booleanValue
+        }
+        if (it instanceof java.lang.String) {
+            return it.toBoolean()
+        }
+        return it;
+    }
 %>
 <div id="${ config.id }-container">
 
@@ -14,7 +24,7 @@
 
     <% levels.each { level ->
         def classes = [ "level" ]
-        if (config.required && level.required) {
+        if (parseAsBoolean(config.required) && level.required) {
             classes.add("required")
         }
         def levelInitial = ""
