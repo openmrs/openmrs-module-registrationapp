@@ -275,16 +275,24 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                 setValue(key, value);
             });
 
-            // go to the first level we didn't just set, using NavigatorController so that the simple for UI keeps up
+            // go to the first level we didn't just set
             var goToLevel = firstLevelNotIncluded(ui.item.data);
-            var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
-            setTimeout(function () {
-                var oldField = selectedModel(NavigatorController.getFields());
-                if (oldField) {
-                    oldField.toggleSelection();
-                }
-                field.select();
-            });
+
+            // if we are using the single UI navigator, use the NavigatorController so that the simple for UI keeps up
+            if (typeof(NavigatorController) != 'undefined') {
+                var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
+                setTimeout(function () {
+                    var oldField = selectedModel(NavigatorController.getFields());
+                    if (oldField) {
+                        oldField.toggleSelection();
+                    }
+                    field.select();
+                });
+            }
+            // otherwise just jump manually
+            else {
+                getInputElementFor(goToLevel.addressField).focus();
+            }
         },
         change: function (event, ui) {
             personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").val('');

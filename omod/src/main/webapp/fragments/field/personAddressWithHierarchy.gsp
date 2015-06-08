@@ -17,8 +17,8 @@
         def shortcutDisplay = ui.message(addressTemplate.nameMappings[config.shortcutFor])
     %>
         <p>
-            <label><em>(Optional) Quick search by ${ shortcutDisplay }</em></label>
-            <input type="text" class="address-hierarchy-shortcut" size="60" placeholder="${ui.escapeAttribute(shortcutDisplay)}, or skip to search manually"/>
+            <label><em>${ ui.message('registrationapp.addressHierarchyWidget.shortcut', shortcutDisplay) }</em></label>
+            <input type="text" class="address-hierarchy-shortcut" size="60" placeholder="${ ui.message('registrationapp.addressHierarchyWidget.shortcut.instructions',ui.escapeAttribute(shortcutDisplay))}"/>
         </p>
     <% } %>
 
