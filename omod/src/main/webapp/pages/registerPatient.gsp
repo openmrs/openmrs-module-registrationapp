@@ -61,7 +61,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         
         <ul id="similarPatientsSelect" class="select"></ul>
        
-        <span class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
+        <span id="reviewSimilarPatients-button-cancel" class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
     </div>
 </div>
 
