@@ -223,7 +223,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <% } %>
                             <% if(question.header) { %>
                                     <h3>${ui.message(question.header)}</h3>
-
                             <% } %>
 
                             <% fields.each { field ->
