@@ -59,7 +59,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
 <div class="container">
 
     <div id="encounters-list">
-        <h3>${ ui.message("Previous patients registered at this location") }</h3>
+        <h3>${ ui.message("registrationapp.previouslyRegisteredPatients") }</h3>
         <table id="encounters-table">
             <thead>
             <tr>
@@ -75,7 +75,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
             <% if ( (appEncounters == null)
                     || (appEncounters!= null && appEncounters.size() == 0)) { %>
             <tr>
-                <td colspan="5">${ ui.message("uicommons.dataTable.emptyTable") }</td>
+                <td colspan="6">${ ui.message("uicommons.dataTable.emptyTable") }</td>
             </tr>
             <% } %>
             <% appEncounters.sort{ it.dateCreated }.reverse().each { encounter ->
