@@ -34,6 +34,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient") }" }
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
     ];
 
