@@ -33,7 +33,7 @@ public class RegistrationSummaryPageController {
 
         patientDomainWrapper.setPatient(patient);
         model.addAttribute("patient", patientDomainWrapper);
-        model.addAttribute("appId", app !=null ? app.getId() : null);
+        model.addAttribute("appId", app !=null ? app.getId() : "registrationapp.basicRegisterPatient");
         model.addAttribute("search", search);
 
         applicationEventService.patientViewed(patient, sessionContext.getCurrentUser());

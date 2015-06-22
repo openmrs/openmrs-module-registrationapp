@@ -11,7 +11,7 @@
 
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient", [ appId: "registrationapp.registerPatient", search: search ]) }" },
+        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient", [ appId: appId, search: search ]) }" },
         { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
             link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
     ]
