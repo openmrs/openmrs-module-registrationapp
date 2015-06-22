@@ -27,7 +27,7 @@ jq(function() {
         jq('.date-component').trigger('blur');
 
         var formData = jq('#registration').serialize();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", { appId: "referenceapplication.registrationapp.registerPatient" }), formData)
+        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", { appId: appId }), formData)
             .success(function (data) {
                 if (data.length == 0) {
                     jq("#similarPatients").hide();
@@ -64,7 +64,7 @@ jq(function() {
         var formData = jq('#registration').serialize();
 
         $('#exact-matches').hide();
-        $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: "referenceapplication.registrationapp.registerPatient" }), formData)
+        $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: appId }), formData)
             .success(function (response) {
                 if (!jq('#checkbox-unknown-patient').is(':checked') && response.length > 0) {
                     $('#exact-matches').show();
@@ -91,7 +91,7 @@ jq(function() {
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
         var formData = jq('#registration').serialize();
-        $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "submit", { appId: "referenceapplication.registrationapp.registerPatient" }), formData)
+        $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "submit", { appId: appId }), formData)
             .success(function (response) {
                 emr.navigateTo({"applicationUrl": response.message});
             })
