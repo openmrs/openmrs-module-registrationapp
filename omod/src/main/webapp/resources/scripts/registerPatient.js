@@ -64,10 +64,23 @@ jq(function() {
         var formData = jq('#registration').serialize();
 
         $('#exact-matches').hide();
+        $('#mpi-exact-match').hide();
+        $('#local-exact-match').hide();
         $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: appId }), formData)
             .success(function (response) {
                 if (!jq('#checkbox-unknown-patient').is(':checked') && response.length > 0) {
                     $('#exact-matches').show();
+                    var isMpi=false;
+                    for (index in response){
+                        if (response[index].mpiPatient!=null && response[index].mpiPatient==true){
+                            isMpi=true;
+                        }
+                    }
+                    if (isMpi == true) {
+                        $('#mpi-exact-match').show();
+                    } else {
+                        $('#local-exact-match').show();
+                    }
                     var exactPatientsSelect = jq('#exactPatientsSelect');
                     exactPatientsSelect.empty();
                     for (index in response) {
@@ -75,7 +88,13 @@ jq(function() {
                         var link = patientDashboardLink;
                         link += '?patientId=' + item.patientId;
                         var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
+                        if (isMpi == true) {
+                            row = '<li style="width: auto" >';
+                        } else {
+                            row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
+                        }
                         row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+
                         row += '</li>';
                         exactPatientsSelect.append(row);
                     }

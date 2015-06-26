@@ -261,8 +261,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
-            <div id="exact-matches" style="display: none; margin-bottom: 20px">
-                <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
+            <div id="exact-matches" style="margin-bottom: 20px">
+                <span id="local-exact-match" class="field-error" style="display: none; ">${ui.message("registrationapp.exactPatientFound")}</span>
+                <span id="mpi-exact-match" class="field-error" style="display: none; ">${ui.message("registrationapp.exactMpiPatientFound")}</span>
+
                 <ul id="exactPatientsSelect" class="select"></ul>
             </div>
             <div id="confirmationQuestion">
