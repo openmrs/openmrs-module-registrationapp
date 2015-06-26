@@ -37,15 +37,18 @@ import java.util.List;
  *
  */
 public class MatchingPatientsFragmentController {
-	
-	public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
+
+    public static final int MAX_RESULTS = 10;
+    public static final double CUTOFF = 2.0;
+
+    public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
 	                                             @SpringBean("registrationCoreService") RegistrationCoreService service,
 	                                             @ModelAttribute("patient") @BindParams Patient patient,
 	                                             @ModelAttribute("personName") @BindParams PersonName name,
 	                                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
 	                                             HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, 2.0, 10);
+		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
         return simplify(ui, matches);
 	}
 
@@ -56,7 +59,14 @@ public class MatchingPatientsFragmentController {
                                                @ModelAttribute("personAddress") @BindParams PersonAddress address,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, null, 2.0, 10);
+        List<PatientAndMatchQuality> matches =
+                service.findPreciseSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
+        int localMatchesCount = matches.size();
+        if (localMatchesCount != MAX_RESULTS) {
+            List<PatientAndMatchQuality> mpiMatches =
+                    service.findPreciseSimilarPatientsOnMpi(patient, null, CUTOFF, MAX_RESULTS - localMatchesCount);
+            matches.addAll(mpiMatches);
+        }
         return simplify(ui, matches);
     }
 
