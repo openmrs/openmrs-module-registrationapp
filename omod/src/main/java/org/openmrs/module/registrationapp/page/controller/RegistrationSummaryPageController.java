@@ -26,8 +26,8 @@ public class RegistrationSummaryPageController extends AbstractRegistrationAppPa
                              @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                              @RequestParam(value = "breadcrumbOverrideProvider", required = false) String breadcrumbOverrideProvider,
                              @RequestParam(value = "breadcrumbOverridePage", required = false) String breadcrumbOverridePage,
-                             @RequestParam(value = "breadcrumbOverLabel", required = false) String breadcrumbOverrideLabel,
-                             @RequestParam(value = "breadcrumbOverApp", required = false) String appId,
+                             @RequestParam(value = "breadcrumbOverrideLabel", required = false) String breadcrumbOverrideLabel,
+                             @RequestParam(value = "breadcrumbOverrideApp", required = false) String appId,
                              @InjectBeans PatientDomainWrapper patientDomainWrapper,
                              @SpringBean AppFrameworkService appFrameworkService,
                              @SpringBean("applicationEventService") ApplicationEventService applicationEventService,
@@ -38,9 +38,9 @@ public class RegistrationSummaryPageController extends AbstractRegistrationAppPa
             return new Redirect("coreapps", "patientdashboard/deletedPatient", "patientId=" + patient.getId());
         }
 
-        // generate the breadcrumb override if necessary
+        // generate the breadcrumb override if necessary--this is to support alternative entry points to this page
         if (StringUtils.isBlank(breadcrumbOverride) && StringUtils.isNotBlank(breadcrumbOverrideProvider)
-                && !StringUtils.isNotBlank(breadcrumbOverridePage) && StringUtils.isNotBlank(breadcrumbOverrideLabel)) {
+                && StringUtils.isNotBlank(breadcrumbOverridePage) && StringUtils.isNotBlank(breadcrumbOverrideLabel)) {
             breadcrumbOverride = generateBreadcrumbOverride(breadcrumbOverrideLabel, breadcrumbOverrideProvider, breadcrumbOverridePage, appId, ui);
         }
 

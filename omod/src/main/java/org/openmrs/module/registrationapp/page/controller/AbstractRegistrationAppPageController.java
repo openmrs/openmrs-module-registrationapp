@@ -13,7 +13,9 @@ public class AbstractRegistrationAppPageController {
                                                String breadcrumbOverridePage, String appId, UiUtils ui) {
         Map<String, Object> attrs = new HashMap<String,Object>();
         if (StringUtils.isNotBlank(appId)) {
+            // TODO super hack that we add this twice, but the registration app seems to go with the model of calling the requesat param "appId", while other modules us "app"
             attrs.put("appId", appId);
+            attrs.put("app", appId);
         }
         SimpleObject breadcrumbOverride = SimpleObject.create("label", ui.message(breadcrumbOverrideLabel), "link",
                 ui.pageLink(breadcrumbOverrideProvider, breadcrumbOverridePage, attrs));
