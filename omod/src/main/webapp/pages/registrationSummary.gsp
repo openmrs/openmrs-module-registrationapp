@@ -2,6 +2,10 @@
     if (sessionContext.authenticated && !sessionContext.currentProvider) {
         throw new IllegalStateException("Logged-in user is not a Provider")
     }
+
+
+    def breadcrumbMiddle = breadcrumbOverride ?: '';
+
     ui.decorateWith("appui", "standardEmrPage")
     ui.includeCss("registrationapp", "summary.css")
 
@@ -9,12 +13,12 @@
 
 <script type="text/javascript">
 
-    var breadcrumbs = [
+    var breadcrumbs = _.compact(_.flatten([
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient", [ appId: appId, search: search ]) }" },
+ ,      ${ breadcrumbMiddle },
         { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
             link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
-    ]
+    ]))
 
     var patient = { id: ${ patient.id } };
 

@@ -20,14 +20,18 @@ import org.openmrs.module.reporting.definition.library.AllDefinitionLibraries;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.query.encounter.definition.AuditEncounterQuery;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class FindPatientPageController {
@@ -43,7 +47,7 @@ public class FindPatientPageController {
                            ) throws EvaluationException {
 
         // only show the most recent registration encounters if a registration encounter has been defined for this app
-        if (app != null && app.getConfig() != null && app.getConfig().get("registrationEncounter") != null) {
+        if (app.getConfig() != null && app.getConfig().get("registrationEncounter") != null) {
             model.addAttribute("mostRecentRegistrationEncounters", addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService));
             model.addAttribute("appId", app.getId());
         }
@@ -52,6 +56,12 @@ public class FindPatientPageController {
             model.addAttribute("appId", null);
         }
 
+        // this breadcrumb gets passed on to patient summary page, so that the patient summary page links back to this page--it can't by default, becauses
+        // the default ref app workflow skips this page entirely
+        Map<String, Object> attrs = new HashMap<String,Object>();
+        attrs.put("appId", app.getId());
+        SimpleObject breadcrumbOverride = SimpleObject.create("label", ui.message("Patient.find"), "link", ui.pageLink("registrationapp", "findPatient", attrs));
+        model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(breadcrumbOverride)));
     }
 
     private List<Encounter> addMostRecentRegistrationEncounters(PageModel model, AppDescriptor app, AllDefinitionLibraries libraries,

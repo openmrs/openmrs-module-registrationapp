@@ -24,6 +24,8 @@
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
+    def breadcrumbMiddle = breadcrumbOverride ?: '';
+
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 %>
@@ -32,11 +34,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
 
-    var breadcrumbs = [
+    var breadcrumbs = _.compact(_.flatten([
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient", [ appId: appId ]) }" },
+        ${ breadcrumbMiddle },
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
-    ];
+    ]));
 
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';

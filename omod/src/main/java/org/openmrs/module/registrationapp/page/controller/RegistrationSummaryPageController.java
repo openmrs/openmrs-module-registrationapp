@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
-
 public class RegistrationSummaryPageController {
 
     public Object controller(@RequestParam("patientId") Patient patient, PageModel model,
-                             @RequestParam(value="appId", required = false) AppDescriptor app,
-                             @RequestParam(value="search", required = false) String search,
+                             @RequestParam(value = "appId", required = false) AppDescriptor app,
+                             @RequestParam(value = "search", required = false) String search,
+                             @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                              @InjectBeans PatientDomainWrapper patientDomainWrapper,
                              @SpringBean AppFrameworkService appFrameworkService,
                              @SpringBean("applicationEventService") ApplicationEventService applicationEventService,
@@ -33,8 +33,9 @@ public class RegistrationSummaryPageController {
 
         patientDomainWrapper.setPatient(patient);
         model.addAttribute("patient", patientDomainWrapper);
-        model.addAttribute("appId", app !=null ? app.getId() : "registrationapp.basicRegisterPatient");
+        model.addAttribute("appId", app !=null ? app.getId() : null);
         model.addAttribute("search", search);
+        model.addAttribute("breadcrumbOverride", breadcrumbOverride);
 
         applicationEventService.patientViewed(patient, sessionContext.getCurrentUser());
 

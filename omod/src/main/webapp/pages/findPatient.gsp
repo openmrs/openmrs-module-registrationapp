@@ -26,7 +26,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         handle: function (row, widgetData) {
             var query = widgetData.lastQuery;
             history.replaceState({ query: query }, "", "${baseUrl}&search=" + query);
-            location.href = emr.pageLink("registrationapp", "registrationSummary", { patientId: row.uuid, appId: '${appId}', search: query});
+            location.href = emr.pageLink("registrationapp", "registrationSummary", { patientId: row.uuid, appId: '${appId}', search: query, breadcrumbOverride: '${breadcrumbOverride}' });
         }
     }
 
@@ -47,7 +47,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
-        <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId ]) }">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId, breadcrumbOverride: breadcrumbOverride ]) }">
             <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
         </a>
     </div>
