@@ -83,7 +83,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <tr>
                     <td>${ encounter.patient.patientIdentifier }</td>
                     <td>
-                        <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, appId: appId ]) }">
+                        <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, appId: appId,  breadcrumbOverride: breadcrumbOverride ]) }">
                         ${ ui.format((encounter.patient)) }
                     </td>
                     <td>${ ui.format( encounter.patient.gender) }</td>
