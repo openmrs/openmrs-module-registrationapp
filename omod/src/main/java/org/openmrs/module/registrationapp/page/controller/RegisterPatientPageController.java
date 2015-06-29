@@ -1,5 +1,6 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.context.Context;
@@ -10,19 +11,31 @@ import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public class RegisterPatientPageController {
+public class RegisterPatientPageController extends AbstractRegistrationAppPageController {
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
+                    @RequestParam(value = "breadcrumbOverrideProvider", required = false) String breadcrumbOverrideProvider,
+                    @RequestParam(value = "breadcrumbOverridePage", required = false) String breadcrumbOverridePage,
+                    @RequestParam(value = "breadcrumbOverLabel", required = false) String breadcrumbOverrideLabel,
+                    @RequestParam(value = "breadcrumbOverApp", required = false) String appId,
                     @ModelAttribute("patient") @BindParams Patient patient,
-                    @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties) throws Exception {
+                    @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
+                    UiUtils ui) throws Exception {
+
+        // generate the breadcrumb override if necessary
+        if (StringUtils.isBlank(breadcrumbOverride) && StringUtils.isNotBlank(breadcrumbOverrideProvider)
+                && !StringUtils.isNotBlank(breadcrumbOverridePage) && StringUtils.isNotBlank(breadcrumbOverrideLabel)) {
+            breadcrumbOverride = generateBreadcrumbOverride(breadcrumbOverrideLabel, breadcrumbOverrideProvider, breadcrumbOverridePage, appId, ui);
+        }
 
         sessionContext.requireAuthentication();
         addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride);

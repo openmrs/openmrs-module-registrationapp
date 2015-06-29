@@ -1,6 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
@@ -8,6 +9,7 @@ import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.event.ApplicationEventService;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
@@ -16,19 +18,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
-public class RegistrationSummaryPageController {
+public class RegistrationSummaryPageController extends AbstractRegistrationAppPageController {
 
     public Object controller(@RequestParam("patientId") Patient patient, PageModel model,
                              @RequestParam(value = "appId", required = false) AppDescriptor app,
                              @RequestParam(value = "search", required = false) String search,
                              @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
+                             @RequestParam(value = "breadcrumbOverrideProvider", required = false) String breadcrumbOverrideProvider,
+                             @RequestParam(value = "breadcrumbOverridePage", required = false) String breadcrumbOverridePage,
+                             @RequestParam(value = "breadcrumbOverLabel", required = false) String breadcrumbOverrideLabel,
+                             @RequestParam(value = "breadcrumbOverApp", required = false) String appId,
                              @InjectBeans PatientDomainWrapper patientDomainWrapper,
                              @SpringBean AppFrameworkService appFrameworkService,
                              @SpringBean("applicationEventService") ApplicationEventService applicationEventService,
+                             UiUtils ui,
                              UiSessionContext sessionContext) {
 
         if (patient.isVoided() || patient.isPersonVoided()) {
             return new Redirect("coreapps", "patientdashboard/deletedPatient", "patientId=" + patient.getId());
+        }
+
+        // generate the breadcrumb override if necessary
+        if (StringUtils.isBlank(breadcrumbOverride) && StringUtils.isNotBlank(breadcrumbOverrideProvider)
+                && !StringUtils.isNotBlank(breadcrumbOverridePage) && StringUtils.isNotBlank(breadcrumbOverrideLabel)) {
+            breadcrumbOverride = generateBreadcrumbOverride(breadcrumbOverrideLabel, breadcrumbOverrideProvider, breadcrumbOverridePage, appId, ui);
         }
 
         patientDomainWrapper.setPatient(patient);
