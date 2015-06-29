@@ -5,7 +5,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
-import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -21,6 +20,7 @@ import org.openmrs.module.reporting.definition.library.AllDefinitionLibraries;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.query.encounter.definition.AuditEncounterQuery;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,10 +38,25 @@ public class FindPatientPageController {
                            @RequestParam("appId") AppDescriptor app,
                            @SpringBean AllDefinitionLibraries libraries,
                            @SpringBean DataSetDefinitionService dsdService,
-                           @SpringBean("encounterService") EncounterService encounterService
+                           @SpringBean("encounterService") EncounterService encounterService,
+                           UiUtils ui
                            ) throws EvaluationException {
 
-        Location currentLocation = uiSessionContext.getSessionLocation();
+        // only show the most recent registration encounters if a registration encounter has been defined for this app
+        if (app != null && app.getConfig() != null && app.getConfig().get("registrationEncounter") != null) {
+            model.addAttribute("mostRecentRegistrationEncounters", addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService));
+            model.addAttribute("appId", app.getId());
+        }
+        else {
+            model.addAttribute("mostRecentRegistrationEncounters", null);
+            model.addAttribute("appId", null);
+        }
+
+    }
+
+    private List<Encounter> addMostRecentRegistrationEncounters(PageModel model, AppDescriptor app, AllDefinitionLibraries libraries,
+                                                                DataSetDefinitionService dsdService, EncounterService encounterService)
+                                                    throws EvaluationException {
 
         List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
         EncounterType encounterType = encounterService.getEncounterTypeByUuid(
@@ -68,26 +83,24 @@ public class FindPatientPageController {
 
         d.addSortCriteria("dateCreated", SortCriteria.SortDirection.DESC);
 
-        SimpleDataSet dataSet = (SimpleDataSet)dsdService.evaluate(d, new EvaluationContext());
+        SimpleDataSet dataSet = (SimpleDataSet) dsdService.evaluate(d, new EvaluationContext());
         DataSetRowList rows = dataSet.getRows();
         List<Encounter> registrationEncounters = new ArrayList<Encounter>();
         //display the last 5 registration encounters for distinct patients
         Set<Integer> patientIds = new HashSet<Integer>();
         for (DataSetRow row : rows) {
-            Integer patientId = (Integer)row.getColumnValue("patientId");
-            Integer encounterId = (Integer)row.getColumnValue("encounterId");
-            if (!patientIds.contains(patientId) ) {
+            Integer patientId = (Integer) row.getColumnValue("patientId");
+            Integer encounterId = (Integer) row.getColumnValue("encounterId");
+            if (!patientIds.contains(patientId)) {
                 patientIds.add(patientId);
-                if (registrationEncounters.size() < 5 ) {
+                if (registrationEncounters.size() < 5) {
                     registrationEncounters.add(encounterService.getEncounter(encounterId));
-                }else {
+                } else {
                     break;
                 }
             }
-
         }
 
-        model.addAttribute("appEncounters", registrationEncounters);
-        model.addAttribute("appId", app.getId());
+        return registrationEncounters;
     }
 }
