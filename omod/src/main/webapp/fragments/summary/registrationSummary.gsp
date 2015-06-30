@@ -34,7 +34,7 @@
                     <h3>${ ui.message("coreapps.clinicianfacing.overallActions") }</h3>
                     <%
                         overallActions.each { ext -> %>
-                            <a href="${ ui.escapeJs(ext.url("/" + ui.contextPath(), appContextModel, ui.thisUrl())) }" id="${ ext.id }">
+                            <a href="${ ui.escapeJs(ext.url("/" + ui.contextPath(), appContextModel, returnUrl)) }" id="${ ext.id }">
                                 <li>
                                     <i class="${ ext.icon }"></i>
                                     ${ ui.message(ext.label) }
