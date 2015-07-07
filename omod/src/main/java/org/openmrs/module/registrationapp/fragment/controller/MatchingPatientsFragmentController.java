@@ -64,8 +64,7 @@ public class MatchingPatientsFragmentController {
             result.addAll(mpiSimilarMatches);
         }
 
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
-        return simplify(ui, matches, PATIENT_PROPERTIES);
+        return result;
 	}
 
     private List<SimpleObject> getLocalSimilarMatches(RegistrationCoreService service, Patient patient, UiUtils ui, int maxResults) {
