@@ -53,7 +53,7 @@ jq(function() {
                     row += '<label>';
                     row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
                     row += '</label>';
-                    row += '<button onclick="location.href=';
+                    row += '<button style="padding: 2px 8px" onclick="location.href=';
                     if (isMpi == true) {
                         row += '\'/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info\'">';
                         row += 'Import and Open';
