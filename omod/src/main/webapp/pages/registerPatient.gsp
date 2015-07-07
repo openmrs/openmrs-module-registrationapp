@@ -55,9 +55,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
       <h3>${ ui.message("registrationapp.reviewSimilarPatients")}</h3>
     </div>
     <div class="dialog-content">
-        <p>
+        <!-- TODO: remove this label from message properties. -->
+        <!-- <p>
         	<em>${ ui.message("registrationapp.selectSimilarPatient") }</em>
-        </p>
+        </p> -->
         
         <ul id="similarPatientsSelect" class="select"></ul>
        

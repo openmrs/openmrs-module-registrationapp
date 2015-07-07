@@ -40,10 +40,28 @@ jq(function() {
                 similarPatientsSelect.empty();
                 for (index in data) {
                     var item = data[index];
+                    var isMpi = false;
+                    if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
+                        isMpi = true;
+                    }
                     var link = patientDashboardLink;
                     link += '?patientId=' + item.patientId;
-                    var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
+                    //var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
+                    //row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+                    //row += '</li>';
+                    var row = '<li style="width: auto">';
+                    row += '<label>';
                     row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+                    row += '</label>';
+                    row += '<button onclick="location.href=';
+                    if (isMpi == true) {
+                        row += '\'/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info.\'"';
+                        row += 'Import and Open';
+                    } else {
+                        row += '\'' + link + '\'"';
+                        row += 'Open';
+                    }
+                    row += '></button>';
                     row += '</li>';
                     similarPatientsSelect.append(row);
                 }
