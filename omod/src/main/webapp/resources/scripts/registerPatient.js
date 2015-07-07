@@ -55,13 +55,13 @@ jq(function() {
                     row += '</label>';
                     row += '<button onclick="location.href=';
                     if (isMpi == true) {
-                        row += '\'/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info.\'"';
+                        row += '\'/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info\'">';
                         row += 'Import and Open';
                     } else {
-                        row += '\'' + link + '\'"';
+                        row += '\'' + link + '\'">';
                         row += 'Open';
                     }
-                    row += '></button>';
+                    row += '</button>';
                     row += '</li>';
                     similarPatientsSelect.append(row);
                 }
