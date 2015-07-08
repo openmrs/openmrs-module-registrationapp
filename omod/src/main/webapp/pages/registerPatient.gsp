@@ -50,6 +50,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 </script>
 
+//TODO remove this div
 <div id="reviewSimilarPatients" class="dialog" style="display: none">
     <div class="dialog-header">
       <h3>${ ui.message("registrationapp.reviewSimilarPatients")}</h3>
@@ -60,8 +61,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         	<em>${ ui.message("registrationapp.selectSimilarPatient") }</em>
         </p> -->
         
-        <ul id="similarPatientsSelect" class="select"></ul>
-       
         <span class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
     </div>
 </div>
@@ -81,8 +80,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 	<div id="similarPatients" class="highlighted" style="display: none;">
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
-		   <div class="clear"></div>
-	</div>
+
+        <div class="clear"></div>
+
+        <div id="similarPatientsSlideView">
+            <ul id="similarPatientsSelect" class="select"
+                style="width: auto; text-align: center; color: blue;">
+            </ul>
+        </div>
+    </div>
 
     <form class="simple-form-ui" id="registration" method="POST">
 

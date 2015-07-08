@@ -18,7 +18,16 @@ jq(function() {
     });
 
     jq('#reviewSimilarPatientsButton').click(function () {
-        reviewSimilarPatients.show();
+        var slideView = $("#similarPatientsSlideView");
+        if (slideView.css("display") == "none"){
+            slideView.slideDown();
+        }else{
+            slideView.slideUp();
+        }
+
+        //TODO remove this
+        //reviewSimilarPatients.show();
+
         return false;
     });
 
