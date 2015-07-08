@@ -25,9 +25,6 @@ jq(function() {
             slideView.slideUp();
         }
 
-        //TODO remove this
-        //reviewSimilarPatients.show();
-
         return false;
     });
 

@@ -50,21 +50,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 </script>
 
-//TODO remove this div
-<div id="reviewSimilarPatients" class="dialog" style="display: none">
-    <div class="dialog-header">
-      <h3>${ ui.message("registrationapp.reviewSimilarPatients")}</h3>
-    </div>
-    <div class="dialog-content">
-        <!-- TODO: remove this label from message properties. -->
-        <!-- <p>
-        	<em>${ ui.message("registrationapp.selectSimilarPatient") }</em>
-        </p> -->
-        
-        <span class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
-    </div>
-</div>
-
 <div id="validation-errors" class="note-container" style="display: none" >
     <div class="note error">
         <div id="validation-errors-content" class="text">
