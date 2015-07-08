@@ -67,12 +67,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 
         <div class="clear"></div>
-
-        <div id="similarPatientsSlideView">
-            <ul id="similarPatientsSelect" class="select"
-                style="width: auto; text-align: center; color: blue;">
-            </ul>
-        </div>
+    </div>
+    <div id="similarPatientsSlideView" style="display: none;">
+        <ul id="similarPatientsSelect" class="select"
+            style="width: auto; text-align: center; color: blue;">
+        </ul>
     </div>
 
     <form class="simple-form-ui" id="registration" method="POST">
