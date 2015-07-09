@@ -19,11 +19,7 @@ jq(function() {
 
     jq('#reviewSimilarPatientsButton').click(function () {
         var slideView = $("#similarPatientsSlideView");
-        if (slideView.css("display") == "none"){
-            slideView.slideDown();
-        }else{
-            slideView.slideUp();
-        }
+        slideView.slideToggle();
 
         return false;
     });
