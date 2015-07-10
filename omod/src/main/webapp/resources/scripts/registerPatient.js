@@ -46,12 +46,37 @@ jq(function() {
                     if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
                         isMpi = true;
                     }
-                    var link = patientDashboardLink;
-                    link += '?patientId=' + item.patientId;
+                    var link;
+                    if (isMpi){
+                        link = 'execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info';
+                    }else {
+                        link = patientDashboardLink;
+                        link += '?patientId=' + item.patientId;
+                    }
+                    var container = $('#matchedPatientTemplates div');
+                    var cloned = container.clone();
+                    cloned.find('.name').append(item.givenName + ' ' + item.familyName + ' (' + item.gender + ') ' + item.birthdate);
+                    cloned.find('.address').append(item.personAddress);
+                    cloned.find('.identifier').append(item.patientIdentifier.identifier);
+
+                    var button;
+                    var clone_button;
+                    if (isMpi){
+                        button = $('#matchedPatientTemplates .mpi_button');
+                    }else{
+                        button = $('#matchedPatientTemplates .local_button');
+                    }
+                    clone_button = button.clone();
+                    clone_button.attr("onclick", "location.href=\'" + link + "\'");
+                    cloned.append(clone_button);
+                    $('#similarPatientsSelect').append(cloned);
+
+
                     //var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
                     //row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
                     //row += '</li>';
                     var row = '<li style="width: auto">';
+                    row = '<div style="border-color: #00463f white; border-style: solid; margin-bottom: 10px; padding: 5px">';
                     row += '<label>';
                     row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
                     row += '</label>';
@@ -64,6 +89,7 @@ jq(function() {
                         row += 'Open';
                     }
                     row += '</button>';
+                    row += '</div>';
                     row += '</li>';
                     similarPatientsSelect.append(row);
                 }
