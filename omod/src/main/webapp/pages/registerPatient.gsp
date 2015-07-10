@@ -68,6 +68,21 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
         <div class="clear"></div>
     </div>
+    <div id="matchedPatientTemplates" style="display:none;">
+        <div id="container" style="border-color: #00463f white; border-style: solid; margin-bottom: 10px; padding: 5px">
+            <label>
+                <p class="name">Patient: </p>
+                <p class="identifier">Identifier: </p>
+                <p class="address">Address: </p>
+            </label>
+        </div>
+        <button class="local_button" style="padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
+            Open
+        </button>
+        <button class="mpi_button" style="padding: 2px 8px" onclick="location.href='/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info'">
+            Import and Open
+        </button>
+    </div>
     <div id="similarPatientsSlideView" style="display: none;">
         <ul id="similarPatientsSelect" class="select"
             style="width: auto; text-align: center; color: blue;">
