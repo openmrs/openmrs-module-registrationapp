@@ -72,11 +72,11 @@ jq(function() {
                     var button;
                     if (isMpi) {
                         button = $('#matchedPatientTemplates .mpi_button').clone();
-                        button.attr("onclick", "importMpiPatient(" + item.patientId + ")");
+                        button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
                     }else{
                         button = $('#matchedPatientTemplates .local_button').clone();
                         var link = patientDashboardLink;
-                        link += '?patientId=' + item.patientId;
+                        link += '?patientId=' + item.uuid;
                         button.attr("onclick", "location.href=\'" + link + "\'");
                     }
                     cloned.append(button);
