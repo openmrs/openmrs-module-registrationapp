@@ -41,10 +41,10 @@ public class MatchingPatientsFragmentController {
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
 
-    public static final String[] PATIENT_PROPERTIES = new String[]{"patientId", "givenName", "familyName",
+    public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "patientIdentifier.preferred", "patientIdentifier.identifier", "gender", "birthdate", "personAddress"};
 
-    public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"patientId", "givenName", "familyName",
+    public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "patientIdentifier.preferred", "patientIdentifier.identifier", "gender", "birthdate", "personAddress", "mpiPatient"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
