@@ -46,13 +46,7 @@ jq(function() {
                     if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
                         isMpi = true;
                     }
-                    var link;
-                    if (isMpi){
-                        link = 'execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info';
-                    }else {
-                        link = patientDashboardLink;
-                        link += '?patientId=' + item.patientId;
-                    }
+
                     var container = $('#matchedPatientTemplates div');
                     var cloned = container.clone();
                     cloned.find('.name').append(item.givenName + ' ' + item.familyName + ' (' + item.gender + ') ' + item.birthdate);
@@ -63,6 +57,13 @@ jq(function() {
                         cloned.find('.identifier').append('Empty');
                     }
 
+                    var link;
+                    if (isMpi){
+                        link = 'execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info';
+                    }else {
+                        link = patientDashboardLink;
+                        link += '?patientId=' + item.patientId;
+                    }
                     var button;
                     var clone_button;
                     if (isMpi){
