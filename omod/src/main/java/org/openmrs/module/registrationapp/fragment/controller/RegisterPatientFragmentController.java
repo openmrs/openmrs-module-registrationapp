@@ -72,11 +72,10 @@ public class RegisterPatientFragmentController {
         }
     }
 
-    public @ResponseBody String importMpiPatient(
-            @RequestParam("mpiPersonId") String personId,
-            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
-        registrationService.importMpiPatient(personId);
-        return "OK";
+    public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
+                            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+        Integer identifier = registrationService.importMpiPatient(personId);
+        return new SuccessResult(String.valueOf(identifier));
     }
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
