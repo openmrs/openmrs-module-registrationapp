@@ -57,7 +57,11 @@ jq(function() {
                     var cloned = container.clone();
                     cloned.find('.name').append(item.givenName + ' ' + item.familyName + ' (' + item.gender + ') ' + item.birthdate);
                     cloned.find('.address').append(item.personAddress);
-                    cloned.find('.identifier').append(item.patientIdentifier.identifier);
+                    if (item.patientIdentifier.preferred) {
+                        cloned.find('.identifier').append(item.patientIdentifier.identifier);
+                    } else {
+                        cloned.find('.identifier').append('Empty');
+                    }
 
                     var button;
                     var clone_button;
