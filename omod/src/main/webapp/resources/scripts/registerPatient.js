@@ -4,6 +4,18 @@ jq = jQuery;
 
 var NavigatorController;
 
+function importMpiPatient(id) {
+    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
+        .success(function (response) {
+            var link = patientDashboardLink;
+            link += '?patientId=' + response.message;
+            location.href = link;
+        })
+        .error(function (xhr, status, err) {
+            alert('AJAX error ' + err);
+        });
+}
+
 jq(function() {
     NavigatorController = new KeyboardController();
 
@@ -57,23 +69,17 @@ jq(function() {
                         cloned.find('.identifier').append('Empty');
                     }
 
-                    var link;
-                    if (isMpi){
-                        link = 'execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info';
-                    }else {
-                        link = patientDashboardLink;
-                        link += '?patientId=' + item.patientId;
-                    }
                     var button;
-                    var clone_button;
-                    if (isMpi){
-                        button = $('#matchedPatientTemplates .mpi_button');
+                    if (isMpi) {
+                        button = $('#matchedPatientTemplates .mpi_button').clone();
+                        button.attr("onclick", "importMpiPatient(" + item.patientId + ")");
                     }else{
-                        button = $('#matchedPatientTemplates .local_button');
+                        button = $('#matchedPatientTemplates .local_button').clone();
+                        var link = patientDashboardLink;
+                        link += '?patientId=' + item.patientId;
+                        button.attr("onclick", "location.href=\'" + link + "\'");
                     }
-                    clone_button = button.clone();
-                    clone_button.attr("onclick", "location.href=\'" + link + "\'");
-                    cloned.append(clone_button);
+                    cloned.append(button);
                     $('#similarPatientsSelect').append(cloned);
                 }
             })
