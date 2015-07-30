@@ -20,6 +20,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.mpi.common.MpiPatient;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
@@ -54,29 +55,8 @@ public class MatchingPatientsFragmentController {
 	                                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
 	                                             HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-        List<SimpleObject> result = new ArrayList<SimpleObject>();
-
-        List<SimpleObject> localSimilarPatients = getLocalSimilarMatches(service, patient, ui, MAX_RESULTS);
-        result.addAll(localSimilarPatients);
-
-        if (result.size() < MAX_RESULTS) {
-            List<SimpleObject> mpiSimilarMatches = getMpiSimilarMatches(service, patient, ui, MAX_RESULTS - result.size());
-            result.addAll(mpiSimilarMatches);
-        }
-
-        return result;
-	}
-
-    private List<SimpleObject> getLocalSimilarMatches(RegistrationCoreService service, Patient patient, UiUtils ui, int maxResults) {
-        List<PatientAndMatchQuality> localMatches = service.findFastSimilarPatients(patient, null, CUTOFF, maxResults);
-
-        return simplify(ui, localMatches, PATIENT_PROPERTIES);
-    }
-
-    private List<SimpleObject> getMpiSimilarMatches(RegistrationCoreService service, Patient patient, UiUtils ui, int maxResults) {
-        List<PatientAndMatchQuality> mpiMatches = service.findProbablisticSimilarPatientsOnMpi(patient, null, CUTOFF, maxResults);
-
-        return simplify(ui, mpiMatches, MPI_PATIENT_PROPERTIES);
+        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
+        return getSimpleObjects(ui, matches);
     }
 
     public List<SimpleObject> getExactPatients(@RequestParam("appId") AppDescriptor app,
@@ -86,17 +66,8 @@ public class MatchingPatientsFragmentController {
                                                @ModelAttribute("personAddress") @BindParams PersonAddress address,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-        List<SimpleObject> result = new ArrayList<SimpleObject>();
-
-        List<SimpleObject> localExactMatches = getLocalExactMatches(service, patient, ui, MAX_RESULTS);
-        result.addAll(localExactMatches);
-
-        if (result.size() < MAX_RESULTS) {
-            List<SimpleObject> mpiExactMatches = getMpiExactMatches(service, patient, ui, MAX_RESULTS - result.size());
-            result.addAll(mpiExactMatches);
-        }
-
-        return result;
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
+        return getSimpleObjects(ui, matches);
     }
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
@@ -110,27 +81,17 @@ public class MatchingPatientsFragmentController {
         }
     }
 
-    private List<SimpleObject> getLocalExactMatches(RegistrationCoreService service,
-                                                    Patient patient, UiUtils ui, int maxResults) {
-        List<PatientAndMatchQuality> localMatches =
-                service.findPreciseSimilarPatients(patient, null, CUTOFF, maxResults);
+    private List<SimpleObject> getSimpleObjects(UiUtils ui, List<PatientAndMatchQuality> matches) {
+        List<SimpleObject> result = new ArrayList<SimpleObject>();
 
-        return simplify(ui, localMatches, PATIENT_PROPERTIES);
-    }
-
-    private List<SimpleObject> getMpiExactMatches(RegistrationCoreService service,
-                                                  Patient patient, UiUtils ui, int maxResults) {
-        List<PatientAndMatchQuality> mpiMatches =
-                service.findPreciseSimilarPatientsOnMpi(patient, null, CUTOFF, maxResults);
-
-        return simplify(ui, mpiMatches, MPI_PATIENT_PROPERTIES);
-    }
-
-    private List<SimpleObject> simplify(UiUtils ui, List<PatientAndMatchQuality> matches, String[] properties) {
-        List<Patient> similarPatients = new ArrayList<Patient>();
-        for (PatientAndMatchQuality match : matches) {
-            similarPatients.add(match.getPatient());
+        for (PatientAndMatchQuality matchedPatient : matches) {
+            Patient patientEntry = matchedPatient.getPatient();
+            if (patientEntry instanceof MpiPatient) {
+                result.add(SimpleObject.fromObject(patientEntry, ui, MPI_PATIENT_PROPERTIES));
+            } else {
+                result.add(SimpleObject.fromObject(patientEntry, ui, PATIENT_PROPERTIES));
+            }
         }
-        return SimpleObject.fromCollection(similarPatients, ui, properties);
+        return result;
     }
 }
