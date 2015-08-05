@@ -43,7 +43,7 @@
         <calculationVersion>1.0</calculationVersion>
         <providerManagementVersion>1.1.3</providerManagementVersion>
         <registrationcoreVersion>1.1.2</registrationcoreVersion>
-        <reportingModuleVersion>0.9.5</reportingModuleVersion>
+        <reportingModuleVersion>0.9.6</reportingModuleVersion>
         <addresshierarchyVersion>2.4</addresshierarchyVersion>
         <htmlformentryVersion>2.5</htmlformentryVersion>
         <appuiVersion>1.4-SNAPSHOT</appuiVersion>
