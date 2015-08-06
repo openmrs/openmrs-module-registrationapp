@@ -43,10 +43,10 @@ public class MatchingPatientsFragmentController {
     public static final double CUTOFF = 2.0;
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "patientIdentifier.preferred", "patientIdentifier.identifier", "gender", "birthdate", "personAddress"};
+            "patientIdentifier.preferred", "identifier", "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "patientIdentifier.preferred", "patientIdentifier.identifier", "gender", "birthdate", "personAddress", "mpiPatient"};
+            "patientIdentifier.preferred", "identifier", "gender", "birthdate", "personAddress", "mpiPatient"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
 	                                             @SpringBean("registrationCoreService") RegistrationCoreService service,
