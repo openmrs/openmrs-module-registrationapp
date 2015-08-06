@@ -14,6 +14,7 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,10 +45,10 @@ public class MatchingPatientsFragmentController {
     public static final double CUTOFF = 2.0;
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "patientIdentifier.preferred", "identifier", "gender", "birthdate", "personAddress"};
+            "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "patientIdentifier.preferred", "identifier", "gender", "birthdate", "personAddress", "mpiPatient"};
+            "gender", "birthdate", "personAddress", "mpiPatient"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
 	                                             @SpringBean("registrationCoreService") RegistrationCoreService service,
@@ -86,12 +88,26 @@ public class MatchingPatientsFragmentController {
 
         for (PatientAndMatchQuality matchedPatient : matches) {
             Patient patientEntry = matchedPatient.getPatient();
+            SimpleObject patientSimple;
             if (patientEntry instanceof MpiPatient) {
-                result.add(SimpleObject.fromObject(patientEntry, ui, MPI_PATIENT_PROPERTIES));
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, MPI_PATIENT_PROPERTIES);
             } else {
-                result.add(SimpleObject.fromObject(patientEntry, ui, PATIENT_PROPERTIES));
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, PATIENT_PROPERTIES);
             }
+            addIdentifiersToPatientSimple(patientEntry, patientSimple);
+            result.add(patientSimple);
         }
         return result;
+    }
+
+    private void addIdentifiersToPatientSimple(Patient patientEntry, SimpleObject patientSimple) {
+        List<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
+        for (PatientIdentifier identifier : patientEntry.getIdentifiers()) {
+            SimpleObject identifierEntry = new SimpleObject();
+            identifierEntry.put("name", identifier.getIdentifierType().getName());
+            identifierEntry.put("value", identifier.getIdentifier());
+            identifiersList.add(identifierEntry);
+        }
+        patientSimple.put("identifiers", identifiersList);
     }
 }
