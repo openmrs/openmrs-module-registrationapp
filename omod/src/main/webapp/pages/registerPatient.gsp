@@ -69,12 +69,14 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <div class="clear"></div>
     </div>
     <div id="matchedPatientTemplates" style="display:none;">
-        <div id="container" style="border-color: #00463f white; border-style: solid; margin-bottom: 10px; padding: 5px">
-            <label>
-                <p class="name">Patient: </p>
-                <p class="identifier">Identifier: </p>
-                <p class="address">Address: </p>
-            </label>
+        <div class="container"
+             style="border-color: #00463f; border-style: solid; border-width:2px; margin-bottom: 10px;">
+            <div class="name">Vova Kereko</div>
+            <div class="info">Male, 49 year(s) (31.Jun.1967)</div>
+            <div class="identifiers">
+                <span class="idName">OpenMRS ID: </span> <span class="idValue">10065KF</span>
+                <span class="idName">OpenEmpi ID:</span> <span class="idValue">123123-1124124-12412-45325325-5235532</span>
+            </div>
         </div>
         <button class="local_button" style="padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
             Open
@@ -83,9 +85,39 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             Import and Open
         </button>
     </div>
+
+    <style type="text/css">
+    #similarPatientsSelect .container div {
+        margin: 5px 10px;
+    }
+
+    #similarPatientsSelect .container .name {
+        font-size: 25px;
+        display: inline-block;
+    }
+
+    #similarPatientsSelect .container .info {
+        font-size: 15px;
+        display: inline-block;
+    }
+
+    #similarPatientsSelect .container .identifiers {
+        font-size: 15px;
+    }
+
+    #similarPatientsSelect .container .identifiers .idName {
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    #similarPatientsSelect .container .identifiers .idValue {
+        font-size: 15px;
+        margin: 0 20px 0 0;
+    }
+    </style>
     <div id="similarPatientsSlideView" style="display: none;">
-        <ul id="similarPatientsSelect" class="select"
-            style="width: auto; text-align: center; color: blue;">
+        <ul id="similarPatientsSelect" class="select" style="width: auto;">
+
         </ul>
     </div>
 
