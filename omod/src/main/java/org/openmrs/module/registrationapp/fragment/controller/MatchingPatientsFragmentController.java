@@ -3,12 +3,12 @@
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
- *
+ * <p/>
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
  * License for the specific language governing rights and limitations
  * under the License.
- *
+ * <p/>
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 package org.openmrs.module.registrationapp.fragment.controller;
@@ -51,11 +51,11 @@ public class MatchingPatientsFragmentController {
             "gender", "birthdate", "personAddress", "mpiPatient"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
-	                                             @SpringBean("registrationCoreService") RegistrationCoreService service,
-	                                             @ModelAttribute("patient") @BindParams Patient patient,
-	                                             @ModelAttribute("personName") @BindParams PersonName name,
-	                                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
-	                                             HttpServletRequest request, UiUtils ui) throws Exception {
+                                                 @SpringBean("registrationCoreService") RegistrationCoreService service,
+                                                 @ModelAttribute("patient") @BindParams Patient patient,
+                                                 @ModelAttribute("personName") @BindParams PersonName name,
+                                                 @ModelAttribute("personAddress") @BindParams PersonAddress address,
+                                                 HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
         List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
         return getSimpleObjects(ui, matches);
@@ -101,12 +101,16 @@ public class MatchingPatientsFragmentController {
     }
 
     private void addIdentifiersToPatientSimple(Patient patientEntry, SimpleObject patientSimple) {
-        List<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
+        LinkedList<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
         for (PatientIdentifier identifier : patientEntry.getIdentifiers()) {
             SimpleObject identifierEntry = new SimpleObject();
             identifierEntry.put("name", identifier.getIdentifierType().getName());
             identifierEntry.put("value", identifier.getIdentifier());
-            identifiersList.add(identifierEntry);
+            if (identifier.isPreferred()) {
+                identifiersList.addFirst(identifierEntry);
+            } else {
+                identifiersList.add(identifierEntry);
+            }
         }
         patientSimple.put("identifiers", identifiersList);
     }
