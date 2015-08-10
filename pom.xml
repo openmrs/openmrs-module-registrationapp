@@ -115,13 +115,6 @@
         <!-- End OpenMRS core -->
 
         <dependency>
-            <groupId>org.openmrs</groupId>
-            <artifactId>event-api</artifactId>
-            <version>${eventVersion}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>idgen-api</artifactId>
             <version>${idgenVersion}</version>

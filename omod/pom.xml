@@ -50,6 +50,9 @@
 		<dependency>
 			<groupId>org.openmrs</groupId>
 			<artifactId>event-api</artifactId>
+			<version>${eventVersion}</version>
+			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
 	</dependencies>
