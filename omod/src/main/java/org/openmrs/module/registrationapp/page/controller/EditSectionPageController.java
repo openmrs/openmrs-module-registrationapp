@@ -8,6 +8,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.event.Event;
+import org.openmrs.event.EventMessage;
 import org.openmrs.layout.web.address.AddressSupport;
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.messagesource.MessageSourceService;
@@ -17,6 +19,7 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Section;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -125,6 +128,10 @@ public class EditSectionPageController {
                 patientService.savePatient(patient);
                 InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
                         ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName()));
+
+                EventMessage eventMessage = new EventMessage();
+                eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
+                Event.fireEvent(RegistrationCoreConstants.EDIT_EVENT_TOPIC_NAME, eventMessage);
 
                 return "redirect:" + returnUrl;
             }
