@@ -41,7 +41,7 @@ jq(function() {
         jq('.date-component').trigger('blur');
 
         var formData = jq('#registration').serialize();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", { appId: appId }), formData)
+        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", {appId: appId}), formData)
             .success(function (data) {
                 if (data.length == 0) {
                     jq("#similarPatients").hide();
@@ -59,27 +59,45 @@ jq(function() {
                         isMpi = true;
                     }
 
-                    var container = $('#matchedPatientTemplates div');
+                    var container = $('#matchedPatientTemplates .container');
                     var cloned = container.clone();
-                    cloned.find('.name').append(item.givenName + ' ' + item.familyName + ' (' + item.gender + ') ' + item.birthdate);
-                    cloned.find('.address').append(item.personAddress);
-                    if (item.patientIdentifier.preferred) {
-                        cloned.find('.identifier').append(item.patientIdentifier.identifier);
+
+                    cloned.find('.name').append(item.givenName + ' ' + item.familyName);
+
+                    var gender;
+                    if (item.gender == 'M') {
+                        gender = "Male";
                     } else {
-                        cloned.find('.identifier').append('Empty');
+                        gender = "Female";
                     }
+
+                    cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress);
+
+                    var identifiers = cloned.find('.identifiers');
+                    item.identifiers.forEach(function (entry) {
+                        var clonedIdName = identifiers.find('.idNameTemplate').clone();
+                        clonedIdName.text(entry.name + ': ');
+                        clonedIdName.removeClass("idNameTemplate");
+                        identifiers.append(clonedIdName);
+
+                        var clonedIdValue = identifiers.find(".idValueTemplate").clone();
+                        clonedIdValue.text(entry.value);
+                        clonedIdValue.removeClass("idValueTemplate");
+                        identifiers.append(clonedIdValue);
+                    });
 
                     var button;
                     if (isMpi) {
                         button = $('#matchedPatientTemplates .mpi_button').clone();
                         button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
-                    }else{
+                    } else {
                         button = $('#matchedPatientTemplates .local_button').clone();
                         var link = patientDashboardLink;
                         link += '?patientId=' + item.uuid;
                         button.attr("onclick", "location.href=\'" + link + "\'");
                     }
                     cloned.append(button);
+
                     $('#similarPatientsSelect').append(cloned);
                 }
             })

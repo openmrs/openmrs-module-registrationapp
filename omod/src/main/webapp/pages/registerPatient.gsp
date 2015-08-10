@@ -71,22 +71,25 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <div id="matchedPatientTemplates" style="display:none;">
         <div class="container"
              style="border-color: #00463f; border-style: solid; border-width:2px; margin-bottom: 10px;">
-            <div class="name">Vova Kereko</div>
-            <div class="info">Male, 49 year(s) (31.Jun.1967)</div>
+            <div class="name"></div>
+            <div class="info"></div>
             <div class="identifiers">
-                <span class="idName">OpenMRS ID: </span> <span class="idValue">10065KF</span>
-                <span class="idName">OpenEmpi ID:</span> <span class="idValue">123123-1124124-12412-45325325-5235532</span>
+                <span class="idName idNameTemplate"></span><span class="idValue idValueTemplate"></span>
             </div>
         </div>
-        <button class="local_button" style="padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
+        <button class="local_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
             Open
         </button>
-        <button class="mpi_button" style="padding: 2px 8px" onclick="location.href='/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info'">
-            Import and Open
+        <button class="mpi_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info'">
+             Import and Open
         </button>
     </div>
 
     <style type="text/css">
+    #similarPatientsSelect .container {
+        overflow: hidden;
+    }
+
     #similarPatientsSelect .container div {
         margin: 5px 10px;
     }
@@ -103,6 +106,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     #similarPatientsSelect .container .identifiers {
         font-size: 15px;
+        display:inline-block;
     }
 
     #similarPatientsSelect .container .identifiers .idName {
