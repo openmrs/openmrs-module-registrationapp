@@ -43,7 +43,6 @@ jq(function() {
             return;
         } else {
             jq("#similarPatients").show();
-            jq("#similarPatientsSlideView").show();
         }
 
         jq('#similarPatientsCount').text(data.length);
@@ -106,6 +105,7 @@ jq(function() {
         var formData = jq('#registration').serialize();
         jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", {appId: appId}), formData)
             .success(function(data) {
+                jq("#reviewSimilarPatientsButton").show();
                 showSimilarPatients(data);
             })
             .error(function (xhr, status, err) {
@@ -128,8 +128,13 @@ jq(function() {
         $('#local-exact-match').hide();
         $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", {appId: appId}), formData)
             .success(function (data) {
+                jq("#reviewSimilarPatientsButton").hide();
                 showSimilarPatients(data);
+                jq("#similarPatientsSlideView").show();
                 submitButton.prop('disabled', false);
+            })
+            .error(function (xhr, status, err) {
+                alert('AJAX error ' + err);
             });
     });
 
