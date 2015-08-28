@@ -131,7 +131,7 @@ public class EditSectionPageController {
 
                 EventMessage eventMessage = new EventMessage();
                 eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
-                Event.fireEvent(RegistrationCoreConstants.EDIT_EVENT_TOPIC_NAME, eventMessage);
+                Event.fireEvent(RegistrationCoreConstants.PATIENT_EDIT_EVENT_TOPIC_NAME, eventMessage);
 
                 return "redirect:" + returnUrl;
             }
