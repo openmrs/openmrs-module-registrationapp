@@ -54,7 +54,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
 
         // this breadcrumb override gets passed on to patient summary page, so that the patient summary page links back to this page--it can't by default, becauses
         // the default ref app workflow skips this page entirely
-        model.addAttribute("breadcrumbOverride", generateBreadcrumbOverride("Patient.find", "registrationapp", "findPatient", app.getId(), ui));
+        model.addAttribute("breadcrumbOverride", generateBreadcrumbOverride("registrationapp.findPatient", "registrationapp", "findPatient", app.getId(), ui));
     }
 
     private List<Encounter> addMostRecentRegistrationEncounters(PageModel model, AppDescriptor app, AllDefinitionLibraries libraries,
