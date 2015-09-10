@@ -1,14 +1,8 @@
-// currently we only support having one of these per page. eventually refactor so that the fragment can create an
-// instance of this. For now, all these properties must be populated from the GSP/HTML that includes this JS.
-var personAddressWithHierarchy = {
-    id: null,
-    container: null,
-    manualFields: []
-};
 
-$(function () {
+function PersonAddressWithHierarchy(personAddressWithHierarchy) {
 
     var levels;
+
     $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getOrderedAddressHierarchyLevels.form', {}, function (result) {
         levels = result;
         _.each(levels, function (item, index) {
@@ -64,15 +58,26 @@ $(function () {
         return _.findWhere(levels, {addressField: addressField});
     }
 
+    function getInputElementFor(addressField) {
+        // this is to handle integration with HFE, when the id is set on the parent span, not the input element itself
+        return $('#' + personAddressWithHierarchy.id + '-' + addressField).is('input') ?
+            $('#' + personAddressWithHierarchy.id + '-' + addressField) :
+            $('#' + personAddressWithHierarchy.id + '-' + addressField).find('input');
+    }
+
     function getValue(addressField) {
-        return $('#' + personAddressWithHierarchy.id + '-' + addressField).val();
+        return getInputElementFor(addressField).val();
     }
 
     function setValue(addressField, value) {
-        $('#' + personAddressWithHierarchy.id + '-' + addressField).val(value);
+        getInputElementFor(addressField).val(value);
         // when setting a field via a shortcut, do bookkeeping so that the autocompletes still work right
-        $('#' + personAddressWithHierarchy.id + '-' + addressField).data('legalValues', [ value ]);
+        getInputElementFor(addressField).data('legalValues', [ value ]);
         levelFor(addressField).lastSelection = value;
+    }
+
+    function getAddressField(element) {
+        return $(element).attr('id').split('-')[1];
     }
 
     function levelsBefore(addressField) {
@@ -168,8 +173,12 @@ $(function () {
     }
 
     personAddressWithHierarchy.container.find('.level').each(function () {
-        var element = $(this);
-        var addressField = element.attr('name');
+
+        var addressField = getAddressField(this);
+
+        // this is to handle integration with HFE, when the id is set on the parent span, not the input element itself
+        var element = $(this).is('input') ? $(this) : $(this).find('input');
+
         if (!_.contains(personAddressWithHierarchy.manualFields, addressField)) {
             element.autocomplete({
                 minLength: 0,
@@ -181,6 +190,9 @@ $(function () {
                     }
                     var level = levelFor(addressField);
                     var searchString = searchStringUntil(level.addressField);
+                    if(!searchString && level.index != 0) {
+                        return; // only allow empty string searches at the top level, to prevent UHM-1983
+                    }
                     element.xhr = queryWithCallback(searchString, function (result) {
                         element.xhr = null;
                         element.data('legalValues', _.pluck(result, 'name'));
@@ -263,19 +275,27 @@ $(function () {
                 setValue(key, value);
             });
 
-            // go to the first level we didn't just set, using NavigatorController so that the simple for UI keeps up
+            // go to the first level we didn't just set
             var goToLevel = firstLevelNotIncluded(ui.item.data);
-            var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
-            setTimeout(function () {
-                var oldField = selectedModel(NavigatorController.getFields());
-                if (oldField) {
-                    oldField.toggleSelection();
-                }
-                field.select();
-            });
+
+            // if we are using the single UI navigator, use the NavigatorController so that the simple for UI keeps up
+            if (typeof(NavigatorController) != 'undefined') {
+                var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
+                setTimeout(function () {
+                    var oldField = selectedModel(NavigatorController.getFields());
+                    if (oldField) {
+                        oldField.toggleSelection();
+                    }
+                    field.select();
+                });
+            }
+            // otherwise just jump manually
+            else {
+                getInputElementFor(goToLevel.addressField).focus();
+            }
         },
         change: function (event, ui) {
             personAddressWithHierarchy.container.find(".address-hierarchy-shortcut").val('');
         }
     });
-});
+}

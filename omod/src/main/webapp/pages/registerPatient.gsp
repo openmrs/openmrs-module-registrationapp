@@ -24,18 +24,21 @@
     def minAgeYear = maxAgeYear - 120
     def minRegistrationAgeYear= maxAgeYear - 15 // do not allow backlog registrations older than 15 years
 
-    def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
+    def breadcrumbMiddle = breadcrumbOverride ?: '';
 
+    def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
+    def identifierSectionFound = false
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 
 <script type="text/javascript">
 
-    var breadcrumbs = [
+    var breadcrumbs = _.compact(_.flatten([
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+        ${ breadcrumbMiddle },
         { label: "${ ui.message("registrationapp.registration.label") }", link: "${ ui.pageLink("registrationapp", "registerPatient") }" }
-    ];
+    ]));
 
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';
@@ -49,6 +52,21 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <% } %>
 
 </script>
+
+<div id="reviewSimilarPatients" class="dialog" style="display: none">
+    <div class="dialog-header">
+      <h3>${ ui.message("registrationapp.reviewSimilarPatients")}</h3>
+    </div>
+    <div class="dialog-content">
+        <p>
+        	<em>${ ui.message("registrationapp.selectSimilarPatient") }</em>
+        </p>
+        
+        <ul id="similarPatientsSelect" class="select"></ul>
+       
+        <span id="reviewSimilarPatients-button-cancel" class="button cancel"> ${ ui.message("registrationapp.cancel") } </span>
+    </div>
+</div>
 
 <div id="validation-errors" class="note-container" style="display: none" >
     <div class="note error">
@@ -65,65 +83,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 	<div id="similarPatients" class="highlighted" style="display: none;">
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
-
-        <div class="clear"></div>
-    </div>
-    <div id="matchedPatientTemplates" style="display:none;">
-        <div class="container"
-             style="border-color: #00463f; border-style: solid; border-width:2px; margin-bottom: 10px;">
-            <div class="name"></div>
-            <div class="info"></div>
-            <div class="identifiers">
-                <span class="idName idNameTemplate"></span><span class="idValue idValueTemplate"></span>
-            </div>
-        </div>
-        <button class="local_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
-            Open
-        </button>
-        <button class="mpi_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info'">
-             Import and Open
-        </button>
-    </div>
-
-    <style type="text/css">
-    #similarPatientsSelect .container {
-        overflow: hidden;
-    }
-
-    #similarPatientsSelect .container div {
-        margin: 5px 10px;
-    }
-
-    #similarPatientsSelect .container .name {
-        font-size: 25px;
-        display: inline-block;
-    }
-
-    #similarPatientsSelect .container .info {
-        font-size: 15px;
-        display: inline-block;
-    }
-
-    #similarPatientsSelect .container .identifiers {
-        font-size: 15px;
-        display:inline-block;
-    }
-
-    #similarPatientsSelect .container .identifiers .idName {
-        font-size: 15px;
-        font-weight: bold;
-    }
-
-    #similarPatientsSelect .container .identifiers .idValue {
-        font-size: 15px;
-        margin: 0 20px 0 0;
-    }
-    </style>
-    <div id="similarPatientsSlideView" style="display: none;">
-        <ul id="similarPatientsSelect" class="select" style="width: auto;">
-
-        </ul>
-    </div>
+		   <div class="clear"></div>
+	</div>
 
     <form class="simple-form-ui" id="registration" method="POST">
 
@@ -241,18 +202,32 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         </fieldset>
                     <% } %>
 
+                    <!-- allow customization of additional question in the patient identification section, if it is included -->
+                    <% if (section.id == 'patient-identification-section') {
+                        identifierSectionFound = true; %>
+                        <% if (allowManualIdentifier) { %>
+                            ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
+                                    identifierTypeName: ui.format(primaryIdentifierType)
+                            ])}
+                        <% } %>
+                    <% } %>
+
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
                         <fieldset
                             <% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>
-                            <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
+                                <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                             <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
                             <legend id="${question.id}">${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
                             <% } %>
+                            <% if(question.header) { %>
+                                    <h3>${ui.message(question.header)}</h3>
+                            <% } %>
+
                             <% fields.each { field ->
                                 def configOptions = [
                                         label:ui.message(field.label),
@@ -276,25 +251,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
 
-        <% if (allowManualIdentifier) { %>
+        <% if (allowManualIdentifier && !identifierSectionFound) { %>
             <section id="patient-identification-section" class="non-collapsible">
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
-                <fieldset id="patient-identifier-question">
-                    <legend id="patientIdentifierLabel">${ui.format(primaryIdentifierType)}</legend>
-                    <h3>${ui.message("registrationapp.patient.identifier.question", ui.format(primaryIdentifierType))}</h3>
-
-                    <p>
-                        <input id="checkbox-autogenerate-identifier" type="checkbox" checked/>
-                        <label for="checkbox-autogenerate-identifier">${ui.message("registrationapp.patient.identifier.autogenerate.label")}</label>
-                    </p>
-
-                    <p>
-                        <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
-                        <input id="patient-identifier" name="patientIdentifier"/>
-                    </p>
-
-                </fieldset>
+                ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
+                        identifierTypeName: ui.format(primaryIdentifierType)
+                ])}
             </section>
         <% } %>
 
@@ -303,10 +266,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
-            <div id="exact-matches" style="margin-bottom: 20px">
-                <span id="local-exact-match" class="field-error" style="display: none; ">${ui.message("registrationapp.exactPatientFound")}</span>
-                <span id="mpi-exact-match" class="field-error" style="display: none; ">${ui.message("registrationapp.exactMpiPatientFound")}</span>
-
+            <div id="exact-matches" style="display: none; margin-bottom: 20px">
+                <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
                 <ul id="exactPatientsSelect" class="select"></ul>
             </div>
             <div id="confirmationQuestion">

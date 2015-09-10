@@ -1,0 +1,10 @@
+{
+    "providerName": "registrationapp",
+    "fragmentId": "field/personAddressWithHierarchy",
+    "config" : {
+        "shortcutFor": "address1",
+        "manualFields": ["address2"],
+        "fieldMappings": {  "address1": "obs.CIEL:1234",
+                            "address2": "obs.CIEL:5678" }
+    }
+}

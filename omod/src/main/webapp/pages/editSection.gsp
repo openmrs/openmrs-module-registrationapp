@@ -144,6 +144,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                 >
                     <legend>${ ui.message(question.legend)}</legend>
+                     <% if(question.header) { %>
+                        <h3>${ui.message(question.header)}</h3>
+                     <% } %>
                     <% fields.each { field ->
                         def configOptions = [
                                 label:ui.message(field.label),

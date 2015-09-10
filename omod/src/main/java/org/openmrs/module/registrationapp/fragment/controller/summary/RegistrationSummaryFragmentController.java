@@ -29,7 +29,7 @@ public class RegistrationSummaryFragmentController {
                            ) {
 
         config.require("patient");
-        AppContextModel appContextModel = new AppContextModel();
+        AppContextModel appContextModel = sessionContext.generateAppContextModel();
 
         Object patient = config.get("patient");
         if (patient instanceof Patient) {
@@ -49,15 +49,15 @@ public class RegistrationSummaryFragmentController {
         }
         model.addAttribute("appId", app !=null ? app.getId() : null);
 
-        List<Extension> registrationFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments");
+        List<Extension> registrationFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments", appContextModel);
         Collections.sort(registrationFragments);
         model.addAttribute("registrationFragments", registrationFragments);
 
-        List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments");
+        List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments", appContextModel);
         Collections.sort(secondColumnFragments);
         model.addAttribute("secondColumnFragments", secondColumnFragments);
 
-        List<Extension> overallActions = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.overallActions");
+        List<Extension> overallActions = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.overallActions", appContextModel);
         Collections.sort(overallActions);
         model.addAttribute("overallActions", overallActions);
 

@@ -1,0 +1,7 @@
+{
+    "providerName": "uicommons",
+    "fragmentId": "field/text",
+    "config" : {
+        "size": 20
+    }
+}

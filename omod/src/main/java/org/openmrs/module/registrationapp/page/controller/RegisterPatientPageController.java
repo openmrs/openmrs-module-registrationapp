@@ -10,24 +10,27 @@ import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-public class RegisterPatientPageController {
+public class RegisterPatientPageController extends AbstractRegistrationAppPageController {
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
+                    @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @ModelAttribute("patient") @BindParams Patient patient,
-                    @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties) throws Exception {
+                    @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
+                    UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType());
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
@@ -49,6 +52,7 @@ public class RegisterPatientPageController {
                 app.getConfig().get("patientDashboardLink").getTextValue() : null);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
+        model.addAttribute("breadcrumbOverride", breadcrumbOverride);
     }
 
 }

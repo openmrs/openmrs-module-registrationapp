@@ -15,7 +15,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("Patient.find") }", link: "${ ui.pageLink("registrationapp", "findPatient") }" }
+        { label: "${ ui.message("registrationapp.findPatient") }", link: "${ ui.pageLink("registrationapp", "findPatient") }" }
     ];
 
     jq(function() {
@@ -26,7 +26,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         handle: function (row, widgetData) {
             var query = widgetData.lastQuery;
             history.replaceState({ query: query }, "", "${baseUrl}&search=" + query);
-            location.href = emr.pageLink("registrationapp", "registrationSummary", { patientId: row.uuid, appId: '${appId}', search: query});
+            location.href = emr.pageLink("registrationapp", "registrationSummary", { patientId: row.uuid, appId: '${appId}', search: query, breadcrumbOverride: '${breadcrumbOverride}' });
         }
     }
 
@@ -47,7 +47,7 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
           showLastViewedPatients: 'false' ])}
     </div>
     <div id="register-patient-div" class="search-div">
-        <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId ]) }">
+        <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId, breadcrumbOverride: breadcrumbOverride ]) }">
             <button id="register-patient-button">${ ui.message("registrationapp.new.registration") }</button>
         </a>
     </div>
@@ -56,56 +56,57 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
 <br>
 <br>
 
-<div class="container">
-
-    <div id="encounters-list">
-        <h3>${ ui.message("Previous patients registered at this location") }</h3>
-        <table id="encounters-table">
-            <thead>
-            <tr>
-                <th>${ ui.message("coreapps.patient.identifier") }</th>
-                <th>${ ui.message("coreapps.person.name") }</th>
-                <th>${ ui.message("coreapps.gender") }</th>
-                <th>${ ui.message("coreapps.birthdate") }</th>
-                <th>${ ui.message("coreapps.patientDashBoard.date") }</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% if ( (appEncounters == null)
-                    || (appEncounters!= null && appEncounters.size() == 0)) { %>
-            <tr>
-                <td colspan="5">${ ui.message("uicommons.dataTable.emptyTable") }</td>
-            </tr>
-            <% } %>
-            <% appEncounters.sort{ it.encounterDatetime }.reverse().each { encounter ->
-                // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
-            %>
-            <tr>
-                <td>${ encounter.patient.patientIdentifier }</td>
-                <td>
-                    <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId ]) }">
-                    ${ ui.format((encounter.patient)) }
-                </td>
-                <td>${ ui.format( encounter.patient.gender) }</td>
-                <td>${ ui.format( encounter.patient.birthdate) }</td>
-                <td>${ ui.format(encounter.encounterDatetime) }</td>
-            </tr>
-            <% } %>
-            </tbody>
-        </table>
+<% if (mostRecentRegistrationEncounters != null) { %>
+    <div class="container">
+        <div id="encounters-list">
+            <h3>${ ui.message("registrationapp.previouslyRegisteredPatients") }</h3>
+            <table id="encounters-table">
+                <thead>
+                <tr>
+                    <th>${ ui.message("coreapps.patient.identifier") }</th>
+                    <th>${ ui.message("coreapps.person.name") }</th>
+                    <th>${ ui.message("coreapps.gender") }</th>
+                    <th>${ ui.message("coreapps.birthdate") }</th>
+                    <th>${ ui.message("Encounter.datetime") }</th>
+                    <th>${ ui.message("general.dateCreated") }</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% if (mostRecentRegistrationEncounters.size() == 0) { %>
+                <tr>
+                    <td colspan="6">${ ui.message("uicommons.dataTable.emptyTable") }</td>
+                </tr>
+                <% } %>
+                <% mostRecentRegistrationEncounters.sort{ it.dateCreated }.reverse().each { encounter ->
+                    // def minutesAgo = (long) ((System.currentTimeMillis() - enc.encounterDatetime.time) / 1000 / 60)
+                %>
+                <tr>
+                    <td>${ encounter.patient.patientIdentifier }</td>
+                    <td>
+                        <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, appId: appId,  breadcrumbOverride: breadcrumbOverride ]) }">
+                        ${ ui.format((encounter.patient)) }
+                    </td>
+                    <td>${ ui.format( encounter.patient.gender) }</td>
+                    <td>${ ui.format( encounter.patient.birthdate) }</td>
+                    <td>${ ui.format(encounter.encounterDatetime) }</td>
+                    <td>${ ui.format(encounter.dateCreated) }</td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-
-<% if (appEncounters !=null && appEncounters.size() > 0) { %>
-${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#encounters-table",
-                                                         options: [
-                                                                 bFilter: false,
-                                                                 bJQueryUI: true,
-                                                                 bLengthChange: false,
-                                                                 iDisplayLength: 5,
-                                                                 sPaginationType: '\"full_numbers\"',
-                                                                 bSort: false,
-                                                                 sDom: '\'ft<\"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg \"ip>\''
-                                                         ]
-]) }
+    <% if (mostRecentRegistrationEncounters.size() > 0) { %>
+        ${ ui.includeFragment("uicommons", "widget/dataTable", [ object: "#encounters-table",
+                                                                 options: [
+                                                                         bFilter: false,
+                                                                         bJQueryUI: true,
+                                                                         bLengthChange: false,
+                                                                         iDisplayLength: 5,
+                                                                         sPaginationType: '\"full_numbers\"',
+                                                                         bSort: false,
+                                                                         sDom: '\'ft<\"fg-toolbar ui-toolbar ui-corner-bl ui-corner-br ui-helper-clearfix datatables-info-and-pg \"ip>\''
+                                                                 ]
+        ]) }
+    <% } %>
 <% } %>
