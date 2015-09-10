@@ -10,7 +10,7 @@
     <div class="info-header">
         <i class="icon-user"></i>
         <h3>${ (section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)).toUpperCase() }</h3>
-        <i class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }"
+        <i id="${ section.id }-edit-link" class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }"
            onclick="location.href='${ui.pageLink("registrationapp", "editSection", [patientId: patient.patient.id, returnUrl: returnUrl, sectionId: section.id, appId: appId ])}#visits';"></i>
 
     </div>

@@ -215,7 +215,7 @@ public class RegisterPatientFragmentController {
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
-        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getId().toString());
+        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid().toString());
         if (registrationEncounter != null) {
             redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
         }
@@ -256,10 +256,12 @@ public class RegisterPatientFragmentController {
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
                     buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
                 }
-                for (Obs obs : groupObsToCreate) {
-                    groupObs.addGroupMember(obs);
+                if (groupObsToCreate.size() > 0) {
+                    for (Obs obs : groupObsToCreate) {
+                        groupObs.addGroupMember(obs);
+                    }
+                    obsToCreate.add(groupObs);
                 }
-                obsToCreate.add(groupObs);
             }
         }
     }
@@ -270,7 +272,7 @@ public class RegisterPatientFragmentController {
             throw new IllegalArgumentException("Cannot find concept: " + conceptId);
         }
         for (String parameterValue : parameterValues) {
-            if (StringUtils.isNotEmpty(parameterValue)) {
+            if (StringUtils.isNotBlank(parameterValue)) {
                 Obs obs = new Obs();
                 obs.setConcept(concept);
                 if (concept.getDatatype().isCoded()) {

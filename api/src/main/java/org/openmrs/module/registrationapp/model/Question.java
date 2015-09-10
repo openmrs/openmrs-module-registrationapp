@@ -3,6 +3,7 @@ package org.openmrs.module.registrationapp.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Question {
@@ -22,6 +23,9 @@ public class Question {
     @JsonProperty
     private List<Field> fields;
 
+    @JsonProperty
+    private String header;
+
     public Question() {
     }
 
@@ -35,6 +39,13 @@ public class Question {
     	this.legend = legend;
     	this.id = id;
     }
+
+    public Question(List<Field> fields, String legend, String header, String id) {
+        this.fields = fields;
+        this.legend = legend;
+        this.header = header;
+        this.id = id;
+    }
     
     public List<Field> getFields() {
         return fields;
@@ -44,6 +55,13 @@ public class Question {
         this.fields = fields;
     }
 
+    public void addField(Field field) {
+        if (fields == null) {
+            fields = new ArrayList<Field>();
+        }
+        fields.add(field);
+    }
+
     public String getLegend() {
         return legend;
     }
@@ -51,6 +69,10 @@ public class Question {
     public void setLegend(String legend) {
         this.legend = legend;
     }
+
+    public String getHeader() { return header; }
+
+    public void setHeader(String header) { this.header = header; }
 
     public String getId() {
     	return id;

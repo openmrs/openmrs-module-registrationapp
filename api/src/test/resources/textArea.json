@@ -1,0 +1,7 @@
+{
+    "providerName": "uicommons",
+    "fragmentId": "field/textarea",
+    "config" : {
+        "maxlength": 60
+    }
+}

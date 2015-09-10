@@ -171,7 +171,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -192,7 +192,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -217,7 +217,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(1));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -244,7 +244,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getId()));
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(patient.getAttribute(emrApiProperties.getUnknownPatientPersonAttributeType()).getValue(), is("true"));
         assertThat(patient.getGivenName(), is("UNKNOWN"));
         assertThat(patient.getFamilyName(), is("UNKNOWN"));

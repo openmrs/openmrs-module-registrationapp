@@ -1,5 +1,15 @@
 <%
     ui.includeJavascript("registrationapp", "field/personAddressWithHierarchy.js")
+
+    def parseAsBoolean = {
+        if (it instanceof org.codehaus.jackson.node.BooleanNode) {
+            return it.booleanValue
+        }
+        if (it instanceof java.lang.String) {
+            return it.toBoolean()
+        }
+        return it;
+    }
 %>
 <div id="${ config.id }-container">
 
@@ -7,14 +17,14 @@
         def shortcutDisplay = ui.message(addressTemplate.nameMappings[config.shortcutFor])
     %>
         <p>
-            <label><em>(Optional) Quick search by ${ shortcutDisplay }</em></label>
-            <input type="text" class="address-hierarchy-shortcut" size="60" placeholder="${ui.escapeAttribute(shortcutDisplay)}, or skip to search manually"/>
+            <label><em>${ ui.message('registrationapp.addressHierarchyWidget.shortcut', shortcutDisplay) }</em></label>
+            <input type="text" class="address-hierarchy-shortcut" size="60" placeholder="${ ui.message('registrationapp.addressHierarchyWidget.shortcut.instructions',ui.escapeAttribute(shortcutDisplay))}"/>
         </p>
     <% } %>
 
     <% levels.each { level ->
         def classes = [ "level" ]
-        if (level.required) {
+        if (parseAsBoolean(config.required) && level.required) {
             classes.add("required")
         }
         def levelInitial = ""
@@ -26,13 +36,22 @@
     %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
+            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ config.fieldMappings?.get(level.addressField.name)?.getTextValue() ?: level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
 </div>
 
 <script type="text/javascript">
+
+    var personAddressWithHierarchy = {
+        id: null,
+        container: null,
+        initialValue: null,
+        shortcutFor: null,
+        manualFields: []
+    }
+
     personAddressWithHierarchy.id = '${ config.id }';
     personAddressWithHierarchy.container = jq('#${ config.id }-container');
     <% if (config.shortcutFor) { %>
@@ -46,4 +65,7 @@
     <% if (initialValue) { %>
         personAddressWithHierarchy.initialValue = ${ ui.toJson(initialValue) };
     <% } %>
+
+    PersonAddressWithHierarchy(personAddressWithHierarchy);
+
 </script>

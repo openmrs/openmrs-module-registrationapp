@@ -1,0 +1,17 @@
+{
+    "afterCreatedUrl": "registrationapp/findPatient.page?appId=registrationapp.registerPatient",
+    "patientDashboardLink": "registrationapp/registrationSummary.page",
+    "allowRetrospectiveEntry": true,
+    "allowUnknownPatients": true,
+    "allowManualIdentifier": true,
+    "registrationEncounter": {
+        "encounterType": "873f968a-73a8-4f9c-ac78-9f4778b751b6",
+        "encounterRole": "cbfe0b9d-9923-404c-941b-f048adc8cdc0"
+    },
+    "sections": [
+        {
+            "id": "contactInfo",
+            "label": "emr.patientDashBoard.contactinfo"
+        }
+    ]
+}
