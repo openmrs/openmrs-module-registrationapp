@@ -6,8 +6,21 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTimeComparator;
-import org.openmrs.*;
-import org.openmrs.api.*;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
+import org.openmrs.Obs;
+import org.openmrs.Patient;
+import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.ObsService;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -34,7 +47,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -48,7 +60,7 @@ public class RegisterPatientFragmentController {
         String obsConcept = null;
         String[] obsValues = null;
 
-        ObsGroupItem(){};
+        ObsGroupItem(){}
 
         ObsGroupItem(String obsConcept, String[] obsValues) {
             this.obsConcept = obsConcept;

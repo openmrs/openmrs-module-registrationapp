@@ -13,14 +13,11 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.SimpleObject;
-import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.RequestParam;
 
