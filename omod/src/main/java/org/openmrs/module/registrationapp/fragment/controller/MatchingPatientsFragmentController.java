@@ -74,7 +74,7 @@ public class MatchingPatientsFragmentController {
         otherDataPoints.put("birthdateYears", birthdateYears);
         otherDataPoints.put("birthdateMonths", birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, null, 2.0, 10);
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, 2.0, 10);
         return simplify(ui, matches);
     }
 
