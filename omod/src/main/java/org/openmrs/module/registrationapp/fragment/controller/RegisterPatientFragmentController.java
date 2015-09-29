@@ -32,6 +32,7 @@ import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -50,7 +51,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -122,14 +122,10 @@ public class RegisterPatientFragmentController {
         patient.addName(name);
         patient.addAddress(address);
 
-        if (patient.getBirthdate() == null && birthdateYears != null) {
+        // handle birthdate estimate, if no birthdate but estimate present
+        if (patient.getBirthdate() == null && (birthdateYears != null || birthdateMonths != null)) {
             patient.setBirthdateEstimated(true);
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, -birthdateYears);
-            if (birthdateMonths != null) {
-                calendar.add(Calendar.MONTH, -birthdateMonths);
-            }
-            patient.setBirthdate(calendar.getTime());
+            patient.setBirthdate(RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
         }
 
         if(formStructure!=null){
