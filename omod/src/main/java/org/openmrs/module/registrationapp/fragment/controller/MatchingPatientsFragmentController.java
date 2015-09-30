@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -55,8 +57,8 @@ public class MatchingPatientsFragmentController {
         otherDataPoints.put("birthdateYears", birthdateYears);
         otherDataPoints.put("birthdateMonths", birthdateMonths);
 
-		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, 2.0, 10);
-        return simplify(ui, matches);
+		List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, 2.0, determineMaxResults(app));
+        return simplify(ui, app, matches);
 	}
 
     public List<SimpleObject> getExactPatients(@RequestParam("appId") AppDescriptor app,
@@ -74,20 +76,16 @@ public class MatchingPatientsFragmentController {
         otherDataPoints.put("birthdateYears", birthdateYears);
         otherDataPoints.put("birthdateMonths", birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, 2.0, 10);
-        return simplify(ui, matches);
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, 2.0, determineMaxResults(app));
+        return simplify(ui, app, matches);
     }
 
-    private List<SimpleObject> simplify(UiUtils ui, List<PatientAndMatchQuality> matches) {
+    private List<SimpleObject> simplify(UiUtils ui, AppDescriptor app, List<PatientAndMatchQuality> matches) {
         List<Patient> similarPatients = new ArrayList<Patient>();
         for (PatientAndMatchQuality match : matches) {
             similarPatients.add(match.getPatient());
         }
-
-        String[] propertiesToInclude = new String[] { "patientId", "givenName", "familyName",
-                "patientIdentifier.identifier", "gender", "birthdate", "personAddress" };
-
-        return SimpleObject.fromCollection(similarPatients, ui, propertiesToInclude);
+        return SimpleObject.fromCollection(similarPatients, ui, determinePropertiesToInclude(app));
     }
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
@@ -98,6 +96,39 @@ public class MatchingPatientsFragmentController {
 
         if (formStructure != null) {
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+        }
+    }
+
+    private String [] determinePropertiesToInclude(AppDescriptor app) {
+
+        List<String> propertiesToIncludeList = null;
+        String [] propertiesToIncludeArray;
+
+        if (app.getConfig().get("matchingPatientsPropertiesToDisplay") != null) {
+            propertiesToIncludeList = new ArrayList<String>();
+            propertiesToIncludeList.add("patientId");
+            Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
+            while (i.hasNext()) {
+                propertiesToIncludeList.add(i.next().getTextValue());
+            }
+        }
+
+        if (propertiesToIncludeList != null) {
+            propertiesToIncludeArray = propertiesToIncludeList.toArray(new String[propertiesToIncludeList.size()]);
+        }
+        else {
+            propertiesToIncludeArray =  new String[] { "patientId", "personName", "patientIdentifier.identifier", "gender", "birthdate", "personAddress" };
+        }
+
+        return propertiesToIncludeArray;
+    }
+
+    private Integer determineMaxResults(AppDescriptor app) {
+        if (app.getConfig().get("maxPatientSearchResults") != null) {
+            return app.getConfig().get("maxPatientSearchResults").getIntValue();
+        }
+        else {
+            return 10;
         }
     }
 

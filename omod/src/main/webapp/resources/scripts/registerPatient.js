@@ -22,6 +22,26 @@ jq(function() {
         return false;
     });
 
+    renderPatientAsDelimitedString = function (patient) {
+        var str = "";
+        // TODO handle this recursively, support more than one level of nesting levels?
+        _.map(patient, function(value, key){
+            if (key != 'patientId') {
+                if (value !== null && typeof value === 'object') {
+                    _.map(value, function(nestedValue) {
+                        if (nestedValue) {
+                            str += nestedValue + " | ";
+                        }
+                    });
+                }
+                else if (value) {
+                    str += value + " | ";
+                }
+            }
+        })
+        return str.substring(0, str.length - 2);  // chop off trailing " | "
+    }
+
     getSimilarPatients = function (field) {
         var focusedField = $(':focus');
         jq('.date-component').trigger('blur');
@@ -43,7 +63,7 @@ jq(function() {
                     var link = patientDashboardLink;
                     link += '?patientId=' + item.patientId;
                     var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
-                    row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+                    row += renderPatientAsDelimitedString(item);
                     row += '</li>';
                     similarPatientsSelect.append(row);
                 }
@@ -75,7 +95,7 @@ jq(function() {
                         var link = patientDashboardLink;
                         link += '?patientId=' + item.patientId;
                         var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
-                        row += item.givenName + ' ' + item.familyName + ' | ' + item.patientIdentifier.identifier + ' | ' + item.gender + ' | ' + item.birthdate + ' | ' + item.personAddress;
+                        row += renderPatientAsDelimitedString(item);
                         row += '</li>';
                         exactPatientsSelect.append(row);
                     }
