@@ -24,7 +24,7 @@ jq(function() {
 
     renderPatientAsDelimitedString = function (patient) {
         var str = "";
-        // TODO handle this recursively, support more than one level of nesting levels?
+        // TODO handle this recursively to support more than one level of nesting levels
         _.map(patient, function(value, key){
             if (key != 'patientId') {
                 if (value !== null && typeof value === 'object') {
