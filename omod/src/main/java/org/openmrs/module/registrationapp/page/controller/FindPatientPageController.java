@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -42,9 +43,10 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
                            UiUtils ui
                            ) throws EvaluationException {
 
+        Location sessionLocation = uiSessionContext.getSessionLocation();
         // only show the most recent registration encounters if a registration encounter has been defined for this app
         if (app.getConfig() != null && app.getConfig().get("registrationEncounter") != null) {
-            model.addAttribute("mostRecentRegistrationEncounters", addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService));
+            model.addAttribute("mostRecentRegistrationEncounters", addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService, sessionLocation));
             model.addAttribute("appId", app.getId());
         }
         else {
@@ -58,7 +60,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
     }
 
     private List<Encounter> addMostRecentRegistrationEncounters(PageModel model, AppDescriptor app, AllDefinitionLibraries libraries,
-                                                                DataSetDefinitionService dsdService, EncounterService encounterService)
+                                                                DataSetDefinitionService dsdService, EncounterService encounterService, Location location)
                                                     throws EvaluationException {
 
         List<EncounterType> encounterTypes = new ArrayList<EncounterType>();
@@ -97,7 +99,10 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
             if (!patientIds.contains(patientId)) {
                 patientIds.add(patientId);
                 if (registrationEncounters.size() < 5) {
-                    registrationEncounters.add(encounterService.getEncounter(encounterId));
+                    Encounter encounter = encounterService.getEncounter(encounterId);
+                    if (encounter.getLocation().getId().compareTo(location.getId()) == 0 ) {
+                        registrationEncounters.add(encounter);
+                    }
                 } else {
                     break;
                 }
