@@ -67,8 +67,8 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                     <th>${ ui.message("coreapps.person.name") }</th>
                     <th>${ ui.message("coreapps.gender") }</th>
                     <th>${ ui.message("coreapps.birthdate") }</th>
-                    <th>${ ui.message("Encounter.datetime") }</th>
-                    <th>${ ui.message("general.dateCreated") }</th>
+                    <th>${ ui.message("registrationapp.encounterDate") }</th>
+                    <th>${ ui.message("registrationapp.dateCreated") }</th>
                 </tr>
                 </thead>
                 <tbody>

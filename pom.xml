@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>registrationapp</artifactId>
-	<version>1.3-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Registration App Module</name>
 	<description>Registration App for the Reference Application</description>
@@ -43,11 +43,11 @@
         <emrapiVersion>1.2</emrapiVersion>
         <calculationVersion>1.0</calculationVersion>
         <providerManagementVersion>1.1.3</providerManagementVersion>
-        <registrationcoreVersion>1.3-SNAPSHOT</registrationcoreVersion>
+        <registrationcoreVersion>1.3</registrationcoreVersion>
         <reportingModuleVersion>0.9.6</reportingModuleVersion>
         <addresshierarchyVersion>2.4</addresshierarchyVersion>
         <htmlformentryVersion>2.5</htmlformentryVersion>
-        <appuiVersion>1.4-SNAPSHOT</appuiVersion>
+        <appuiVersion>1.4</appuiVersion>
         <coreappsVersion>1.6</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.7</serializationXstreamModuleVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

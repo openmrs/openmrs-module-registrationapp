@@ -19,6 +19,7 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Section;
+import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
@@ -33,7 +34,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Calendar;
 import javax.servlet.http.HttpServletRequest;
 
 public class EditSectionPageController {
@@ -85,17 +85,11 @@ public class EditSectionPageController {
             }
         }
 
-        // handle birthdate, if present
-        if (patient.getBirthdate() == null && birthdateYears != null) {
+        // handle birthdate estimate, if no birthdate but estimate present
+        if (patient.getBirthdate() == null && (birthdateYears != null || birthdateMonths != null)) {
             patient.setBirthdateEstimated(true);
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, -birthdateYears);
-            if (birthdateMonths != null) {
-                calendar.add(Calendar.MONTH, -birthdateMonths);
-            }
-            patient.setBirthdate(calendar.getTime());
+            patient.setBirthdate(RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
         }
-
 
         // handle person address, if present
         if (address != null && !address.isBlank()) {

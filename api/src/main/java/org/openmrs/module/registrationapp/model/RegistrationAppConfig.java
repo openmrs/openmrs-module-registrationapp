@@ -31,6 +31,14 @@ public class RegistrationAppConfig {
     @JsonProperty
     private List<String> afterCreatedActions;
 
+    // properties to display when displaying lists of similar or exact patient matches
+    @JsonProperty
+    private List<String> matchingPatientsPropertiesToDisplay;
+
+    // maximum number of patients to return when doing similar and exact searches (default is 10)
+    @JsonProperty
+    private Integer maxPatientSearchResults;
+
     public RegistrationAppConfig() {
     }
 
@@ -72,6 +80,22 @@ public class RegistrationAppConfig {
 
     public void setAllowManualIdentifier(boolean allowManualIdentifier) {
         this.allowManualIdentifier = allowManualIdentifier;
+    }
+
+    public List<String> getMatchingPatientsPropertiesToDisplay() {
+        return matchingPatientsPropertiesToDisplay;
+    }
+
+    public void setMatchingPatientsPropertiesToDisplay(List<String> matchingPatientsPropertiesToDisplay) {
+        this.matchingPatientsPropertiesToDisplay = matchingPatientsPropertiesToDisplay;
+    }
+
+    public Integer getMaxPatientSearchResults() {
+        return maxPatientSearchResults;
+    }
+
+    public void setMaxPatientSearchResults(Integer maxPatientSearchResults) {
+        this.maxPatientSearchResults = maxPatientSearchResults;
     }
 
     public RegistrationEncounter getRegistrationEncounter() {
