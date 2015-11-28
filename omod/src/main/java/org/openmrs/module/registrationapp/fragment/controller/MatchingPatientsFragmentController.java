@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +67,7 @@ public class MatchingPatientsFragmentController {
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
         List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        return getSimpleObjects(ui, matches);
+        return getSimpleObjects(app, ui, matches);
     }
 
     public List<SimpleObject> getExactPatients(@RequestParam("appId") AppDescriptor app,
@@ -81,7 +83,7 @@ public class MatchingPatientsFragmentController {
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
         List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        return getSimpleObjects(ui, matches);
+        return getSimpleObjects(app, ui, matches);
     }
 
     private Map<String, Object> createDataPoints(Integer birthdateYears, Integer birthdateMonths) {
@@ -102,16 +104,16 @@ public class MatchingPatientsFragmentController {
         }
     }
 
-    private List<SimpleObject> getSimpleObjects(UiUtils ui, List<PatientAndMatchQuality> matches) {
+    private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches) {
         List<SimpleObject> result = new ArrayList<SimpleObject>();
 
         for (PatientAndMatchQuality matchedPatient : matches) {
             Patient patientEntry = matchedPatient.getPatient();
             SimpleObject patientSimple;
             if (patientEntry instanceof MpiPatient) {
-                patientSimple = SimpleObject.fromObject(patientEntry, ui, MPI_PATIENT_PROPERTIES);
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, MPI_PATIENT_PROPERTIES));
             } else {
-                patientSimple = SimpleObject.fromObject(patientEntry, ui, PATIENT_PROPERTIES);
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
             }
             addIdentifiersToPatientSimple(patientEntry, patientSimple);
             result.add(patientSimple);
@@ -132,6 +134,29 @@ public class MatchingPatientsFragmentController {
             }
         }
         patientSimple.put("identifiers", identifiersList);
+    }
+
+    private String [] determinePropertiesToInclude(AppDescriptor app, String[] defaultProperties) {
+        List<String> propertiesToIncludeList = null;
+        String [] propertiesToIncludeArray;
+
+        if (app.getConfig().get("matchingPatientsPropertiesToDisplay") != null) {
+            propertiesToIncludeList = new ArrayList<String>();
+            propertiesToIncludeList.add("patientId");
+            Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
+            while (i.hasNext()) {
+                propertiesToIncludeList.add(i.next().getTextValue());
+            }
+        }
+
+        if (propertiesToIncludeList != null) {
+            propertiesToIncludeArray = propertiesToIncludeList.toArray(new String[propertiesToIncludeList.size()]);
+        }
+        else {
+            propertiesToIncludeArray =  defaultProperties;
+        }
+
+        return propertiesToIncludeArray;
     }
 
     private Integer determineMaxResults(AppDescriptor app) {
