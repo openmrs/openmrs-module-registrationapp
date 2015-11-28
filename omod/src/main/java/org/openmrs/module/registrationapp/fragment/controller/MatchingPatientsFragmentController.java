@@ -32,8 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -55,9 +57,14 @@ public class MatchingPatientsFragmentController {
                                                  @ModelAttribute("patient") @BindParams Patient patient,
                                                  @ModelAttribute("personName") @BindParams PersonName name,
                                                  @ModelAttribute("personAddress") @BindParams PersonAddress address,
+                                                 @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
+                                                 @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                  HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
+
+        Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
+
+        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, MAX_RESULTS);
         return getSimpleObjects(ui, matches);
     }
 
@@ -66,10 +73,22 @@ public class MatchingPatientsFragmentController {
                                                @ModelAttribute("patient") @BindParams Patient patient,
                                                @ModelAttribute("personName") @BindParams PersonName name,
                                                @ModelAttribute("personAddress") @BindParams PersonAddress address,
+                                               @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
+                                               @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, null, CUTOFF, MAX_RESULTS);
+
+        Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
+
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, MAX_RESULTS);
         return getSimpleObjects(ui, matches);
+    }
+
+    private Map<String, Object> createDataPoints(Integer birthdateYears, Integer birthdateMonths) {
+        Map<String, Object> otherDataPoints = new HashMap<String, Object>();
+        otherDataPoints.put("birthdateYears", birthdateYears);
+        otherDataPoints.put("birthdateMonths", birthdateMonths);
+        return otherDataPoints;
     }
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
