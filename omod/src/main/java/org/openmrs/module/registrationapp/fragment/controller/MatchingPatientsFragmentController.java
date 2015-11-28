@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  *
  */
+//TODO this class is to complex. Filtering by patient properties should be extracted into separate class.
 public class MatchingPatientsFragmentController {
 
     public static final int MAX_RESULTS = 10;
@@ -143,6 +145,9 @@ public class MatchingPatientsFragmentController {
         if (app.getConfig().get("matchingPatientsPropertiesToDisplay") != null) {
             propertiesToIncludeList = new ArrayList<String>();
             propertiesToIncludeList.add("patientId");
+            if (Arrays.asList(defaultProperties).contains("mpiPatient")) {
+                propertiesToIncludeList.add("mpiPatient");
+            }
             Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
