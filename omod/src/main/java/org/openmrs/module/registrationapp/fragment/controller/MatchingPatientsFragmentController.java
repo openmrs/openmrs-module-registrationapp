@@ -64,7 +64,7 @@ public class MatchingPatientsFragmentController {
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, MAX_RESULTS);
+        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(ui, matches);
     }
 
@@ -80,7 +80,7 @@ public class MatchingPatientsFragmentController {
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, MAX_RESULTS);
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(ui, matches);
     }
 
@@ -132,5 +132,14 @@ public class MatchingPatientsFragmentController {
             }
         }
         patientSimple.put("identifiers", identifiersList);
+    }
+
+    private Integer determineMaxResults(AppDescriptor app) {
+        if (app.getConfig().get("maxPatientSearchResults") != null) {
+            return app.getConfig().get("maxPatientSearchResults").getIntValue();
+        }
+        else {
+            return MAX_RESULTS;
+        }
     }
 }
