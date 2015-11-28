@@ -54,6 +54,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 #similarPatientsSelect .container .identifiers {
     font-size: 15px;
     display:inline-block;
+    min-width: 600px;
 }
 
 #similarPatientsSelect .container .identifiers .idName {

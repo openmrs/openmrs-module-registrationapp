@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -88,13 +90,6 @@ public class MatchingPatientsFragmentController {
         return getSimpleObjects(app, ui, matches);
     }
 
-    private Map<String, Object> createDataPoints(Integer birthdateYears, Integer birthdateMonths) {
-        Map<String, Object> otherDataPoints = new HashMap<String, Object>();
-        otherDataPoints.put("birthdateYears", birthdateYears);
-        otherDataPoints.put("birthdateMonths", birthdateMonths);
-        return otherDataPoints;
-    }
-
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
@@ -104,6 +99,13 @@ public class MatchingPatientsFragmentController {
         if (formStructure != null) {
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
         }
+    }
+
+    private Map<String, Object> createDataPoints(Integer birthdateYears, Integer birthdateMonths) {
+        Map<String, Object> otherDataPoints = new HashMap<String, Object>();
+        otherDataPoints.put("birthdateYears", birthdateYears);
+        otherDataPoints.put("birthdateMonths", birthdateMonths);
+        return otherDataPoints;
     }
 
     private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches) {
