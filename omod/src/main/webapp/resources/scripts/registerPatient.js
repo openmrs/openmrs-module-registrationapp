@@ -69,18 +69,20 @@ jq(function() {
 
             cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress);
 
-            var identifiers = cloned.find('.identifiers');
-            item.identifiers.forEach(function (entry) {
-                var clonedIdName = identifiers.find('.idNameTemplate').clone();
-                clonedIdName.text(entry.name + ': ');
-                clonedIdName.removeClass("idNameTemplate");
-                identifiers.append(clonedIdName);
+            if (item.identifiers) {
+                var identifiers = cloned.find('.identifiers');
+                item.identifiers.forEach(function (entry) {
+                    var clonedIdName = identifiers.find('.idNameTemplate').clone();
+                    clonedIdName.text(entry.name + ': ');
+                    clonedIdName.removeClass("idNameTemplate");
+                    identifiers.append(clonedIdName);
 
-                var clonedIdValue = identifiers.find(".idValueTemplate").clone();
-                clonedIdValue.text(entry.value);
-                clonedIdValue.removeClass("idValueTemplate");
-                identifiers.append(clonedIdValue);
-            });
+                    var clonedIdValue = identifiers.find(".idValueTemplate").clone();
+                    clonedIdValue.text(entry.value);
+                    clonedIdValue.removeClass("idValueTemplate");
+                    identifiers.append(clonedIdValue);
+                });
+            }
 
             var button;
             if (isMpi) {

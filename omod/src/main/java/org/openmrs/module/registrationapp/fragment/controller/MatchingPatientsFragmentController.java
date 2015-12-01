@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -146,7 +144,6 @@ public class MatchingPatientsFragmentController {
 
         if (app.getConfig().get("matchingPatientsPropertiesToDisplay") != null) {
             propertiesToIncludeList = new ArrayList<String>();
-            propertiesToIncludeList.add("patientId");
             if (Arrays.asList(defaultProperties).contains("mpiPatient")) {
                 propertiesToIncludeList.add("mpiPatient");
             }
@@ -154,6 +151,7 @@ public class MatchingPatientsFragmentController {
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
             }
+            addRequiredPropertiesToInclude(propertiesToIncludeList);  // these are properties hardcoded into the default template, so must be included
         }
 
         if (propertiesToIncludeList != null) {
@@ -163,7 +161,22 @@ public class MatchingPatientsFragmentController {
             propertiesToIncludeArray =  defaultProperties;
         }
 
-        return propertiesToIncludeArray;
+            return propertiesToIncludeArray;
+    }
+
+    private void addRequiredPropertiesToInclude(List<String> propertiesToInclude) {
+        addIfMissing("patientId", propertiesToInclude);
+        addIfMissing("givenName", propertiesToInclude);
+        addIfMissing("familyName", propertiesToInclude);
+        addIfMissing("gender", propertiesToInclude);
+        addIfMissing("personAddress", propertiesToInclude);
+        addIfMissing("birthdate", propertiesToInclude);
+    }
+
+    private void addIfMissing(String property, List<String> propertiesToInclude) {
+        if (!propertiesToInclude.contains(property)) {
+            propertiesToInclude.add(property);
+        }
     }
 
     private Integer determineMaxResults(AppDescriptor app) {
