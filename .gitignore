@@ -1,17 +1,9 @@
-/.classpath
-/.settings
-/.project
-/target
-/api/.classpath
-/api/.settings
-/api/.project
-/api/target
-/omod/.classpath
-/omod/.settings
-/omod/.project
-/omod/target
+.classpath
+.settings
+.project
+.idea
+target
 
-/.idea
 *.iml
 *.sass-cache
 *.DS_Store
