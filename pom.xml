@@ -29,6 +29,8 @@
 
 	<modules>
 		<module>api</module>
+		<module>web-1.9</module>
+		<module>web-2.0</module>
 		<module>omod</module>
 	</modules>
 	
@@ -78,6 +80,12 @@
             <version>${openMRSVersion}</version>
             <type>jar</type>
             <scope>provided</scope>
+            <exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
         <dependency>
@@ -86,6 +94,12 @@
             <version>${openMRSVersion}</version>
             <type>jar</type>
             <scope>provided</scope>
+            <exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
         <dependency>
@@ -94,6 +108,12 @@
             <version>${openMRSVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
+            <exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
         <dependency>
@@ -102,6 +122,12 @@
             <version>${openMRSVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
+            <exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
         <dependency>
@@ -110,6 +136,12 @@
             <version>${openMRSVersion}</version>
             <type>pom</type>
             <scope>test</scope>
+            <exclusions>
+				<exclusion>
+					<artifactId>javassist</artifactId>
+					<groupId>javassist</groupId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
         <!-- End OpenMRS core -->

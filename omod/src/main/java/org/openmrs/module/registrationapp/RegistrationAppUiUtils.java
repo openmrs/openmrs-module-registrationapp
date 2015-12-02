@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.registrationapp;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,8 +21,6 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.address.AddressSupport;
-import org.openmrs.layout.web.address.AddressTemplate;
 import org.springframework.validation.BindingResult;
 
 public class RegistrationAppUiUtils {
@@ -86,9 +85,11 @@ public class RegistrationAppUiUtils {
 	
 	public static void validateLatitudeAndLongitudeIfNecessary(PersonAddress address, BindingResult errors) {
 		if (address != null) {
-			AddressTemplate template = AddressSupport.getInstance().getAddressTemplate().get(0);
+			
+	        Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
+
 			if (StringUtils.isNotBlank(address.getLatitude())) {
-				if (template.getElementRegex() != null && StringUtils.isBlank(template.getElementRegex().get("latitude"))) {
+				if (regex != null && StringUtils.isBlank(regex.get("latitude"))) {
 					if (!RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
 						errors.reject("registrationapp.latitude.invalid");
 					}
@@ -96,7 +97,7 @@ public class RegistrationAppUiUtils {
 			}
 			
 			if (StringUtils.isNotBlank(address.getLongitude())) {
-				if (template.getElementRegex() != null && StringUtils.isBlank(template.getElementRegex().get("longitude"))) {
+				if (regex != null && StringUtils.isBlank(regex.get("longitude"))) {
 					if (!RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
 						errors.reject("registrationapp.longitude.invalid");
 					}
