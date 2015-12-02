@@ -9,6 +9,7 @@ import java.util.Map;
  */
 public interface AfterPatientCreatedAction {
 
+
     /**
      * @param created the patient who is being created
      * @param submittedParameters parameters, typically from an HttpServletRequest
