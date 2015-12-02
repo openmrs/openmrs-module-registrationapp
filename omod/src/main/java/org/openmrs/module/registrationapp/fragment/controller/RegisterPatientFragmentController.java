@@ -49,6 +49,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,7 +57,6 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 public class RegisterPatientFragmentController {
 
@@ -66,7 +66,7 @@ public class RegisterPatientFragmentController {
         String obsConcept = null;
         String[] obsValues = null;
 
-        ObsGroupItem(){};
+        ObsGroupItem(){}
 
         ObsGroupItem(String obsConcept, String[] obsValues) {
             this.obsConcept = obsConcept;
@@ -90,6 +90,11 @@ public class RegisterPatientFragmentController {
         }
     }
 
+    public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
+                            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+        String patientUuid = registrationService.importMpiPatient(personId);
+        return new SuccessResult(patientUuid);
+    }
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,

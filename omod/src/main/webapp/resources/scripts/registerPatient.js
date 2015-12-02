@@ -4,6 +4,18 @@ jq = jQuery;
 
 var NavigatorController;
 
+function importMpiPatient(id) {
+    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
+        .success(function (response) {
+            var link = patientDashboardLink;
+            link += '?patientId=' + response.message;
+            location.href = link;
+        })
+        .error(function (xhr, status, err) {
+            alert('AJAX error ' + err);
+        });
+}
+
 jq(function() {
     NavigatorController = new KeyboardController();
 
@@ -18,28 +30,72 @@ jq(function() {
     });
 
     jq('#reviewSimilarPatientsButton').click(function () {
-        reviewSimilarPatients.show();
+        var slideView = $("#similarPatientsSlideView");
+        slideView.slideToggle();
+
         return false;
     });
 
-    renderPatientAsDelimitedString = function (patient) {
-        var str = "";
-        // TODO handle this recursively to support more than one level of nesting levels
-        _.map(patient, function(value, key){
-            if (key != 'patientId') {
-                if (value !== null && typeof value === 'object') {
-                    _.map(value, function(nestedValue) {
-                        if (nestedValue) {
-                            str += nestedValue + " | ";
-                        }
-                    });
-                }
-                else if (value) {
-                    str += value + " | ";
-                }
+    function showSimilarPatients(data) {
+        if (data.length == 0 || jq('#checkbox-unknown-patient').is(':checked')) {
+            jq("#similarPatients").hide();
+            jq("#similarPatientsSlideView").hide();
+            return;
+        } else {
+            jq("#similarPatients").show();
+        }
+
+        jq('#similarPatientsCount').text(data.length);
+        var similarPatientsSelect = jq('#similarPatientsSelect');
+        similarPatientsSelect.empty();
+        for (index in data) {
+            var item = data[index];
+            var isMpi = false;
+            if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
+                isMpi = true;
             }
-        })
-        return str.substring(0, str.length - 2);  // chop off trailing " | "
+
+            var container = $('#matchedPatientTemplates .container');
+            var cloned = container.clone();
+
+            cloned.find('.name').append(item.givenName + ' ' + item.familyName);
+
+            var gender;
+            if (item.gender == 'M') {
+                gender = "Male";
+            } else {
+                gender = "Female";
+            }
+
+            cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress);
+
+            var identifiers = cloned.find('.identifiers');
+            item.identifiers.forEach(function (entry) {
+                var clonedIdName = identifiers.find('.idNameTemplate').clone();
+                clonedIdName.text(entry.name + ': ');
+                clonedIdName.removeClass("idNameTemplate");
+                identifiers.append(clonedIdName);
+
+                var clonedIdValue = identifiers.find(".idValueTemplate").clone();
+                clonedIdValue.text(entry.value);
+                clonedIdValue.removeClass("idValueTemplate");
+                identifiers.append(clonedIdValue);
+            });
+
+            var button;
+            if (isMpi) {
+                button = $('#matchedPatientTemplates .mpi_button').clone();
+                button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
+            } else {
+                button = $('#matchedPatientTemplates .local_button').clone();
+                var link = patientDashboardLink;
+                link += '?patientId=' + item.uuid;
+                button.attr("onclick", "location.href=\'" + link + "\'");
+            }
+            cloned.append(button);
+
+            $('#similarPatientsSelect').append(cloned);
+        }
     }
 
     getSimilarPatients = function (field) {
@@ -47,26 +103,10 @@ jq(function() {
         jq('.date-component').trigger('blur');
 
         var formData = jq('#registration').serialize();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", { appId: appId }), formData)
-            .success(function (data) {
-                if (data.length == 0) {
-                    jq("#similarPatients").hide();
-                } else {
-                    jq("#similarPatients").show();
-                }
-
-                jq('#similarPatientsCount').text(data.length);
-                var similarPatientsSelect = jq('#similarPatientsSelect');
-                similarPatientsSelect.empty();
-                for (index in data) {
-                    var item = data[index];
-                    var link = patientDashboardLink;
-                    link += '?patientId=' + item.patientId;
-                    var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
-                    row += renderPatientAsDelimitedString(item);
-                    row += '</li>';
-                    similarPatientsSelect.append(row);
-                }
+        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", {appId: appId}), formData)
+            .success(function(data) {
+                jq("#reviewSimilarPatientsButton").show();
+                showSimilarPatients(data);
             })
             .error(function (xhr, status, err) {
                 alert('AJAX error ' + err);
@@ -84,23 +124,17 @@ jq(function() {
         var formData = jq('#registration').serialize();
 
         $('#exact-matches').hide();
-        $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", { appId: appId }), formData)
-            .success(function (response) {
-                if (!jq('#checkbox-unknown-patient').is(':checked') && response.length > 0) {
-                    $('#exact-matches').show();
-                    var exactPatientsSelect = jq('#exactPatientsSelect');
-                    exactPatientsSelect.empty();
-                    for (index in response) {
-                        var item = response[index];
-                        var link = patientDashboardLink;
-                        link += '?patientId=' + item.patientId;
-                        var row = '<li style="width: auto" onclick="location.href=\'' + link + '\'">';
-                        row += renderPatientAsDelimitedString(item);
-                        row += '</li>';
-                        exactPatientsSelect.append(row);
-                    }
-                    submitButton.prop('disabled', false);
-                }
+        $('#mpi-exact-match').hide();
+        $('#local-exact-match').hide();
+        $.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", {appId: appId}), formData)
+            .success(function (data) {
+                jq("#reviewSimilarPatientsButton").hide();
+                showSimilarPatients(data);
+                jq("#similarPatientsSlideView").show();
+                submitButton.prop('disabled', false);
+            })
+            .error(function (xhr, status, err) {
+                alert('AJAX error ' + err);
             });
     });
 

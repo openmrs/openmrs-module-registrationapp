@@ -50,10 +50,10 @@ public class RegistrationAppActivator extends BaseModuleActivator {
 
             IdentifierSource sourceForPrimaryType = identifierSourceService.getAutoGenerationOption(primaryIdentifierType).getSource();
 
-            administrationService.setGlobalProperty(RegistrationCoreConstants.GP_IDENTIFIER_SOURCE_ID, sourceForPrimaryType.getId().toString());
+            administrationService.setGlobalProperty(RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID, sourceForPrimaryType.getId().toString());
         }
         catch (Exception ex) {
-            log.warn("Failed to set global property for " + RegistrationCoreConstants.GP_IDENTIFIER_SOURCE_ID + " based on " + EmrApiConstants.PRIMARY_IDENTIFIER_TYPE + ". Will try again at next module startup.", ex);
+            log.warn("Failed to set global property for " + RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID + " based on " + EmrApiConstants.PRIMARY_IDENTIFIER_TYPE + ". Will try again at next module startup.", ex);
         }
     }
 
