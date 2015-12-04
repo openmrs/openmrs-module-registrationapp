@@ -3,10 +3,9 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.address.AddressSupport;
-import org.openmrs.layout.web.address.AddressTemplate;
 import org.openmrs.module.addresshierarchy.AddressHierarchyLevel;
 import org.openmrs.module.addresshierarchy.service.AddressHierarchyService;
+import org.openmrs.module.registrationapp.AddressSupportCompatibility;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
@@ -24,8 +23,8 @@ public class PersonAddressWithHierarchyFragmentController {
         List<AddressHierarchyLevel> levels = addressHierarchyService.getOrderedAddressHierarchyLevels();
         model.put("levels", levels);
 
-        AddressTemplate addressTemplate = AddressSupport.getInstance().getDefaultLayoutTemplate();
-        model.put("addressTemplate", addressTemplate);
+        AddressSupportCompatibility addressSupport = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class);
+        model.put("addressTemplate", addressSupport.getDefaultLayoutTemplate());
 
         SimpleObject initial = null;
         if (initialValue != null) {

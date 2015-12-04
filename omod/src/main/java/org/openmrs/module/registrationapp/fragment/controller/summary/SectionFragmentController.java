@@ -1,10 +1,11 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
 import org.openmrs.Patient;
-import org.openmrs.layout.web.name.NameSupport;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.module.registrationapp.NameSupportCompatibility;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -37,8 +38,10 @@ public class SectionFragmentController {
         } else if (patient instanceof PatientDomainWrapper) {
             patientWrapper = (PatientDomainWrapper) patient;
         }
+        
+        NameSupportCompatibility nameSupport = Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class);
 
-        model.put("nameTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+        model.put("nameTemplate", nameSupport.getDefaultLayoutTemplate());
         model.put("section", formStructure.getSections().get(sectionId));
         model.put("uiUtils", new RegistrationAppUiUtils());
     }

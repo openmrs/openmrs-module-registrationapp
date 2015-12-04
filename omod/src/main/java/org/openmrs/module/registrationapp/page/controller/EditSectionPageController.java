@@ -15,6 +15,8 @@ import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.registrationapp.AddressSupportCompatibility;
+import org.openmrs.module.registrationapp.NameSupportCompatibility;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -159,12 +161,15 @@ public class EditSectionPageController {
                                     AdministrationService adminService, String returnUrl,
                                     AppDescriptor app) throws Exception {
 
+        NameSupportCompatibility nameSupport = Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class);
+        AddressSupportCompatibility addressSupport = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class);
+
         model.addAttribute("app", app);
         model.addAttribute("returnUrl", returnUrl);
         model.put("uiUtils", new RegistrationAppUiUtils());
         model.addAttribute("patient", patient);
-        model.addAttribute("addressTemplate", AddressSupport.getInstance().getAddressTemplate().get(0));
-        model.addAttribute("nameTemplate", NameSupport.getInstance().getDefaultLayoutTemplate());
+        model.addAttribute("addressTemplate", addressSupport.getAddressTemplate());
+        model.addAttribute("nameTemplate", nameSupport.getDefaultLayoutTemplate());
         model.addAttribute("section", section);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 adminService.getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));

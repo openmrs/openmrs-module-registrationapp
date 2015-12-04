@@ -31,6 +31,18 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.RegistrationAppActivator</activator>
 	
+	<!-- Conditional Resources -->
+    <conditionalResources>
+    	<conditionalResource>
+            <path>/lib/registrationapp-web-1.9-${project.parent.version}.jar</path>
+            <openmrsVersion>1.9.9 - 1.12.*</openmrsVersion>
+        </conditionalResource>
+        <conditionalResource>
+            <path>/lib/registrationapp-web-2.0-${project.parent.version}.jar</path>
+            <openmrsVersion>2.0.*</openmrsVersion>
+        </conditionalResource>
+    </conditionalResources>
+    <!-- / Conditional Resources -->
 	
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
