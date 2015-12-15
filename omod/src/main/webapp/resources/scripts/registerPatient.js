@@ -67,7 +67,16 @@ jq(function() {
                 gender = emr.message('emr.gender.F');
             }
 
-            cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress);
+            var attributes = "";
+            if (item.attributeMap) {
+                _.each(item.attributeMap, function(value, key) {
+                    if (value) {
+                        attributes = attributes + ", " + value;
+                    }
+                });
+            }
+
+            cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress + attributes);
 
             if (item.identifiers) {
                 var identifiers = cloned.find('.identifiers');
