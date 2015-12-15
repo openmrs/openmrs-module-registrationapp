@@ -62,9 +62,9 @@ jq(function() {
 
             var gender;
             if (item.gender == 'M') {
-                gender = "Male";
+                gender = emr.message('emr.gender.M');
             } else {
-                gender = "Female";
+                gender = emr.message('emr.gender.F');
             }
 
             cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress);

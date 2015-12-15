@@ -30,6 +30,14 @@
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 %>
+
+<!-- used within registerPatient.js -->
+<%= ui.includeFragment("appui", "messages", [ codes: [
+        'emr.gender.M',
+        'emr.gender.F'
+].flatten()
+]) %>
+
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <style type="text/css">
