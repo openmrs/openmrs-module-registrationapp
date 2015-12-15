@@ -84,6 +84,13 @@ jq(function() {
                 });
             }
 
+            if (item.attributeMap) {
+                var attributes = cloned.find('.identifiers');
+                _.each(item.attributeMap, function(value, key) {
+                    console.log(key, value);
+                });
+            }
+
             var button;
             if (isMpi) {
                 button = $('#matchedPatientTemplates .mpi_button').clone();

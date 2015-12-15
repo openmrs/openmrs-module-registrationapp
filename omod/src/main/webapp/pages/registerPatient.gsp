@@ -124,10 +124,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </div>
         </div>
         <button class="local_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
-            Open
+            ${ui.message("registrationapp.open")}
         </button>
         <button class="mpi_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/execute_script_which_will_request_service_to_import_patient_from_mpi_to_local_DB_and_redirect_to_patient_info'">
-             Import and Open
+            ${ui.message("registrationapp.importAndOpen")}
         </button>
     </div>
 
