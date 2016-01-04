@@ -34,6 +34,7 @@ public class RegistrationSummaryPageController extends AbstractRegistrationAppPa
                              UiUtils ui,
                              UiSessionContext sessionContext) {
 
+        // TODO handle error case of patient == null
         if (patient.isVoided() || patient.isPersonVoided()) {
             return new Redirect("coreapps", "patientdashboard/deletedPatient", "patientId=" + patient.getId());
         }
