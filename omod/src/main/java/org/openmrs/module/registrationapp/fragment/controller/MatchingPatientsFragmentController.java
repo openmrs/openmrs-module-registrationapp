@@ -165,6 +165,7 @@ public class MatchingPatientsFragmentController {
     }
 
     private void addRequiredPropertiesToInclude(List<String> propertiesToInclude) {
+        addIfMissing("uuid", propertiesToInclude);
         addIfMissing("patientId", propertiesToInclude);
         addIfMissing("givenName", propertiesToInclude);
         addIfMissing("familyName", propertiesToInclude);
