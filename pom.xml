@@ -39,7 +39,6 @@
         <uiframeworkVersion>3.0</uiframeworkVersion>
         <appframeworkVersion>2.1</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
-        <eventVersion>2.1</eventVersion>
         <idgenVersion>2.5</idgenVersion>
         <uicommonsVersion>1.0</uicommonsVersion>
         <emrapiVersion>1.2</emrapiVersion>
@@ -252,7 +251,7 @@
 
         <dependency>
             <groupId>org.openmrs</groupId>
-            <artifactId>event-api</artifactId>
+            <artifactId>event-api-1.x</artifactId>
             <version>${eventVersion}</version>
             <scope>test</scope>
         </dependency>
