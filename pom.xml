@@ -51,7 +51,7 @@
         <appuiVersion>1.4</appuiVersion>
         <coreappsVersion>1.6</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.7</serializationXstreamModuleVersion>
-        <eventVersion>2.3-SNAPSHOT</eventVersion>
+        <eventVersion>2.3</eventVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
