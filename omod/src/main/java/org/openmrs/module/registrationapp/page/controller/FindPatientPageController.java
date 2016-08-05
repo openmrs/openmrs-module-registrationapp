@@ -1,6 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Encounter;
@@ -10,6 +11,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.reporting.common.SortCriteria;
+import org.openmrs.module.reporting.data.converter.PropertyConverter;
 import org.openmrs.module.reporting.data.encounter.definition.EncounterDataDefinition;
 import org.openmrs.module.reporting.data.patient.definition.PatientDataDefinition;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -27,8 +29,10 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class FindPatientPageController extends AbstractRegistrationAppPageController {
@@ -86,6 +90,16 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
         d.addColumn("dateCreated", libraries.getDefinition(EncounterDataDefinition.class, "reporting.library.encounterDataDefinition.builtIn.dateCreated"), "");
         d.addColumn("encounterDatetime", libraries.getDefinition(EncounterDataDefinition.class, "reporting.library.encounterDataDefinition.builtIn.encounterDatetime"), "");
 
+        // add the paper record identifier, if the definition is available (provided by the paper record module)
+        PatientDataDefinition paperRecordIdentifierDefinition =  libraries.getDefinition(PatientDataDefinition.class, "paperrecord.patientDataDefinition.paperRecordIdentifier");
+        if (paperRecordIdentifierDefinition != null) {
+            model.addAttribute("paperRecordIdentifierDefinitionAvailable", true);
+            d.addColumn("paperRecordIdentifier", paperRecordIdentifierDefinition, "", new PropertyConverter(String.class, "identifier"));
+        }
+        else {
+            model.addAttribute("paperRecordIdentifierDefinitionAvailable", false);
+        }
+
         d.addSortCriteria("dateCreated", SortCriteria.SortDirection.DESC);
 
         SimpleDataSet dataSet = (SimpleDataSet) dsdService.evaluate(d, new EvaluationContext());
@@ -93,11 +107,17 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
         List<Encounter> registrationEncounters = new ArrayList<Encounter>();
         //display the last 5 registration encounters for distinct patients
         Set<Integer> patientIds = new HashSet<Integer>();
+        //to minimize the changes to this core module we just added an independent map to keep track of patients paper record IDs
+        Map<Integer, String> paperRecordIdentifierMap  = new HashMap<Integer, String>();
         for (DataSetRow row : rows) {
             Integer patientId = (Integer) row.getColumnValue("patientId");
             Integer encounterId = (Integer) row.getColumnValue("encounterId");
+            String paperRecordId = (String) row.getColumnValue("paperRecordIdentifier");
             if (!patientIds.contains(patientId)) {
                 patientIds.add(patientId);
+                if (StringUtils.isNotBlank(paperRecordId)) {
+                    paperRecordIdentifierMap.put(patientId, paperRecordId);
+                }
                 if (registrationEncounters.size() < 5) {
                     Encounter encounter = encounterService.getEncounter(encounterId);
                     if (encounter.getLocation().getId().compareTo(location.getId()) == 0 ) {
@@ -108,7 +128,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
                 }
             }
         }
-
+        model.addAttribute("paperRecordIdentifierMap", paperRecordIdentifierMap);
         return registrationEncounters;
     }
 }

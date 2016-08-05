@@ -64,6 +64,9 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 <thead>
                 <tr>
                     <th>${ ui.message("coreapps.patient.identifier") }</th>
+                    <% if (paperRecordIdentifierDefinitionAvailable) { %>
+                        <th>${ ui.message("paperrecord.archivesRoom.recordNumber.label") }</th>
+                    <% } %>
                     <th>${ ui.message("coreapps.person.name") }</th>
                     <th>${ ui.message("coreapps.gender") }</th>
                     <th>${ ui.message("coreapps.birthdate") }</th>
@@ -82,6 +85,9 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
                 %>
                 <tr>
                     <td>${ encounter.patient.patientIdentifier }</td>
+                    <% if (paperRecordIdentifierDefinitionAvailable) { %>
+                        <td>${  paperRecordIdentifierMap.get(encounter.patient.patientId) ? ui.format( paperRecordIdentifierMap.get(encounter.patient.patientId) ) : ''}</td>
+                    <% } %>
                     <td>
                         <a href="${ ui.pageLink("registrationapp", "registrationSummary", [ patientId: encounter.patient.patientId, appId: appId,  breadcrumbOverride: breadcrumbOverride ]) }">
                         ${ ui.format((encounter.patient)) }
