@@ -16,10 +16,6 @@
     def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
                           [label: ui.message("emr.gender.F"), value: 'F'] ]
 
-    def cleanup = {
-        return (it instanceof org.codehaus.jackson.node.TextNode) ? it.textValue : it;
-    }
-
     Calendar cal = Calendar.getInstance()
     def maxAgeYear = cal.get(Calendar.YEAR)
     def minAgeYear = maxAgeYear - 120
@@ -280,17 +276,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <% } %>
 
                             <% fields.each { field ->
-                                def configOptions = [
-                                        label:ui.message(field.label),
-                                        formFieldName: field.formFieldName,
-                                        left: true,
-                                        "classes": field.cssClasses
-                                ]
-                                if (field.widget.config) {
-                                    field.widget.config.fields.each {
-                                        configOptions[it.key] = cleanup(it.value);
-                                    }
-                                }
+                                def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
+                                configOptions.label = ui.message(field.label)
+                                configOptions.formFieldName = field.formFieldName
+                                configOptions.left = true
+                                configOptions.classes = field.cssClasses
+
                                 if(field.type == 'personAddress'){
                                     configOptions.addressTemplate = addressTemplate
                                 }
