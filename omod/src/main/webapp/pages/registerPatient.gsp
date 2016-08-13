@@ -285,7 +285,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 if(field.type == 'personAddress'){
                                     configOptions.addressTemplate = addressTemplate
                                 }
-                                field.fragmentRequest.configuration = configOptions;
                             %>
                                 ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                             <% } %>
