@@ -36,7 +36,7 @@
     %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
-            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ config.fieldMappings?.get(level.addressField.name)?.getTextValue() ?: level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
+            <input class="${ classes.join(" ") }" type="text" autocomplete="off" size="40" name="${ config.fieldMappings?.get(level.addressField.name) ?: level.addressField.name }" id="${ config.id }-${ level.addressField.name }" value="${ ui.escapeAttribute(levelInitial) }"/>
             ${ ui.includeFragment("uicommons", "fieldErrors", [fieldName: level.addressField.name]) }
         </p>
     <% } %>
@@ -59,7 +59,7 @@
     <% } %>
     <% if (config.manualFields) { %>
         <% config.manualFields.each { %>
-            personAddressWithHierarchy.manualFields.push(${ it }); // since this comes from json config, it's a jackson text node, so we don't put quotes
+            personAddressWithHierarchy.manualFields.push('${ it }');
         <% } %>
     <% } %>
     <% if (initialValue) { %>
