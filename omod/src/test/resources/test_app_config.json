@@ -1,0 +1,55 @@
+{
+  "id": "casereport.registrationapp.registerPatient",
+  "instanceOf": "registrationapp.registerPatient",
+  "label": "Register Patient",
+  "description": "Create a new Patient Record",
+  "extensions": [
+    {
+      "id": "casereport.registrationapp.registerPatient.homepageLink",
+      "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+      "type": "link",
+      "label": "referenceapplication.app.registerPatient.label",
+      "url": "registrationapp/registerPatient.page?appId=casereport.registrationapp.registerPatient",
+      "icon": "icon-group",
+      "order": 1,
+      "requiredPrivilege": "App: registrationapp.registerPatient"
+    }
+  ],
+  "config": {
+    "afterCreatedUrl": "/coreapps/clinicianfacing/patient.page?patientId={{patientId}}",
+    "sections": [
+      {
+        "id": "otherInfo",
+        "label": "Other info",
+        "questions": [
+          {
+            "legend": "Some Person Attribute Field",
+            "id": "some-field",
+            "fields": [
+              {
+                "type": "personAttribute",
+                "label": "Some Field",
+                "formFieldName": "anotherField",
+                "uuid": "14d4f066-15f5-102d-96e4-000c29c2a5d7",
+                "widget": {
+                  "providerName": "uicommons",
+                  "fragmentId": "field/text",
+                  "cssClasses": [
+                    "regex",
+                    "numeric-range"
+                  ],
+                  "config": {
+                    "regex": "someRegex",
+                    "min": 2.0,
+                    "max": 4.0,
+                    "size": 60
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -46,6 +46,14 @@ public class RegisterPatientFormBuilder {
 	
 	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 	
+	/**
+	 * Builds the navigable form structure for the specified app descriptor
+	 * 
+	 * @param app the app descriptor
+	 * @return the form structure
+	 * @throws IOException
+	 * @should flatten the widget config
+	 */
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 		
