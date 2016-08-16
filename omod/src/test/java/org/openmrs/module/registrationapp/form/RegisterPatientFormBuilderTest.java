@@ -15,7 +15,6 @@ package org.openmrs.module.registrationapp.form;
 
 import static org.junit.Assert.assertEquals;
 
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -37,8 +36,9 @@ public class RegisterPatientFormBuilderTest {
 		assertEquals(1, fs.getFields().size());
 		FragmentConfiguration fc = fs.getFields().get(0).getFragmentRequest().getConfiguration();
 		assertEquals("someRegex", fc.getAttribute("regex"));
-		assertEquals("2.0", ((JsonNode) fc.get("min")).getValueAsText());
-		assertEquals("4.0", ((JsonNode) fc.get("max")).getValueAsText());
-		assertEquals("60", ((JsonNode) fc.get("size")).getValueAsText());
+		assertEquals(2.0, fc.get("min"));
+		assertEquals(4.0, fc.get("max"));
+		assertEquals(60, fc.get("size"));
+		assertEquals(true, fc.get("resizeable"));
 	}
 }

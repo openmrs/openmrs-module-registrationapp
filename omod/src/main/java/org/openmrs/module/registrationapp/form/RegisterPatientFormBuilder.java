@@ -109,6 +109,10 @@ public class RegisterPatientFormBuilder {
 		if (node != null) {
 			if (node.isTextual()) {
 				obj = node.getTextValue();
+			} else if (node.isBoolean()) {
+				obj = node.getBooleanValue();
+			} else if (node.isNumber()) {
+				obj = node.getNumberValue();
 			} else if (node.isArray()) {
 				List<Object> list = new ArrayList<Object>();
 				Iterator<JsonNode> itemIterator = node.getElements();

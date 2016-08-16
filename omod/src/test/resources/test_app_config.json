@@ -42,7 +42,8 @@
                     "regex": "someRegex",
                     "min": 2.0,
                     "max": 4.0,
-                    "size": 60
+                    "size": 60,
+                    "resizeable": true
                   }
                 }
               }
