@@ -56,7 +56,7 @@
         <% section.questions.each { question ->
             // TODO do we want to display any labels for questions?
             def fields = question.fields %>
-            <div>
+            <div id="${ question.id }">
                 <h3>${ ui.message(question.legend) }</h3>
                 <p class="left">
                     <% fields.each { field ->

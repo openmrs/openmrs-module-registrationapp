@@ -278,7 +278,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
             // go to the first level we didn't just set
             var goToLevel = firstLevelNotIncluded(ui.item.data);
 
-            // if we are using the single UI navigator, use the NavigatorController so that the simple for UI keeps up
+            // if we are using the simple UI navigator, use the NavigatorController so that the simple for UI keeps up
             if (typeof(NavigatorController) != 'undefined') {
                 var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
                 setTimeout(function () {

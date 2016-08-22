@@ -262,12 +262,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <% questions.each { question ->
                         def fields=question.fields
                     %>
-                        <fieldset
+                        <fieldset id="${question.id}"
                             <% if(question.legend == "Person.address"){ %> class="requireOne"<% } %>
                                 <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                             <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
-                            <legend id="${question.id}">${ ui.message(question.legend)}</legend>
+                            <legend>${ ui.message(question.legend)}</legend>
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
                             <% } %>

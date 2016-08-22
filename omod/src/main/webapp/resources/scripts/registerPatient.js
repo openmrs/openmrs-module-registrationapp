@@ -2,6 +2,7 @@ jq = jQuery;
 
 // TODO refactor this all into something cleaner
 
+// we expose this in the global scope so that other javascript widgets can access it--probably should have a better pattern for this
 var NavigatorController;
 
 function importMpiPatient(id) {
