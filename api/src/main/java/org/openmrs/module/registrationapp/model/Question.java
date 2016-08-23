@@ -26,6 +26,9 @@ public class Question {
     @JsonProperty
     private String header;
 
+    @JsonProperty
+    private List<String> cssClasses;
+
     public Question() {
     }
 
@@ -97,4 +100,13 @@ public class Question {
     public void setDisplayTemplate(String displayTemplate) {
         this.displayTemplate = displayTemplate;
     }
+
+    public List<String> getCssClasses() {
+        return cssClasses;
+    }
+
+    public void setCssClasses(List<String> cssClasses) {
+        this.cssClasses = cssClasses;
+    }
+
 }

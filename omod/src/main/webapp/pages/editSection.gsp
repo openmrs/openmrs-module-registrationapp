@@ -135,7 +135,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <% section.questions.each { question ->
                     def fields=question.fields
                 %>
-                <fieldset
+                <fieldset id="${question.id}"
+                    <% if (question.cssClasses) { %> class="${question.cssClasses?.join(' ')}" <% } %>
                     <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                     <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                 >
