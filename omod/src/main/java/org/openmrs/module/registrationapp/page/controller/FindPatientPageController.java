@@ -9,7 +9,10 @@ import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.domain.Extension;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.registrationapp.RegistrationAppConstants;
 import org.openmrs.module.reporting.common.SortCriteria;
 import org.openmrs.module.reporting.data.converter.PropertyConverter;
 import org.openmrs.module.reporting.data.encounter.definition.EncounterDataDefinition;
@@ -29,6 +32,7 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +48,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
                            @SpringBean AllDefinitionLibraries libraries,
                            @SpringBean DataSetDefinitionService dsdService,
                            @SpringBean("encounterService") EncounterService encounterService,
+                           @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                            UiUtils ui
                            ) throws EvaluationException {
 
@@ -57,6 +62,10 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
             model.addAttribute("mostRecentRegistrationEncounters", null);
             model.addAttribute("appId", null);
         }
+
+        List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser(RegistrationAppConstants.FIND_PATIENT_FRAGMENTS_EXTENSION_POINT);
+        Collections.sort(includeFragments);
+        model.addAttribute("includeFragments", includeFragments);
 
         // this breadcrumb override gets passed on to patient summary page, so that the patient summary page links back to this page--it can't by default, becauses
         // the default ref app workflow skips this page entirely

@@ -53,6 +53,13 @@ ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
     </div>
 </div>
 
+
+<% if (includeFragments) {
+    includeFragments.each { %>
+        ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, it.extensionParams.fragmentConfig) }
+    <%  }
+} %>
+
 <br>
 <br>
 
