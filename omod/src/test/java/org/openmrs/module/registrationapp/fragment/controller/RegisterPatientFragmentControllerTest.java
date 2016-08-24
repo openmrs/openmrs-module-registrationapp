@@ -2,6 +2,7 @@ package org.openmrs.module.registrationapp.fragment.controller;
 
 import org.apache.struts.mock.MockHttpServletRequest;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
@@ -55,6 +57,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
     public static final String WEIGHT_CONCEPT_UUID = "c607c80f-1ea9-4da3-bb88-6276ce8868dd";
     public static final String CIVIL_STATUS_CONCEPT_UUID = "89ca642a-dab6-4f20-b712-e12ca4fc6d36";
     public static final String MARRIED_CONCEPT_UUID = "92afda7c-78c9-47bd-a841-0de0817027d4";
+    public static final String OLD_IDENTIFIER_TYPE_UUID = "2f470aa8-1d73-43b7-81b5-01f0c0dfa53c";
 
     private RegisterPatientFragmentController controller;
 
@@ -248,6 +251,99 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         assertThat(patient.getAttribute(emrApiProperties.getUnknownPatientPersonAttributeType()).getValue(), is("true"));
         assertThat(patient.getGivenName(), is("UNKNOWN"));
         assertThat(patient.getFamilyName(), is("UNKNOWN"));
+    }
+
+    @Test
+    public void testPostWithPatientIdentifier() throws Exception {
+
+        // clear out the identifier we configured in the setup
+        patient.setIdentifiers(null);
+
+        // hack, make location not required
+        PatientIdentifierType type = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
+        type.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+        patientService.savePatientIdentifierType(type);
+
+        ObjectNode section = objectMapper.createObjectNode();
+        ArrayNode questions = objectMapper.createArrayNode();
+        ObjectNode question  = objectMapper.createObjectNode();
+        ArrayNode fields = objectMapper.createArrayNode();
+        ObjectNode identifierField = objectMapper.createObjectNode();
+        ObjectNode widget = objectMapper.createObjectNode();
+
+        widget.put("providerName", "test");
+        widget.put("fragmentId", "test");
+
+        identifierField.put("type", "patientIdentifier");
+        identifierField.put("uuid", OLD_IDENTIFIER_TYPE_UUID);
+        identifierField.put("formFieldName", "patientIdentifierField");
+        identifierField.put("widget", widget);
+        fields.add(identifierField);
+
+        question.put("fields", fields);
+        questions.add(question);
+        section.put("questions", questions);
+
+        ((ArrayNode) app.getConfig().get("sections")).add(section);
+
+        request.addParameter("patientIdentifierField", "123abcd");
+
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+                patient, name, address, 30, null, null, true, null, request,
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertThat(patient.getActiveIdentifiers().size(), is(1));
+        assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifier(), is("123abcd"));
+        assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifierType().getUuid(), is(OLD_IDENTIFIER_TYPE_UUID));
+
+    }
+
+    @Test
+    public void testPostToUpdatePatientIdentifier() throws Exception {
+
+        // hack, make location not required
+        PatientIdentifierType type = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
+        type.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+        patientService.savePatientIdentifierType(type);
+
+        ObjectNode section = objectMapper.createObjectNode();
+        ArrayNode questions = objectMapper.createArrayNode();
+        ObjectNode question  = objectMapper.createObjectNode();
+        ArrayNode fields = objectMapper.createArrayNode();
+        ObjectNode identifierField = objectMapper.createObjectNode();
+        ObjectNode widget = objectMapper.createObjectNode();
+
+        widget.put("providerName", "test");
+        widget.put("fragmentId", "test");
+
+        identifierField.put("type", "patientIdentifier");
+        identifierField.put("uuid", OLD_IDENTIFIER_TYPE_UUID);
+        identifierField.put("formFieldName", "patientIdentifierField");
+        identifierField.put("widget", widget);
+        fields.add(identifierField);
+
+        question.put("fields", fields);
+        questions.add(question);
+        section.put("questions", questions);
+
+        ((ArrayNode) app.getConfig().get("sections")).add(section);
+
+        request.addParameter("patientIdentifierField", "123abcd");
+
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+                patient, name, address, 30, null, null, true, null, request,
+                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof SuccessResult);
+        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertThat(patient.getActiveIdentifiers().size(), is(1));
+        assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifier(), is("123abcd"));
+        assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifierType().getUuid(), is(OLD_IDENTIFIER_TYPE_UUID));
+
     }
 
 }

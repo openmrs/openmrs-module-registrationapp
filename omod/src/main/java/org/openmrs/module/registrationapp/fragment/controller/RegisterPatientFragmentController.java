@@ -135,6 +135,7 @@ public class RegisterPatientFragmentController {
 
         if(formStructure!=null){
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+            RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
         }
 
         BindingResult errors = new BeanPropertyBindingResult(patient, "patient");

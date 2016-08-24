@@ -115,6 +115,7 @@ public class EditSectionPageController {
 
         if (formStructure != null) {
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+            RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
         }
 
         if (!errors.hasErrors()) {
