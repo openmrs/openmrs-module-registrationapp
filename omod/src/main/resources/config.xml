@@ -40,7 +40,7 @@
         </conditionalResource>
         <conditionalResource>
             <path>/lib/registrationapp-web-2.0-${project.parent.version}.jar</path>
-            <openmrsVersion>2.0.*</openmrsVersion>
+            <openmrsVersion>2.*</openmrsVersion>
         </conditionalResource>
     </conditionalResources>
     <!-- / Conditional Resources -->
