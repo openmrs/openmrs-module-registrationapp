@@ -14,7 +14,7 @@ import org.openmrs.layout.name.NameSupport;
 import org.springframework.stereotype.Component;
 
 @Component("registrationapp.NameSupportCompatibility")
-@OpenmrsProfile(openmrsPlatformVersion = "2.0.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.*")
 public class NameSupportCompatibility2_0 implements NameSupportCompatibility {
 
 	@Override
