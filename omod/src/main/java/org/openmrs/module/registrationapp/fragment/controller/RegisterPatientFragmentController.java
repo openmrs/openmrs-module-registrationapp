@@ -6,21 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.joda.time.DateTimeComparator;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.PersonAddress;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonName;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.DuplicateIdentifierException;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.InvalidCheckDigitException;
-import org.openmrs.api.ObsService;
-import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.*;
+import org.openmrs.api.*;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -147,6 +134,8 @@ public class RegisterPatientFragmentController {
         }
 
         try {
+            List<Relationship> relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+
             // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
             patient = registrationService.registerPatient(patient, null, patientIdentifier, sessionContext.getSessionLocation());
         }
@@ -408,5 +397,35 @@ public class RegisterPatientFragmentController {
             }
         }
         return false;
+    }
+
+    private List<Relationship> getPatientRelationships(String[] types, String[] persons) {
+        List<Relationship> relationships = new ArrayList<Relationship>();
+        PersonService personService = Context.getPersonService();
+
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] != null && types[i].length() > 0) {
+                // Remove flag characters at the end (used for relationship direction)
+                String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
+                // Last character reveals relationship direction (aIsToB or bIsToA)
+                char relationshipDirection = types[i].charAt(types[i].length() - 1);
+
+                RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
+                if (rt != null) {
+                    Person p = personService.getPersonByUuid(persons[i]);
+                    if (p != null) {
+                        if (relationshipDirection == 'A') {
+                            relationships.add(new Relationship(p, null, rt));
+                        } else if (relationshipDirection == 'B') {
+                            relationships.add(new Relationship(null, p, rt));
+                        } else {
+                            throw new APIException("Relationship direction not specified");
+                        }
+                    }
+                }
+            }
+        }
+
+        return relationships;
     }
 }
