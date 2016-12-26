@@ -310,6 +310,15 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
 
+        <section id="relationships-info" class="non-collapsible">
+            <span class="title">${ui.message("registrationapp.person.relationship")}</span>
+            <fieldset>
+                <legend>${ui.message("registrationapp.person.relationship.label")}</legend>
+                <h3>${ui.message("registrationapp.person.relationship.question")}</h3>
+                ${ui.includeFragment("registrationapp", "field/personRelationship", [reltionshipTypes: relationshipTypes])}
+            </fieldset>
+        </section>
+
         <div id="confirmation">
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
