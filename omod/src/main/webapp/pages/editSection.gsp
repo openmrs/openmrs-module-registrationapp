@@ -84,7 +84,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         def name = line.find({it['isToken'] == 'IS_NAME_TOKEN'})['codeName'];
                         def initialNameFieldValue = ""
                         if(patient.personName && patient.personName[name]){
-                            initialNameFieldValue = patient.personName[name]
+                            initialNameFieldValue = ui.encodeHtml(patient.personName[name])
                         }
                     %>
                     ${ ui.includeFragment("registrationapp", "field/personName", [
@@ -110,7 +110,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             formFieldName: "gender",
                             options: genderOptions,
                             classes: ["required"],
-                            initialValue: patient.gender,
+                            initialValue: ui.encodeHtml(patient.gender),
                             hideEmptyLabel: true,
                             expanded: true
                     ])}
@@ -151,9 +151,22 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         configOptions.left = true
                         configOptions.classes = field.cssClasses
 
+                        // [RA-452] Sanitize addresses to prevent XSS
+                        def htmlSafeAddress = [:]
+
+                        patient.personAddress.properties.each { prop, val ->
+
+                            if(val instanceof String){
+                                htmlSafeAddress[prop] = ui.encodeHtml(patient.personAddress."$prop")
+                            }else{
+                                htmlSafeAddress[prop] = patient.personAddress."$prop"
+                            }
+
+                        }
+
                         if(field.type == 'personAddress'){
                             configOptions.addressTemplate = addressTemplate
-                            configOptions.initialValue = patient.personAddress;
+                            configOptions.initialValue = htmlSafeAddress;
                         }else if(field.type == 'personAttribute'){
                             configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
                         }
