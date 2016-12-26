@@ -1,7 +1,9 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -16,6 +18,9 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegisterPatientPageController extends AbstractRegistrationAppPageController {
 
@@ -56,6 +61,17 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
+
+        // Relationship Types to exclude (Doctor/Patient and Supervisor/Supervisee)
+        String[] excludeRelationshipTypes = {"8d919b58-c2cc-11de-8d13-0010c6dffd0f", "2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"};
+        List<RelationshipType> relationshipTypeList = Context.getPersonService().getAllRelationshipTypes();
+        List<RelationshipType> relationshipTypes = new ArrayList<RelationshipType>();
+        for (RelationshipType rt : relationshipTypeList) {
+            if (!ArrayUtils.contains(excludeRelationshipTypes, rt.getUuid())) {
+                relationshipTypes.add(rt);
+            }
+        }
+        model.addAttribute("relationshipTypes", relationshipTypes);
     }
 
 }

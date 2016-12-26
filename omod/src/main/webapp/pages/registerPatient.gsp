@@ -300,6 +300,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </section>
         <% } %>
 
+        <section id="relationships-info">
+            <span class="title">${ui.message("registrationapp.person.relationship")}</span>
+            <fieldset>
+                ${ui.includeFragment("registrationapp", "field/personRelationship", [reltionshipTypes: relationshipTypes])}
+            </fieldset>
+        </section>
+
         <% if (allowManualIdentifier && !identifierSectionFound) { %>
             <section id="patient-identification-section" class="non-collapsible">
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
