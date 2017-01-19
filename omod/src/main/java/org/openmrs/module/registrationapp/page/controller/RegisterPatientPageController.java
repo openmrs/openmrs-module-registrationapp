@@ -1,15 +1,15 @@
 package org.openmrs.module.registrationapp.page.controller;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.AddressSupportCompatibility;
 import org.openmrs.module.registrationapp.NameSupportCompatibility;
+import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.ui.framework.UiUtils;
@@ -18,9 +18,6 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class RegisterPatientPageController extends AbstractRegistrationAppPageController {
 
@@ -36,6 +33,15 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
     }
 
     public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride) throws Exception {
+        // check if the appId needs to be replaced with the custom one defined as a global property
+        if (RegistrationAppUiUtils.getDefaultRegistrationAppId().equals(app.getId())) {
+            // replace the app with the one configured for registration
+            AppDescriptor customApp = Context.getService(AppFrameworkService.class).getApp(RegistrationAppUiUtils.getDefaultRegistrationAppId());
+            if (customApp != null) {
+                app = customApp;
+            }
+        }
+        
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
