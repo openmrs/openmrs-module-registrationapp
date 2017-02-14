@@ -10,6 +10,7 @@ import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,8 +21,14 @@ public class PersonAddressWithHierarchyFragmentController {
         // there is no accessible spring bean for this, so we fetch it in the old hacky way
         AddressHierarchyService addressHierarchyService = Context.getService(AddressHierarchyService.class);
 
+        List<AddressHierarchyLevel> validLevels = new ArrayList<AddressHierarchyLevel>();
         List<AddressHierarchyLevel> levels = addressHierarchyService.getOrderedAddressHierarchyLevels();
-        model.put("levels", levels);
+        for (AddressHierarchyLevel level : levels) {
+            if (level.getAddressField() != null) {
+                validLevels.add(level);
+            }
+        }
+        model.put("levels", validLevels);
 
         AddressSupportCompatibility addressSupport = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class);
         model.put("addressTemplate", addressSupport.getDefaultLayoutTemplate());
