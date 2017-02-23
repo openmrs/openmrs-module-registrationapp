@@ -17,7 +17,7 @@
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
  ,      ${ breadcrumbMiddle },
         { label: "${ ui.escapeJs(ui.format(patient.patient)) }" ,
-            link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id])}'}
+            link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.patient.id, appId: appId])}'}
     ]))
 
     var patient = { id: ${ patient.id } };
@@ -32,4 +32,4 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient, activeVisit: null, appContextModel: null ]) }
 
-${ ui.includeFragment("registrationapp", "summary/registrationSummary", [patient: patient, appId: "registrationapp.registerPatient"]) }
+${ ui.includeFragment("registrationapp", "summary/registrationSummary", [patient: patient, appId: appId]) }
