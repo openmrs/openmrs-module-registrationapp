@@ -1,5 +1,5 @@
 <%
-    def returnUrl = "/${contextPath}/registrationapp/registrationSummary.page?patientId=${patient.patient.id}"
+    def returnUrl = "/${contextPath}/registrationapp/registrationSummary.page?patientId=${patient.patient.id}&appId=${appId}"
 
 %>
 
@@ -8,7 +8,7 @@
 <div class="container">
     <div class="dashboard clear">
         <div class="info-container column">
-            ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: "registrationapp.registerPatient", sectionId: "demographics"]) }
+            ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "demographics"]) }
 
             <% if (registrationFragments) {
                 registrationFragments.each { %>
@@ -18,7 +18,7 @@
         </div>
 
         <div class="info-container column">
-            ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: "registrationapp.registerPatient", sectionId: "contactInfo"]) }
+            ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "contactInfo"]) }
 
             <% if (secondColumnFragments) {
                 secondColumnFragments.each { %>

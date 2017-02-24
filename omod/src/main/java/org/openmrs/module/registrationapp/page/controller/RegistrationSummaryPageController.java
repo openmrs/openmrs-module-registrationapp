@@ -47,7 +47,7 @@ public class RegistrationSummaryPageController extends AbstractRegistrationAppPa
 
         patientDomainWrapper.setPatient(patient);
         model.addAttribute("patient", patientDomainWrapper);
-        model.addAttribute("appId", app !=null ? app.getId() : null);
+        model.addAttribute("appId", app !=null ? app.getId() : "referenceapplication.registrationapp.registerPatient");
         model.addAttribute("search", search);
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
 

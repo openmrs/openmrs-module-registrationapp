@@ -47,7 +47,7 @@ public class RegistrationSummaryFragmentController {
         if (config.get("appId") !=null ) {
             app = appFrameworkService.getApp((String) config.get("appId"));
         }
-        model.addAttribute("appId", app !=null ? app.getId() : null);
+        model.addAttribute("appId", app !=null ? app.getId() : "referenceapplication.registrationapp.registerPatient");
 
         List<Extension> registrationFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments", appContextModel);
         Collections.sort(registrationFragments);
