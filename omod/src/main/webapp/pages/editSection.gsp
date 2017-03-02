@@ -151,22 +151,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         configOptions.left = true
                         configOptions.classes = field.cssClasses
 
-                        // [RA-452] Sanitize addresses to prevent XSS
-                        def htmlSafeAddress = [:]
-
-                        patient.personAddress.properties.each { prop, val ->
-
-                            if(val instanceof String){
-                                htmlSafeAddress[prop] = ui.encodeHtml(patient.personAddress."$prop")
-                            }else{
-                                htmlSafeAddress[prop] = patient.personAddress."$prop"
-                            }
-
-                        }
-
                         if(field.type == 'personAddress'){
                             configOptions.addressTemplate = addressTemplate
-                            configOptions.initialValue = htmlSafeAddress;
+                            configOptions.initialValue = patient.personAddress
                         }else if(field.type == 'personAttribute'){
                             configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
                         }
