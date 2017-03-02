@@ -2,7 +2,7 @@
     def patient = config.patient
     def appId  = config.appId
 
-    def returnUrl = "/${contextPath}/registrationapp/registrationSummary.page?patientId=${patient.patient.id}&appId=${appId}"
+    def returnUrl = ui.urlEncode("/${contextPath}/registrationapp/registrationSummary.page?patientId=${patient.patient.id}&appId=${appId}")
 
 
 %>
