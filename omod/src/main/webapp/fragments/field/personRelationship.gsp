@@ -11,7 +11,7 @@
 
     <div ng-repeat="relationship in relationships">
         <p class="left">
-            <select name="relationship_type" class="rel_type">
+            <select id="relationship_type" name="relationship_type" class="rel_type" ng-model="relationship.type">
                 <option value="">${ui.message('registrationapp.person.relationship.selectRelationshipType')}</option>
                 <% relationshipTypes.each { type -> %>
                 <option value="${type.uuid}-A">${type.aIsToB}</option>
