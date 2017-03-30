@@ -172,7 +172,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="confirmationQuestion">
                 ${ui.message("registrationapp.confirm")}
                 <p style="display: inline">
-                    <input type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
+                    <input id="submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
                 </p>
                 <p style="display: inline">
                     <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
