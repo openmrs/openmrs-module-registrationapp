@@ -123,7 +123,7 @@ public class EditSectionPageController {
                 //The person address changes get saved along as with the call to save patient
                 patientService.savePatient(patient);
                 InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
-                        ui.message("registrationapp.editContactInfoMessage.success", ui.encodeHtml(patient.getPersonName().toString())));
+                        ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : ""));
 
                 EventMessage eventMessage = new EventMessage();
                 eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
