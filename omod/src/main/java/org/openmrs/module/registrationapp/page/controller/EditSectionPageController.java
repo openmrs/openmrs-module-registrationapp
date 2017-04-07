@@ -122,16 +122,8 @@ public class EditSectionPageController {
             try {
                 //The person address changes get saved along as with the call to save patient
                 patientService.savePatient(patient);
-
-                // Ensure name is HTML-safe to prevent XSS in info messages
-                PersonName htmlSafePersonName = new PersonName(
-                        ui.encodeHtml(patient.getGivenName()),
-                        ui.encodeHtml(patient.getMiddleName()),
-                        ui.encodeHtml(patient.getFamilyName())
-                );
-
                 InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
-                        ui.message("registrationapp.editContactInfoMessage.success", htmlSafePersonName));
+                        ui.message("registrationapp.editContactInfoMessage.success", ui.encodeHtml(patient.getPersonName().toString())));
 
                 EventMessage eventMessage = new EventMessage();
                 eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
