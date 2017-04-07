@@ -42,7 +42,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         NavigatorController = KeyboardController();
         jq('#cancelSubmission').unbind(); // unbind the functionality built into the navigator to return to top of the form
         jq('#cancelSubmission').click(function(event){
-            window.location='${ ui.encodeHtml(returnUrl) }';
+            window.location='${ returnUrl }';
         })
     });
 </script>
@@ -69,7 +69,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </div>
     <% } %>
 
-    <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.encodeHtml(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
+    <form class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
         <!-- read configurable sections from the json config file-->
         <section id="${section.id}" class="non-collapsible">
             <span class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
