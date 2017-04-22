@@ -44,7 +44,7 @@
         <emrapiVersion>1.18</emrapiVersion>
         <calculationVersion>1.2</calculationVersion>
         <providerManagementVersion>2.5.0</providerManagementVersion>
-        <registrationcoreVersion>1.6</registrationcoreVersion>
+        <registrationcoreVersion>1.7-SNAPSHOT</registrationcoreVersion>
         <reportingModuleVersion>0.10.4</reportingModuleVersion>
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>

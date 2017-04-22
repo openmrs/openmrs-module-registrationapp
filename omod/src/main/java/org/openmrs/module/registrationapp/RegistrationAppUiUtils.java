@@ -21,6 +21,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.springframework.validation.BindingResult;
 
 public class RegistrationAppUiUtils {
@@ -103,6 +104,37 @@ public class RegistrationAppUiUtils {
 					}
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Get the defined custom registration appId from the global property value registrationcore.customRegistrationAppId defined by
+	 *
+	 * @see RegistrationAppConstants#GP_CUSTOM_REGISTRATION_APPID
+	 *
+	 * @return the custom appId or null if none is defined
+	 */
+	public static String getCustomRegistrationAppId() {
+		// check if there is a custom registration app registered then use that
+		String customRegistratonAppId = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.GP_CUSTOM_REGISTRATION_APPID);
+		if (StringUtils.isNotBlank(customRegistratonAppId)) {
+			return customRegistratonAppId;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Get the registration appId
+	 *
+	 * @return the Reference Application Registration appId or the custom one if defined by the global property {@link RegistrationAppConstants#GP_CUSTOM_REGISTRATION_APPID}
+	 */
+	public static String getDefaultRegistrationAppId() {
+		String customAppId = getCustomRegistrationAppId();
+		if (StringUtils.isBlank(customAppId)) {
+			return "referenceapplication.registrationapp.registerPatient";
+		} else {
+			return customAppId;
 		}
 	}
 }

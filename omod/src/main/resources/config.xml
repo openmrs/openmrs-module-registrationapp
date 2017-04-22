@@ -78,6 +78,14 @@
 		<name>App: registrationapp.registerPatient</name>
 		<description>Able to access the register patient app</description>
 	</privilege>
+	
+	<globalProperty>
+		<property>${project.parent.artifactId}.customRegistrationAppId</property>
+		<defaultValue></defaultValue>
+		<description>
+			Specifies the appId of a custom registration app, a blank value uses the default appId which is referenceapplication.registrationapp.registerPatient
+		</description>
+	</globalProperty>
 
 </module>
 
