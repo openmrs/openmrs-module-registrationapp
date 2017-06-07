@@ -129,7 +129,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
                 }
                 if (registrationEncounters.size() < 5) {
                     Encounter encounter = encounterService.getEncounter(encounterId);
-                    if (encounter.getLocation().getId().compareTo(location.getId()) == 0 ) {
+                    if (encounter.getLocation() != null && encounter.getLocation().getId().compareTo(location.getId()) == 0 ) {
                         registrationEncounters.add(encounter);
                     }
                 } else {
