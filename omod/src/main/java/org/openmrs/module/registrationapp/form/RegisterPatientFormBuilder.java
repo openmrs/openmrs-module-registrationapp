@@ -175,7 +175,7 @@ public class RegisterPatientFormBuilder {
 							log.warn("Multiple values for a single patient identifier type not supported, ignoring extra values");
 						}
 						String parameterValue = parameterValues[0];
-						if (parameterValue != null) {
+						if (StringUtils.isNotBlank(parameterValue)) {
 							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
 							if (identifierType  != null) {
 
