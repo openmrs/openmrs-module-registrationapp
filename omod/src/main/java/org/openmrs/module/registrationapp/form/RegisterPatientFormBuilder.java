@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,8 @@ import java.util.Map;
 public class RegisterPatientFormBuilder {
 
 	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
+
+	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
 
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
@@ -61,12 +64,8 @@ public class RegisterPatientFormBuilder {
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
-		// preload the demographics section; if there is a user-specified demographics section, it will override this, but remain at the front by rules of a LinkedHashMap
-		Section demographics = new Section();
-		demographics.setId("demographics");
-		demographics.setLabel("registrationapp.patient.demographics.label");
-		formStructure.addSection(demographics);
-
+		// Get the ordered list of sections out of the configuration
+		Map<String, Section> configuredSections = new LinkedHashMap<String, Section>();
 		ArrayNode sections = (ArrayNode) app.getConfig().get("sections");
 		for (JsonNode i : sections) {
 			ObjectNode config = (ObjectNode) i;
@@ -93,8 +92,20 @@ public class RegisterPatientFormBuilder {
 				}
 			}
 
-			formStructure.addSection(section);
+			configuredSections.put(section.getId(), section);
 		}
+
+		// If no demographics section is explicitly included, ensure the default one is included first
+        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+            Section demographics = new Section();
+            demographics.setId(DEMOGRAPHICS_SECTION_ID);
+            demographics.setLabel("registrationapp.patient.demographics.label");
+            formStructure.addSection(demographics);
+        }
+
+        for (Section section : configuredSections.values()) {
+            formStructure.addSection(section);
+        }
 
 		return formStructure;
 	}
