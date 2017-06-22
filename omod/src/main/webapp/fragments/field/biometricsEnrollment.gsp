@@ -5,7 +5,7 @@
     ui.includeJavascript("uicommons", "angular-app.js")
     ui.includeJavascript("uicommons", "ngDialog/ngDialog.js")
     ui.includeCss("uicommons", "ngDialog/ngDialog.min.css")
-    ui.includeJavascript("registrationapp", "biometrics/biometrics.js")
+    ui.includeJavascript("registrationapp", "field/biometrics.js")
     ui.includeJavascript("uicommons", "handlebars/handlebars.js")
 %>
 
@@ -15,6 +15,7 @@
     .biometric-section { padding: 20px; }
     .fingerprint-capture-section { display: inline-block; }
     .finger-label {font-weight: bold; padding-bottom: 5px; text-align: center;}
+    .biometrics-enrollment-field {display:none;}
 </style>
 
 <div id="fingerprint-enrollment-section" ng-controller="FingerprintScanningController" ng-init='init(${ ui.toJson(config) })'>
@@ -36,11 +37,11 @@
 
     <div class="service-enabled-section" ng-show="serverStatus.enabled">
 
-        <div class="biometric-section fingerprint-capture-section" ng-repeat="finger in fingersToScan track by finger.id">
+        <div class="biometric-section fingerprint-capture-section" ng-repeat="finger in fingersToScan track by finger.type">
             <div class="finger-label">{{finger.label}}</div>
-            <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.id].image }}" width="120" height="120"><br/>
+            <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.type].image }}" width="120" height="120"><br/>
             <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress">
-                {{scannedData[finger.id].buttonLabel}}
+                {{scannedData[finger.type].buttonLabel}}
             </button>
         </div>
 
@@ -72,7 +73,7 @@
 
         </div>
 
-        <p id="biometrics-enrollment-field">
+        <p id="biometrics-enrollment-field" class="biometrics-enrollment-field">
             <input id="biometrics-enrollment" type="text" size="40" name="{{ config.formFieldName }}" value="{{enrolledTemplate.subjectId}}"/>
         </p>
 
@@ -81,5 +82,5 @@
 </div>
 
 <script>
-    angular.bootstrap("#fingerprint-enrollment-section", ["openmrs-module-coreapps-biometrics"])
+    angular.bootstrap("#fingerprint-enrollment-section", ["openmrs-module-registrationapp-biometrics"])
 </script>

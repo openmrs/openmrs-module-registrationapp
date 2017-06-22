@@ -1,5 +1,5 @@
 
-angular.module('openmrs-module-coreapps-biometrics', ['ngDialog'])
+angular.module('openmrs-module-registrationapp-biometrics', ['ngDialog'])
 
     .service('FingerprintScanningService', ['$q', '$http',
 
@@ -181,12 +181,12 @@ angular.module('openmrs-module-coreapps-biometrics', ['ngDialog'])
 
             $scope.scanFinger = function(finger) {
                 $scope.scanningFingerInProgress = true;
-                $scope.scannedData[finger.id] = {"currentlyScanning": true, "buttonLabel": "Scanning"};
+                $scope.scannedData[finger.type] = {"currentlyScanning": true, "buttonLabel": "Scanning"};
                 FingerprintScanningService.scanFinger($scope.selectedScanner).then(function(data) {
                     $scope.scanningFingerInProgress = false;
                     data.currentlyScanning = false;
                     data.buttonLabel = "Re-Scan";
-                    $scope.scannedData[finger.id] = data;
+                    $scope.scannedData[finger.type] = data;
                 });
             };
 
@@ -222,7 +222,7 @@ angular.module('openmrs-module-coreapps-biometrics', ['ngDialog'])
                 $scope.fingersToScan = $scope.config.fingers;
                 $scope.scannedData = [];
                 $scope.fingersToScan.forEach(function(finger) {
-                    $scope.scannedData[finger.id] = {"currentlyScanning": false, "buttonLabel": "Scan"};
+                    $scope.scannedData[finger.type] = {"currentlyScanning": false, "buttonLabel": "Scan"};
                 });
             }
         }

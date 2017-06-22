@@ -11,7 +11,7 @@ public class BiometricsEnrollmentWidget extends Widget {
     private Config config;
 
     public BiometricsEnrollmentWidget() {
-        super("registrationapp", "biometrics/biometricsEnrollment");
+        super("registrationapp", "field/biometricsEnrollment");
     }
 
     public void setConfig(Config config) {
@@ -46,22 +46,22 @@ public class BiometricsEnrollmentWidget extends Widget {
     public static class Finger {
 
         @JsonProperty
-        private String id;  // This is what the fingerprinting engine uses to identify a particular finger (eg. left-index)
+        private String type;  // This is what the fingerprinting engine uses to identify a particular finger (eg. left-index)
 
         @JsonProperty
         private String label;  // This is what should appear on the enrollment page for the user
 
-        public Finger(String id, String label) {
-            this.id = id;
+        public Finger(String type, String label) {
+            this.type = type;
             this.label = label;
         }
 
-        public String getId() {
-            return id;
+        public String getType() {
+            return type;
         }
 
-        public void setId(String id) {
-            this.id = id;
+        public void setType(String type) {
+            this.type = type;
         }
 
         public String getLabel() {
