@@ -30,12 +30,16 @@
         <span ng-show="scannerInfo.scanners.length > 0">
             <select ng-options="scanner as scanner.displayName for scanner in scannerInfo.scanners track by scanner.id" ng-model="selectedScanner"></select>
         </span>
+        <button class="task" style="min-width: 30px;" type="button" ng-click="refreshScannerInfo()" ng-disabled="refreshingScannerInfo">
+            <i class="icon-refresh"></i>
+        </button>
+
         <i ng-show="refreshingScannerInfo" class="icon-spinner icon-spin"></i>
     </div>
 
     <div class="biometric-status" ng-show="serverStatus.statusMessage">{{ serverStatus.statusMessage }}</div>
 
-    <div class="service-enabled-section" ng-show="serverStatus.enabled">
+    <div class="service-enabled-section" ng-show="serverStatus.enabled && scannerInfo.enabled && scannerInfo.scanners.length > 0">
 
         <div class="biometric-section fingerprint-capture-section" ng-repeat="finger in fingersToScan track by finger.type">
             <div class="finger-label">{{finger.label}}</div>

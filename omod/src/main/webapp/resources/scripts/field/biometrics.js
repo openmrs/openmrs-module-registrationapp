@@ -39,7 +39,7 @@ angular.module('openmrs-module-registrationapp-biometrics', ['ngDialog'])
                         var scannerInfo = {};
                         scannerInfo.enabled = false;
                         scannerInfo.scanners = [];
-                        scannerInfo.statusMessage = "Unable to retrieve available scanners.  Please check browser console for errors.";
+                        scannerInfo.statusMessage = "Unable to retrieve available scanners.  Is the scanning service started?";
                         return scannerInfo;
                     }
                 );
@@ -214,10 +214,7 @@ angular.module('openmrs-module-registrationapp-biometrics', ['ngDialog'])
             $scope.init = function(config) {
                 $scope.config = config;
                 $scope.refreshScannerInfo();
-                $interval(function () {$scope.refreshScannerInfo();}, 5000);
-
                 $scope.refreshServerStatus();
-                $interval(function () {$scope.refreshServerStatus();}, 5000);
 
                 $scope.fingersToScan = $scope.config.fingers;
                 $scope.scannedData = [];
