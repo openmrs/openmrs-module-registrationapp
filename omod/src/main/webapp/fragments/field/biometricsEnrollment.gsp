@@ -41,11 +41,11 @@
 
     <div class="service-enabled-section" ng-show="serverStatus.enabled && scannerInfo.enabled && scannerInfo.scanners.length > 0">
 
-        <div class="biometric-section fingerprint-capture-section" ng-repeat="finger in fingersToScan track by finger.type">
+        <div class="biometric-section fingerprint-capture-section" ng-repeat="finger in fingersToScan">
             <div class="finger-label">{{finger.label}}</div>
-            <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.type].image }}" width="120" height="120"><br/>
+            <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.index].image }}" width="120" height="120"><br/>
             <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress">
-                {{scannedData[finger.type].buttonLabel}}
+                {{scannedData[finger.index].buttonLabel}}
             </button>
         </div>
 
