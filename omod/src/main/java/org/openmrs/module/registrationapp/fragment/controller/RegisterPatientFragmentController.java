@@ -12,6 +12,8 @@ import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -25,6 +27,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
@@ -36,9 +39,14 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
+import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricTemplateFormat;
+import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -116,6 +124,7 @@ public class RegisterPatientFragmentController {
                             @SpringBean("encounterService") EncounterService encounterService,
                             @SpringBean("obsService") ObsService obsService,
                             @SpringBean("conceptService") ConceptService conceptService,
+                            @SpringBean("patientService") PatientService patientService,
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
@@ -213,6 +222,65 @@ public class RegisterPatientFragmentController {
                     obs.setObsDatetime(datetime);
                     obsService.saveObs(obs, null);
                 }
+            }
+        }
+
+        // Enroll any fingerprint templates that were submitted
+        List<Field> fingerprintFields = new ArrayList<Field>();
+        List<Field> fields = formStructure.getFields();
+        if (fields != null) {
+            for (Field field : fields) {
+                if (StringUtils.equals(field.getType(), "fingerprint")) {
+                    fingerprintFields.add(field);
+                }
+            }
+        }
+
+        for (Field fingerprintField : fingerprintFields) {
+            log.debug("Found a fingerprint field defined.  Constructing new BiometricSubject.");
+            BiometricSubject subject = new BiometricSubject();
+            String[] fingerprintTemplates = request.getParameterValues(fingerprintField.getFormFieldName() + "_template");
+            if (fingerprintTemplates != null && fingerprintTemplates.length > 0) {
+                if (fingerprintTemplates.length > 1) {
+                    log.warn("Multiple values for a single fingerprint form field are not supported, ignoring extra values");
+                }
+                String fpTemplate = fingerprintTemplates[0];
+                if (StringUtils.isNotBlank(fpTemplate)) {
+                    String fpType = request.getParameter(fingerprintField.getFormFieldName() + "_type");
+                    String fpFormatParam = request.getParameter(fingerprintField.getFormFieldName() + "_format");
+                    BiometricTemplateFormat fpFormat = (StringUtils.isNotBlank(fpFormatParam) ? BiometricTemplateFormat.valueOf(fpFormatParam) : null);
+                    subject.addFingerprint(new Fingerprint(fpType, fpFormat, fpTemplate));
+                }
+            }
+
+            if (subject.getFingerprints().isEmpty()) {
+                log.debug("No fingerprint templates found for this field.");
+            }
+            else {
+                // Before we actually enroll the fingerprints, do a bit more validation of form fields
+                if (fingerprintField.getUuid() == null) {
+                    throw new IllegalStateException("Missing uuid on fingerprint configuration.  This must be configured with a valid patient identifier type uuid");
+                }
+                PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+                if (identifierType == null) {
+                    throw new IllegalStateException("Invalid uuid on fingerprint configuration. Identifier type with uuid [" + fingerprintField.getUuid() + "] is not found.");
+                }
+
+                log.debug("Registration includes " + subject.getFingerprints().size() + " fingerprint templates");
+                BiometricEngine biometricEngine = registrationService.getBiometricEngine();
+                if (biometricEngine == null) {
+                    throw new IllegalStateException("Unable to enroll patient fingerprints, as no biometrics engine is enabled");
+                }
+                log.debug("Attempting to enroll fingerprints with engine: " + biometricEngine.getClass().getSimpleName());
+                subject = biometricEngine.enroll(subject);
+                log.info("Fingerprint enrollment completed.  New subjectId = " + subject.getSubjectId());
+
+                // For now, we always store this reference as a patient identifier, if uuid is configured.  We could add additional configuration to change this if needed
+                log.debug("Saving new patient identifier of type " + identifierType.getName());
+                PatientIdentifier biometricReferenceNumber = new PatientIdentifier(subject.getSubjectId(), identifierType, null);
+                patient.addIdentifier(biometricReferenceNumber);
+                patientService.savePatientIdentifier(biometricReferenceNumber);
+                log.debug("Identifier saved successfully");
             }
         }
 

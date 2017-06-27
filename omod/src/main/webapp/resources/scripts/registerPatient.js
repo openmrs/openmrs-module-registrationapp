@@ -115,14 +115,11 @@ jq(function() {
         jq('.date-component').trigger('blur');
 
         var formData = jq('#registration').serialize();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getSimilarPatients", {appId: appId}), formData)
-            .success(function(data) {
-                jq("#reviewSimilarPatientsButton").show();
-                showSimilarPatients(data);
-            })
-            .error(function (xhr, status, err) {
-                alert('AJAX error ' + err);
-            });
+        var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getSimilarPatients.action?appId='+appId;
+        jq.post(url, formData, function(data) {
+            jq("#reviewSimilarPatientsButton").show();
+            showSimilarPatients(data);
+        }, "json");
         focusedField.focus();
     };
 
@@ -137,15 +134,13 @@ jq(function() {
         jq('#exact-matches').hide();
         jq('#mpi-exact-match').hide();
         jq('#local-exact-match').hide();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "matchingPatients", "getExactPatients", {appId: appId}), formData)
-            .success(function (data) {
-                jq("#reviewSimilarPatientsButton").hide();
-                showSimilarPatients(data);
-                jq("#similarPatientsSlideView").show();
-            })
-            .error(function (xhr, status, err) {
-                alert('AJAX error ' + err);
-            });
+
+        var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getExactPatients.action?appId='+appId;
+        jq.post(url, formData, function(data) {
+            jq("#reviewSimilarPatientsButton").hide();
+            showSimilarPatients(data);
+            jq("#similarPatientsSlideView").show();
+        }, "json");
     });
 
     /* Submit functionality */
@@ -155,16 +150,19 @@ jq(function() {
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
         var formData = jq('#registration').serialize();
-        jq.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "submit", { appId: appId }), formData)
-            .success(function (response) {
-                emr.navigateTo({"applicationUrl": response.message});
-            })
-            .error(function (response) {
+
+        var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/registerPatient/submit.action?appId=' + appId;
+        jq.post(url, formData, function (data, status, response) {
+            if (response.status == 200) {
+                emr.navigateTo({"applicationUrl": data.message});
+            }
+            else {
                 jq('#validation-errors-content').html(jq.parseJSON(response.responseText).globalErrors);
                 jq('#validation-errors').show();
                 jq('#submit').removeAttr('disabled');
                 jq('#cancelSubmission').removeAttr('disabled');
-        });
+            }
+        }, "json");
     });
 
     /* Registration date functionality */
