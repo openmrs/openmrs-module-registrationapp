@@ -51,6 +51,7 @@ import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
@@ -236,27 +237,43 @@ public class RegisterPatientFragmentController {
             }
         }
 
+        // We configure a new BiometricSubject to hold any fingerprint data that we read out of the request
+        BiometricSubject subject = new BiometricSubject();
+
         for (Field fingerprintField : fingerprintFields) {
-            log.debug("Found a fingerprint field defined.  Constructing new BiometricSubject.");
-            BiometricSubject subject = new BiometricSubject();
-            String[] fingerprintTemplates = request.getParameterValues(fingerprintField.getFormFieldName() + "_template");
-            if (fingerprintTemplates != null && fingerprintTemplates.length > 0) {
-                if (fingerprintTemplates.length > 1) {
-                    log.warn("Multiple values for a single fingerprint form field are not supported, ignoring extra values");
+            log.debug("Found a fingerprint field defined: " + fingerprintField);
+
+            FragmentConfiguration config = fingerprintField.getFragmentRequest().getConfiguration();
+            String formatConfig = (String)config.get("format");
+            BiometricTemplateFormat templateFormat = (StringUtils.isNotBlank(formatConfig) ? BiometricTemplateFormat.valueOf(formatConfig) : null);
+            List<Map<String, Object>> fingers = (List<Map<String, Object>>)config.get("fingers");
+
+            if (fingers != null) {
+                log.debug("This field has: " + fingers.size() + " fingers defined.  Iterating across these");
+
+                for (Map<String, Object> finger : fingers) {
+                    String[] fingerprintTemplates = request.getParameterValues((String)finger.get("formFieldName"));
+                    if (fingerprintTemplates != null && fingerprintTemplates.length > 0) {
+                        if (fingerprintTemplates.length > 1) {
+                            log.warn("Multiple values for a single fingerprint form field are not supported. Please ensure you configure unique form field names.");
+                        }
+                        String fpTemplate = fingerprintTemplates[0];
+                        if (StringUtils.isNotBlank(fpTemplate)) {
+                            subject.addFingerprint(new Fingerprint((String)finger.get("type"), templateFormat, fpTemplate));
+                        }
+                    }
                 }
-                String fpTemplate = fingerprintTemplates[0];
-                if (StringUtils.isNotBlank(fpTemplate)) {
-                    String fpType = request.getParameter(fingerprintField.getFormFieldName() + "_type");
-                    String fpFormatParam = request.getParameter(fingerprintField.getFormFieldName() + "_format");
-                    BiometricTemplateFormat fpFormat = (StringUtils.isNotBlank(fpFormatParam) ? BiometricTemplateFormat.valueOf(fpFormatParam) : null);
-                    subject.addFingerprint(new Fingerprint(fpType, fpFormat, fpTemplate));
-                }
+            }
+            else {
+                log.warn("Fingerprint field does not have any fingers defined.  Please check the app configuration.");
             }
 
             if (subject.getFingerprints().isEmpty()) {
                 log.debug("No fingerprint templates found for this field.");
             }
             else {
+                log.debug("Extracted " + subject.getFingerprints().size() + " fingerprints in registration form");
+
                 // Before we actually enroll the fingerprints, do a bit more validation of form fields
                 if (fingerprintField.getUuid() == null) {
                     throw new IllegalStateException("Missing uuid on fingerprint configuration.  This must be configured with a valid patient identifier type uuid");
@@ -266,7 +283,6 @@ public class RegisterPatientFragmentController {
                     throw new IllegalStateException("Invalid uuid on fingerprint configuration. Identifier type with uuid [" + fingerprintField.getUuid() + "] is not found.");
                 }
 
-                log.debug("Registration includes " + subject.getFingerprints().size() + " fingerprint templates");
                 BiometricEngine biometricEngine = registrationService.getBiometricEngine();
                 if (biometricEngine == null) {
                     throw new IllegalStateException("Unable to enroll patient fingerprints, as no biometrics engine is enabled");

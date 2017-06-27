@@ -46,8 +46,7 @@
                 {{scannedData[finger.index].buttonLabel}}
             </button>
             <p class="fingerprints-field">
-                <input type="text" size="40" name="{{ finger.formFieldName }}_type" value="{{finger.type}}"/>
-                <input type="text" size="40" name="{{ finger.formFieldName }}_template" value="{{scannedData[finger.index].template}}"/>
+                <input type="text" size="40" name="{{ finger.formFieldName }}" value="{{scannedData[finger.index].template}}"/>
             </p>
         </div>
 
