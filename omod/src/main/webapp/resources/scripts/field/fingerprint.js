@@ -61,7 +61,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
             };
 
             this.scanFinger = function(scanner, finger) {
-                return $http.get(CONFIG.URLS.SCAN_FINGER, {"params" : {"deviceId": scanner.id, "type": finger.type}}).then(function(response) {
+                return $http.get(CONFIG.URLS.SCAN_FINGER, {"params" : {"deviceId": scanner.id, "type": finger.type, "format": finger.format}}).then(function(response) {
                     if (response.status === 200) {
                         return response.data;
                     }
@@ -109,26 +109,9 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                     data.currentlyScanning = false;
                     data.buttonLabel = "Re-Scan";
                     $scope.scannedData[finger.index] = data;
-                });
-            };
-
-            $scope.matchFingers = function() {
-                $scope.matchesFound = [];
-                $scope.matchingFingersInProgress = true;
-                FingerprintScanningService.matchFingers($scope.scannedData).then(function(data) {
-                    $scope.matchingFingersInProgress = false;
-                    $scope.matchesFound = data;
-                });
-            };
-
-            $scope.enrollTemplate = function() {
-                $scope.enrollingTemplateInProgress = true;
-                FingerprintScanningService.enrollTemplate($scope.scannedData).then(function(data) {
-                    $scope.enrollingTemplateInProgress = false;
-                    $scope.enrolledTemplate = data;
                     NavigatorController.stepForward();
                 });
-            }
+            };
 
             $scope.init = function(config) {
                 $scope.config = config;
