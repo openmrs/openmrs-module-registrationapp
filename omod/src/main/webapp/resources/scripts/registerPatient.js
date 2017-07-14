@@ -152,17 +152,21 @@ jq(function() {
         var formData = jq('#registration').serialize();
 
         var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/registerPatient/submit.action?appId=' + appId;
-        jq.post(url, formData, function (data, status, response) {
-            if (response.status == 200) {
-                emr.navigateTo({"applicationUrl": data.message});
-            }
-            else {
-                jq('#validation-errors-content').html(jq.parseJSON(response.responseText).globalErrors);
+        jq.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            success: function(response) {
+                emr.navigateTo({"applicationUrl": response.message});
+            },
+            error: function(response) {
+                jq('#validation-errors-content').html(response.responseJSON.globalErrors);
                 jq('#validation-errors').show();
                 jq('#submit').removeAttr('disabled');
                 jq('#cancelSubmission').removeAttr('disabled');
             }
-        }, "json");
+        });
     });
 
     /* Registration date functionality */
