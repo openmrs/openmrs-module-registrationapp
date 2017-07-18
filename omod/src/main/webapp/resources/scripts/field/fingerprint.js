@@ -110,6 +110,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                     data.buttonLabel = "Re-Scan";
                     $scope.scannedData[finger.index] = data;
                     NavigatorController.stepForward();
+                    getBiometricMatches();  // TODO: This should be done better.
                 });
             };
 

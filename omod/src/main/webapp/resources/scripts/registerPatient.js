@@ -120,11 +120,104 @@ jq(function() {
             jq("#reviewSimilarPatientsButton").show();
             showSimilarPatients(data);
         }, "json");
+
         focusedField.focus();
     };
 
     jq('input').change(getSimilarPatients);
     jq('select').change(getSimilarPatients);
+
+    // Biometric matching
+    // TODO: This is mostly copied from similar patients above.  Refactor into shared, common functionality as appropriate
+
+    /* Biometric patient functionality */
+    reviewBiometricPatients = emr.setupConfirmationDialog({
+        selector: '#reviewBiometricPatients',
+        actions: {
+            cancel: function () {
+                reviewBiometricPatients.close();
+            }
+        }
+    });
+
+    jq('#reviewBiometricPatientsButton').click(function () {
+        var slideView = $("#biometricPatientsSlideView");
+        slideView.slideToggle();
+
+        return false;
+    });
+
+    function showBiometricPatients(data) {
+        if (data.length == 0) {
+            jq("#biometricPatients").hide();
+            jq("#biometricPatientsSlideView").hide();
+            return;
+        } else {
+            jq("#biometricPatients").show();
+        }
+
+        jq('#biometricPatientsCount').text(data.length);
+        var biometricPatientsSelect = jq('#biometricPatientsSelect');
+        biometricPatientsSelect.empty();
+        for (index in data) {
+            var item = data[index];
+            var container = $('#matchedPatientTemplates .container');
+            var cloned = container.clone();
+
+            cloned.find('.name').append(item.givenName + ' ' + item.familyName);
+
+            var gender;
+            if (item.gender == 'M') {
+                gender = emr.message('emr.gender.M');
+            } else {
+                gender = emr.message('emr.gender.F');
+            }
+
+            var attributes = "";
+            if (item.attributeMap) {
+                _.each(item.attributeMap, function(value, key) {
+                    if (value) {
+                        attributes = attributes + ", " + value;
+                    }
+                });
+            }
+
+            cloned.find('.info').append(gender + ', ' + item.birthdate + ', ' + item.personAddress + attributes);
+
+            if (item.identifiers) {
+                var identifiers = cloned.find('.identifiers');
+                item.identifiers.forEach(function (entry) {
+                    var clonedIdName = identifiers.find('.idNameTemplate').clone();
+                    clonedIdName.text(entry.name + ': ');
+                    clonedIdName.removeClass("idNameTemplate");
+                    identifiers.append(clonedIdName);
+
+                    var clonedIdValue = identifiers.find(".idValueTemplate").clone();
+                    clonedIdValue.text(entry.value);
+                    clonedIdValue.removeClass("idValueTemplate");
+                    identifiers.append(clonedIdValue);
+                });
+            }
+
+            var button = $('#matchedPatientTemplates .local_button').clone();
+            var link = patientDashboardLink;
+            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;
+            button.attr("onclick", "location.href=\'" + link + "\'");
+            cloned.append(button);
+
+            $('#biometricPatientsSelect').append(cloned);
+        }
+    }
+
+    getBiometricMatches = function() {
+        var formData = jq('#registration').serialize();
+        var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getBiometricMatches.action?appId='+appId;
+        jq.post(biometricUrl, formData, function(data) {
+            jq("#reviewBiometricPatientsButton").show();
+            showBiometricPatients(data);
+            jq("#biometricPatientsSlideView").show();
+        }, "json");
+    };
 
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {

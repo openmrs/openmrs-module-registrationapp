@@ -37,36 +37,36 @@
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <style type="text/css">
-#similarPatientsSelect .container {
+.matchingPatientContainer .container {
     overflow: hidden;
 }
 
-#similarPatientsSelect .container div {
+.matchingPatientContainer .container div {
     margin: 5px 10px;
 }
 
-#similarPatientsSelect .container .name {
+.matchingPatientContainer .container .name {
     font-size: 25px;
     display: inline-block;
 }
 
-#similarPatientsSelect .container .info {
+.matchingPatientContainer .container .info {
     font-size: 15px;
     display: inline-block;
 }
 
-#similarPatientsSelect .container .identifiers {
+.matchingPatientContainer .container .identifiers {
     font-size: 15px;
     display:inline-block;
     min-width: 600px;
 }
 
-#similarPatientsSelect .container .identifiers .idName {
+.matchingPatientContainer .container .identifiers .idName {
     font-size: 15px;
     font-weight: bold;
 }
 
-#similarPatientsSelect .container .identifiers .idValue {
+.matchingPatientContainer .container .identifiers .idValue {
     font-size: 15px;
     margin: 0 20px 0 0;
 }
@@ -110,6 +110,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 		   <div class="clear"></div>
 	</div>
 
+    <div id="biometricPatients" class="highlighted" style="display: none;">
+        <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometricPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
+        <div class="clear"></div>
+    </div>
+
     <div id="matchedPatientTemplates" style="display:none;">
         <div class="container"
              style="border-color: #00463f; border-style: solid; border-width:2px; margin-bottom: 10px;">
@@ -128,7 +133,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </div>
 
     <div id="similarPatientsSlideView" style="display: none;">
-        <ul id="similarPatientsSelect" class="select" style="width: auto;">
+        <ul id="similarPatientsSelect" class="matchingPatientContainer select" style="width: auto;">
+
+        </ul>
+    </div>
+
+    <div id="biometricPatientsSlideView" style="display: none;">
+        <ul id="biometricPatientsSelect" class="matchingPatientContainer select" style="width: auto;">
 
         </ul>
     </div>

@@ -45,13 +45,10 @@ import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
-import org.openmrs.module.registrationcore.api.biometrics.model.BiometricTemplateFormat;
-import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
-import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
@@ -227,77 +224,33 @@ public class RegisterPatientFragmentController {
         }
 
         // Enroll any fingerprint templates that were submitted
-        List<Field> fingerprintFields = new ArrayList<Field>();
-        List<Field> fields = formStructure.getFields();
-        if (fields != null) {
-            for (Field field : fields) {
-                if (StringUtils.equals(field.getType(), "fingerprint")) {
-                    fingerprintFields.add(field);
-                }
+        Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
+        for (Field fingerprintField : fingerprintData.keySet()) {
+            BiometricSubject subject = fingerprintData.get(fingerprintField);
+
+             // Before we actually enroll the fingerprints, do a bit more validation of form fields
+            if (fingerprintField.getUuid() == null) {
+                throw new IllegalStateException("Missing uuid on fingerprint configuration.  This must be configured with a valid patient identifier type uuid");
             }
-        }
-
-        // We configure a new BiometricSubject to hold any fingerprint data that we read out of the request
-        BiometricSubject subject = new BiometricSubject();
-
-        for (Field fingerprintField : fingerprintFields) {
-            log.debug("Found a fingerprint field defined: " + fingerprintField);
-
-            FragmentConfiguration config = fingerprintField.getFragmentRequest().getConfiguration();
-            String formatConfig = (String)config.get("format");
-            BiometricTemplateFormat templateFormat = (StringUtils.isNotBlank(formatConfig) ? BiometricTemplateFormat.valueOf(formatConfig) : null);
-            List<Map<String, Object>> fingers = (List<Map<String, Object>>)config.get("fingers");
-
-            if (fingers != null) {
-                log.debug("This field has: " + fingers.size() + " fingers defined.  Iterating across these");
-
-                for (Map<String, Object> finger : fingers) {
-                    String[] fingerprintTemplates = request.getParameterValues((String)finger.get("formFieldName"));
-                    if (fingerprintTemplates != null && fingerprintTemplates.length > 0) {
-                        if (fingerprintTemplates.length > 1) {
-                            log.warn("Multiple values for a single fingerprint form field are not supported. Please ensure you configure unique form field names.");
-                        }
-                        String fpTemplate = fingerprintTemplates[0];
-                        if (StringUtils.isNotBlank(fpTemplate)) {
-                            subject.addFingerprint(new Fingerprint((String)finger.get("type"), templateFormat, fpTemplate));
-                        }
-                    }
-                }
-            }
-            else {
-                log.warn("Fingerprint field does not have any fingers defined.  Please check the app configuration.");
+            PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+            if (identifierType == null) {
+                throw new IllegalStateException("Invalid uuid on fingerprint configuration. Identifier type with uuid [" + fingerprintField.getUuid() + "] is not found.");
             }
 
-            if (subject.getFingerprints().isEmpty()) {
-                log.debug("No fingerprint templates found for this field.");
+            BiometricEngine biometricEngine = registrationService.getBiometricEngine();
+            if (biometricEngine == null) {
+                throw new IllegalStateException("Unable to enroll patient fingerprints, as no biometrics engine is enabled");
             }
-            else {
-                log.debug("Extracted " + subject.getFingerprints().size() + " fingerprints in registration form");
+            log.debug("Attempting to enroll fingerprints with engine: " + biometricEngine.getClass().getSimpleName());
+            subject = biometricEngine.enroll(subject);
+            log.info("Fingerprint enrollment completed.  New subjectId = " + subject.getSubjectId());
 
-                // Before we actually enroll the fingerprints, do a bit more validation of form fields
-                if (fingerprintField.getUuid() == null) {
-                    throw new IllegalStateException("Missing uuid on fingerprint configuration.  This must be configured with a valid patient identifier type uuid");
-                }
-                PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
-                if (identifierType == null) {
-                    throw new IllegalStateException("Invalid uuid on fingerprint configuration. Identifier type with uuid [" + fingerprintField.getUuid() + "] is not found.");
-                }
-
-                BiometricEngine biometricEngine = registrationService.getBiometricEngine();
-                if (biometricEngine == null) {
-                    throw new IllegalStateException("Unable to enroll patient fingerprints, as no biometrics engine is enabled");
-                }
-                log.debug("Attempting to enroll fingerprints with engine: " + biometricEngine.getClass().getSimpleName());
-                subject = biometricEngine.enroll(subject);
-                log.info("Fingerprint enrollment completed.  New subjectId = " + subject.getSubjectId());
-
-                // For now, we always store this reference as a patient identifier, if uuid is configured.  We could add additional configuration to change this if needed
-                log.debug("Saving new patient identifier of type " + identifierType.getName());
-                PatientIdentifier biometricReferenceNumber = new PatientIdentifier(subject.getSubjectId(), identifierType, null);
-                patient.addIdentifier(biometricReferenceNumber);
-                patientService.savePatientIdentifier(biometricReferenceNumber);
-                log.debug("Identifier saved successfully");
-            }
+            // For now, we always store this reference as a patient identifier, if uuid is configured.  We could add additional configuration to change this if needed
+            log.debug("Saving new patient identifier of type " + identifierType.getName());
+            PatientIdentifier biometricReferenceNumber = new PatientIdentifier(subject.getSubjectId(), identifierType, null);
+            patient.addIdentifier(biometricReferenceNumber);
+            patientService.savePatientIdentifier(biometricReferenceNumber);
+            log.debug("Identifier saved successfully");
         }
 
         // run any AfterPatientCreated actions

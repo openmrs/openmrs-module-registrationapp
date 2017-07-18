@@ -16,12 +16,18 @@ package org.openmrs.module.registrationapp.fragment.controller;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.PatientService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
+import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.mpi.common.MpiPatient;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.ui.framework.SimpleObject;
@@ -31,6 +37,7 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +46,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -86,6 +92,39 @@ public class MatchingPatientsFragmentController {
 
         List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(app, ui, matches);
+    }
+
+    public List<SimpleObject> getBiometricMatches(@RequestParam("appId") AppDescriptor app,
+                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
+                                                  @SpringBean("patientService") PatientService patientService,
+                                                  HttpServletRequest request, UiUtils ui) throws Exception {
+
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        List<PatientAndMatchQuality> matches = getBiometricMatches(service, patientService, formStructure, request.getParameterMap());
+        return getSimpleObjects(app, ui, matches);
+    }
+
+    private List<PatientAndMatchQuality> getBiometricMatches(RegistrationCoreService service, PatientService patientService,
+                                                             NavigableFormStructure formStructure, Map<String, String[]> parameterMap) {
+        List<PatientAndMatchQuality> ret = new ArrayList<PatientAndMatchQuality>();
+        BiometricEngine biometricEngine = service.getBiometricEngine();
+        if (biometricEngine != null && biometricEngine.getStatus().isEnabled()) {
+            Map<Field, BiometricSubject> biometricFields = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, parameterMap);
+            for (Field biometricField : biometricFields.keySet()) {
+                BiometricSubject subject = biometricFields.get(biometricField);
+                List<BiometricMatch> biometricMatches = biometricEngine.search(subject);
+                if (biometricMatches.size() > 0) {
+                    List<PatientIdentifierType> biometricIdList = Arrays.asList(patientService.getPatientIdentifierTypeByUuid(biometricField.getUuid()));
+                    for (BiometricMatch match : biometricMatches) {
+                        List<Patient> patients = patientService.getPatients(null, match.getSubjectId(), biometricIdList, true);
+                        for (Patient patient : patients) {
+                            ret.add(new PatientAndMatchQuality(patient, match.getMatchScore(), Arrays.asList(biometricField.getFormFieldName())));
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
