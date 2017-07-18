@@ -6,6 +6,7 @@
 
 
 %>
+<% if (section) { %>
 <div class="info-section">
     <div class="info-header">
         <i class="icon-user"></i>
@@ -76,3 +77,4 @@
         <% } %>
     </div>
 </div>
+<% } %>
