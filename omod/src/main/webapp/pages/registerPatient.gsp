@@ -272,16 +272,16 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
                     <% questions.each { question ->
                         def fields=question.fields
-                        def classes;
+                        def classes = "";
                         if (question.legend == "Person.address") {
                             classes = "requireOne"
                         }
                         if (question.cssClasses) {
-                            classes = classes + (classes ? ' ' : '') + question.cssClasses.join(" ")
+                            classes = classes + (classes.length() > 0 ? ' ' : '') + question.cssClasses.join(" ")
                         }
                     %>
                         <fieldset id="${question.id}"
-                                <% if (classes) { %> class="${classes}" <% } %>
+                                <% if (classes.length() > 0) { %> class="${classes}" <% } %>
                                 <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                                 <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
