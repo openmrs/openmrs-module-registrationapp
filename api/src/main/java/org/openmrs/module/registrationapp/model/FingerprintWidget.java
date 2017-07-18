@@ -31,6 +31,12 @@ public class FingerprintWidget extends Widget {
         @JsonProperty
         private List<FingerprintFormField> fingers;
 
+        @JsonProperty
+        private String scanUrl;  // This is the REST endpoint that the widget should use to perform a scan operation
+
+        @JsonProperty
+        private String devicesUrl; // This is the REST endpoint that the widget should use to retrieve available devices
+
         public void addFinger(FingerprintFormField finger) {
             if (fingers == null) {
                 fingers = new ArrayList<FingerprintFormField>();
@@ -52,6 +58,22 @@ public class FingerprintWidget extends Widget {
 
         public void setFingers(List<FingerprintFormField> fingers) {
             this.fingers = fingers;
+        }
+
+        public String getScanUrl() {
+            return scanUrl;
+        }
+
+        public void setScanUrl(String scanUrl) {
+            this.scanUrl = scanUrl;
+        }
+
+        public String getDevicesUrl() {
+            return devicesUrl;
+        }
+
+        public void setDevicesUrl(String devicesUrl) {
+            this.devicesUrl = devicesUrl;
         }
     }
 
