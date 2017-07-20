@@ -31,6 +31,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
@@ -150,6 +151,13 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
             @Override
             public Patient answer(InvocationOnMock invocationOnMock) throws Throwable {
                 return patientService.savePatient((Patient) invocationOnMock.getArguments()[0]);
+            }
+        });
+        when(registrationService.registerPatient(any(RegistrationData.class))).thenAnswer(new Answer<Patient>() {
+            @Override
+            public Patient answer(InvocationOnMock invocationOnMock) throws Throwable {
+                RegistrationData registrationData = (RegistrationData)invocationOnMock.getArguments()[0];
+                return patientService.savePatient(registrationData.getPatient());
             }
         });
 

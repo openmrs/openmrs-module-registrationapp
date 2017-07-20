@@ -33,7 +33,6 @@ import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
-import org.openmrs.module.registrationcore.api.biometrics.model.BiometricTemplateFormat;
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
@@ -228,8 +227,7 @@ public class RegisterPatientFormBuilder {
 
                     log.debug("Found a fingerprint field defined: " + field);
                     FragmentConfiguration config = field.getFragmentRequest().getConfiguration();
-                    String formatConfig = (String) config.get("format");
-                    BiometricTemplateFormat templateFormat = (StringUtils.isNotBlank(formatConfig) ? BiometricTemplateFormat.valueOf(formatConfig) : null);
+                    String templateFormat = (String) config.get("format");
                     List<Map<String, Object>> fingers = (List<Map<String, Object>>) config.get("fingers");
 
                     // We configure a new BiometricSubject to hold any fingerprint data that we read out of the request

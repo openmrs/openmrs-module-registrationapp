@@ -1,7 +1,6 @@
 package org.openmrs.module.registrationapp.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.openmrs.module.registrationcore.api.biometrics.model.BiometricTemplateFormat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class FingerprintWidget extends Widget {
     public static class Config {
 
         @JsonProperty
-        private BiometricTemplateFormat format;
+        private String format;
 
         @JsonProperty
         private List<FingerprintFormField> fingers;
@@ -44,11 +43,11 @@ public class FingerprintWidget extends Widget {
             fingers.add(finger);
         }
 
-        public BiometricTemplateFormat getFormat() {
+        public String getFormat() {
             return format;
         }
 
-        public void setFormat(BiometricTemplateFormat format) {
+        public void setFormat(String format) {
             this.format = format;
         }
 
