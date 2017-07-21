@@ -67,7 +67,10 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
             this.scanFinger = function(scanner, finger, config) {
                 return $http.get(config.scanUrl, {"params" : {"deviceId": scanner.id, "type": finger.type, "format": finger.format}}).then(function(response) {
                     if (response.status === 200) {
-                        return response.data;
+                        var data = response.data;
+                        data.type = data.type || finger.type;
+                        data.format = data.format || finger.format;
+                        return data;
                     }
                     else {
                         console.log('Error scanning fingerprint: ' + response.status);
@@ -105,6 +108,15 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
                 });
             };
 
+            // TODO: This seems hacky and should be improved
+            $scope.updateBiometricMatches = function() {
+                var biometricData = ""
+                $scope.fingersToScan.forEach(function(finger) {
+                    biometricData += "&" + finger.formFieldName + "=" + encodeURIComponent($scope.scannedData[finger.index].template);
+                });
+                getBiometricMatches(biometricData);
+            }
+
             $scope.scanFinger = function(finger) {
                 $scope.scanningFingerInProgress = true;
                 $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
@@ -119,7 +131,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
                         data.buttonLabel = "registrationapp.biometrics.scan";
                     }
                     $scope.scannedData[finger.index] = data;
-                    getBiometricMatches();  // TODO: This should be done better.
+                    $scope.updateBiometricMatches();
                 });
             };
 

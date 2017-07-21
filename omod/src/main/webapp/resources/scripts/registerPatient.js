@@ -148,6 +148,7 @@ jq(function() {
     });
 
     function showBiometricPatients(data) {
+
         if (data.length == 0) {
             jq("#biometricPatients").hide();
             jq("#biometricPatientsSlideView").hide();
@@ -209,13 +210,13 @@ jq(function() {
         }
     }
 
-    getBiometricMatches = function() {
-        var formData = jq('#registration').serialize();
+    getBiometricMatches = function(formData) {
         var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getBiometricMatches.action?appId='+appId;
         jq.post(biometricUrl, formData, function(data) {
             jq("#reviewBiometricPatientsButton").show();
             showBiometricPatients(data);
-            jq("#biometricPatientsSlideView").show();
+            // TODO: Uncomment the below if we wish to display the matching patient list open by default
+            //jq("#biometricPatientsSlideView").show();
         }, "json");
     };
 
