@@ -3,6 +3,8 @@
     ui.includeJavascript("uicommons", "angular-resource.min.js")
     ui.includeJavascript("uicommons", "angular-common.js")
     ui.includeJavascript("uicommons", "angular-app.js")
+    ui.includeJavascript("uicommons", "angular-translate.min.js")
+    ui.includeJavascript("uicommons", "angular-translate-loader-url.min.js")
     ui.includeJavascript("uicommons", "ngDialog/ngDialog.js")
     ui.includeCss("uicommons", "ngDialog/ngDialog.min.css")
     ui.includeJavascript("registrationapp", "field/fingerprint.js")
@@ -18,14 +20,21 @@
     .fingerprints-field {display:none;}
 </style>
 
-<div id="fingerprint-enrollment-section" ng-controller="FingerprintScanningController" ng-init='init(${ ui.toJson(config) })'>
+<div id="fingerprint-enrollment-section" ng-controller="FingerprintScanningController" ng-init='init(${ ui.toJson(config) }, "${ ui.locale }")'>
 
-    <div class="fingerprint-status" ng-show="scannerStatus.statusMessage">{{ scannerStatus.statusMessage }}</div>
+    <div class="fingerprint-status" ng-show="scannerStatus.statusMessage">
+        {{scannerStatus.statusMessage | translate}}
+        <span ng-show="scannerStatus.errorDetails"> - {{ scannerStatus.errorDetails | translate }}</span>
+    </div>
+    <div class="fingerprint-status" ng-show="engineStatus.statusMessage">
+        {{engineStatus.statusMessage | translate}}
+        <span ng-show="engineStatus.errorDetails"> - {{ engineStatus.errorDetails | translate }}</span>
+    </div>
 
     <div class="scanner-enabled-section" ng-show="scannerStatus.enabled">
-        <b>Scanner: </b>
+        <b>${ui.message("registrationapp.biometrics.scanner")}: </b>
         <span ng-show="scannerStatus.scanners.length === 0">
-            None Found
+            ${ui.message("registrationapp.biometrics.noneFound")}
         </span>
         <span ng-show="scannerStatus.scanners.length > 0">
             <select ng-options="scanner as scanner.displayName for scanner in scannerStatus.scanners track by scanner.id" ng-model="selectedScanner"></select>
@@ -40,10 +49,10 @@
     <div class="engine-enabled-section" ng-show="engineStatus.enabled && scannerStatus.enabled && scannerStatus.scanners.length > 0">
 
         <div class="fingerprint-section fingerprint-capture-section" ng-repeat="finger in fingersToScan">
-            <div class="finger-label">{{finger.label}}</div>
+            <div class="finger-label">{{finger.label | translate}}</div>
             <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.index].image }}" width="120" height="120"><br/>
             <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress">
-                {{scannedData[finger.index].buttonLabel}}
+                {{scannedData[finger.index].buttonLabel | translate}}
             </button>
             <p class="fingerprints-field">
                 <input type="text" size="40" name="{{ finger.formFieldName }}" value="{{scannedData[finger.index].template}}"/>

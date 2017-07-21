@@ -111,7 +111,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 	</div>
 
     <div id="biometricPatients" class="highlighted" style="display: none;">
-        <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometricPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
+        <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometrics.matchingPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
         <div class="clear"></div>
     </div>
 

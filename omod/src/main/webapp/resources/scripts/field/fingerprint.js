@@ -1,9 +1,17 @@
 
-angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
+angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pascalprecht.translate'])
 
-    .service('FingerprintScanningService', ['$q', '$http',
+    .config(function ($translateProvider) {
+        $translateProvider
+            .useUrlLoader('/' +  OPENMRS_CONTEXT_PATH + '/module/uicommons/messages/messages.json',  {
+                queryParameter : 'localeKey'
+            })
+            .useSanitizeValueStrategy('escape');
+    })
 
-        function($q, $http) {
+    .service('FingerprintScanningService', ['$q', '$http', '$translate', '$filter',
+
+        function($q, $http, $translate, $filter) {
 
             this.getEngineStatus = function() {
                 var url = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/registrationcore/biometrics/enginestatus";
@@ -14,13 +22,14 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                     else {
                         return {
                             "enabled": false,
-                            "statusMessage": "Error retrieving server status: " + response.status
+                            "statusMessage": "registrationapp.biometrics.errorRetrievingServerStatus",
+                            "errorDetails": response.status
                         };
                     }
                 }, function (error) {
                     return {
                         "enabled": false,
-                        "statusMessage": "Error retrieving server status: " + error
+                        "statusMessage": "registrationapp.biometrics.errorRetrievingServerStatus"
                     };
                 });
             };
@@ -39,7 +48,8 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                             var scannerStatus = {};
                             scannerStatus.enabled = true;
                             scannerStatus.scanners = [];
-                            scannerStatus.statusMessage = "Unable to retrieve available scanners: " + response.status;
+                            scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
+                            scannerStatus.errorDetails = response.status;
                             return scannerStatus;
                         }
                     },
@@ -47,7 +57,8 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                         var scannerStatus = {};
                         scannerStatus.enabled = false;
                         scannerStatus.scanners = [];
-                        scannerStatus.statusMessage = "Unable to retrieve available scanners.  Is the scanning service started?";
+                        scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
+                        scannerStatus.errorDetails = "registrationapp.biometrics.isScanningServiceRunning";
                         return scannerStatus;
                     }
                 );
@@ -71,9 +82,9 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
         }
     ])
 
-    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintScanningService', 'ngDialog',
+    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintScanningService', 'ngDialog', '$translate', '$filter',
 
-        function($scope, $interval, FingerprintScanningService, ngDialog) {
+        function($scope, $interval, FingerprintScanningService, ngDialog, $translate, $filter) {
 
             $scope.refreshScannerStatus = function() {
                 $scope.refreshingScannerStatus = true;
@@ -96,18 +107,25 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
 
             $scope.scanFinger = function(finger) {
                 $scope.scanningFingerInProgress = true;
-                $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "Scanning"};
+                $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
                 FingerprintScanningService.scanFinger($scope.selectedScanner, finger, $scope.config).then(function(data) {
                     $scope.scanningFingerInProgress = false;
                     data.currentlyScanning = false;
-                    data.buttonLabel = "Re-Scan";
+                    if (data.template) {
+                        data.buttonLabel = "registrationapp.biometrics.rescan";
+                        //NavigatorController.stepForward(); // TODO: Decide if and when we want to do this
+                    }
+                    else {
+                        data.buttonLabel = "registrationapp.biometrics.scan";
+                    }
                     $scope.scannedData[finger.index] = data;
-                    NavigatorController.stepForward();
                     getBiometricMatches();  // TODO: This should be done better.
                 });
             };
 
-            $scope.init = function(config) {
+            $scope.init = function(config, locale) {
+                $translate.use(locale);
+
                 $scope.config = config;
                 $scope.refreshScannerStatus();
                 $scope.refreshEngineStatus();
@@ -117,7 +135,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog'])
                 $scope.config.fingers.forEach(function(finger, index) {
                     finger.index = index;
                     $scope.fingersToScan[index] = finger;
-                    $scope.scannedData[index] = {"currentlyScanning": false, "buttonLabel": "Scan"};
+                    $scope.scannedData[index] = {"currentlyScanning": false, "buttonLabel": "registrationapp.biometrics.scan"};
                 });
             }
         }
