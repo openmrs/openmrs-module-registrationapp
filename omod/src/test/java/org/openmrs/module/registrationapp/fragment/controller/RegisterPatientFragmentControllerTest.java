@@ -31,6 +31,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
@@ -152,6 +153,13 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 return patientService.savePatient((Patient) invocationOnMock.getArguments()[0]);
             }
         });
+        when(registrationService.registerPatient(any(RegistrationData.class))).thenAnswer(new Answer<Patient>() {
+            @Override
+            public Patient answer(InvocationOnMock invocationOnMock) throws Throwable {
+                RegistrationData registrationData = (RegistrationData)invocationOnMock.getArguments()[0];
+                return patientService.savePatient(registrationData.getPatient());
+            }
+        });
 
         sessionContext = mock(UiSessionContext.class);
         when(sessionContext.getSessionLocation()).thenReturn(location);
@@ -170,7 +178,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -191,7 +199,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -216,7 +224,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -243,7 +251,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -290,7 +298,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -335,7 +343,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
