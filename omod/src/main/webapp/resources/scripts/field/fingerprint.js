@@ -1,5 +1,5 @@
 
-angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pascalprecht.translate'])
+angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 'pascalprecht.translate', 'openmrs-module-registrationapp-fingerprint-service'])
 
     .config(function ($translateProvider) {
         $translateProvider
@@ -9,89 +9,13 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
             .useSanitizeValueStrategy('escape');
     })
 
-    .service('FingerprintScanningService', ['$q', '$http', '$translate', '$filter',
+    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintService', 'ngDialog', '$translate', '$filter',
 
-        function($q, $http, $translate, $filter) {
-
-            this.getEngineStatus = function() {
-                var url = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/registrationcore/biometrics/enginestatus";
-                return $http.get(url, {}).then(function (response) {
-                    if (response.status === 200) {
-                        return response.data;
-                    }
-                    else {
-                        return {
-                            "enabled": false,
-                            "statusMessage": "registrationapp.biometrics.errorRetrievingServerStatus",
-                            "errorDetails": response.status
-                        };
-                    }
-                }, function (error) {
-                    return {
-                        "enabled": false,
-                        "statusMessage": "registrationapp.biometrics.errorRetrievingServerStatus"
-                    };
-                });
-            };
-
-            this.getScannerStatus = function (config) {
-                return $http.get(config.devicesUrl, {}).then(
-                    function (response) {
-                        if (response.status === 200) {
-                           var scannerStatus = {};
-                           scannerStatus.enabled = true;
-                           scannerStatus.scanners = response.data;
-                           scannerStatus.statusMessage = '';
-                           return scannerStatus;
-                        }
-                        else {
-                            var scannerStatus = {};
-                            scannerStatus.enabled = true;
-                            scannerStatus.scanners = [];
-                            scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
-                            scannerStatus.errorDetails = response.status;
-                            return scannerStatus;
-                        }
-                    },
-                    function (error) {
-                        var scannerStatus = {};
-                        scannerStatus.enabled = false;
-                        scannerStatus.scanners = [];
-                        scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
-                        scannerStatus.errorDetails = "registrationapp.biometrics.isScanningServiceRunning";
-                        return scannerStatus;
-                    }
-                );
-            };
-
-            this.scanFinger = function(scanner, finger, config) {
-                return $http.get(config.scanUrl, {"params" : {"deviceId": scanner.id, "type": finger.type, "format": finger.format}}).then(function(response) {
-                    if (response.status === 200) {
-                        var data = response.data;
-                        data.type = data.type || finger.type;
-                        data.format = data.format || finger.format;
-                        return data;
-                    }
-                    else {
-                        console.log('Error scanning fingerprint: ' + response.status);
-                        return {};
-                    }
-                }, function (error) {
-                    console.log("Unable to connect to " + config.scanUrl + ". Please ensure this is running.");
-                    return {};
-                });
-            };
-
-        }
-    ])
-
-    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintScanningService', 'ngDialog', '$translate', '$filter',
-
-        function($scope, $interval, FingerprintScanningService, ngDialog, $translate, $filter) {
+        function($scope, $interval, FingerprintService, ngDialog, $translate, $filter) {
 
             $scope.refreshScannerStatus = function() {
                 $scope.refreshingScannerStatus = true;
-                FingerprintScanningService.getScannerStatus($scope.config).then(function (scannerStatus) {
+                FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
                     $scope.scannerStatus = scannerStatus;
                     if (scannerStatus.scanners.length > 0 && !$scope.selectedScanner) {
                         $scope.selectedScanner = scannerStatus.scanners[0];
@@ -102,7 +26,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
 
             $scope.refreshEngineStatus = function() {
                 $scope.refreshingEngineStatus = true;
-                FingerprintScanningService.getEngineStatus().then(function (engineStatus) {
+                FingerprintService.getEngineStatus().then(function (engineStatus) {
                     $scope.engineStatus = engineStatus.results;
                     $scope.refreshingEngineStatus = false;
                 });
@@ -120,7 +44,7 @@ angular.module('openmrs-module-registrationapp-fingerprint', ['ngDialog', 'pasca
             $scope.scanFinger = function(finger) {
                 $scope.scanningFingerInProgress = true;
                 $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
-                FingerprintScanningService.scanFinger($scope.selectedScanner, finger, $scope.config).then(function(data) {
+                FingerprintService.scanFinger($scope.selectedScanner, finger, $scope.config).then(function(data) {
                     $scope.scanningFingerInProgress = false;
                     data.currentlyScanning = false;
                     if (data.template) {

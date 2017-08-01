@@ -8,6 +8,7 @@
     ui.includeJavascript("uicommons", "ngDialog/ngDialog.js")
     ui.includeCss("uicommons", "ngDialog/ngDialog.min.css")
     ui.includeJavascript("registrationapp", "field/fingerprint.js")
+    ui.includeJavascript("registrationapp", "biometrics/fingerprintService.js")
     ui.includeJavascript("uicommons", "handlebars/handlebars.js")
 %>
 
@@ -64,5 +65,5 @@
 </div>
 
 <script>
-    angular.bootstrap("#fingerprint-enrollment-section", ["openmrs-module-registrationapp-fingerprint"])
+    angular.bootstrap("#fingerprint-enrollment-section", ["openmrs-module-registrationapp-fingerprint-field"])
 </script>
