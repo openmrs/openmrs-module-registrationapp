@@ -18,6 +18,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
             $scope.selectedScanner = null;
             $scope.buttonLabel = "registrationapp.biometrics.scan";
             $scope.scanningFingerInProgress = false;
+            $scope.scanError = false;
 
             $scope.init = function(config, locale) {
 
@@ -37,30 +38,51 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                 });
             }
 
+            $scope.disableScanButton = function () {
+                $scope.scanningFingerInProgress = true;
+                $scope.buttonLabel = "registrationapp.biometrics.scanning";
+            }
+
+            $scope.enableScanButton = function() {
+                $scope.scanningFingerInProgress = false;
+                $scope.buttonLabel = "registrationapp.biometrics.scan";
+                jq('#patient-search-form').trigger('search:enable');
+            }
+
             $scope.scanFinger = function(finger) {
 
                 jq('#patient-search-form').trigger('search:clear');
                 jq('#patient-search-form').trigger('search:disable');
 
-                $scope.scanningFingerInProgress = true;
-                $scope.buttonLabel = "registrationapp.biometrics.scanning";
+                $scope.scanError = false;
+                $scope.disableScanButton();
 
                 FingerprintService.scanFinger($scope.selectedScanner, { type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
                     if (data && data.template) {
-                        FingerprintService.matchFinger(data.template).then(function (data){
+                        FingerprintService.matchFinger(data.template).then(function (data) {
                             if (data && data.length > 0) {
                                 // TODO sort by match score
-                                angular.forEach(data.reverse(), function(match) {
-                                    // TODO better way to do this than access jquery directly? how do I assue jquery is present?
+                                angular.forEach(data.reverse(), function (match) {
+                                    // TODO better way to do this than access jquery directly? how do we assure jquery is present?
                                     jq('#patient-search-form').trigger('search:add', match.subjectId);
                                 })
                             }
-                            $scope.scanningFingerInProgress = false;
-                            $scope.buttonLabel = "registrationapp.biometrics.scan";
+                            $scope.enableScanButton();
                             $scope.$digest();
-                            jq('#patient-search-form').trigger('search:enable');
+                        },
+                        function (error) {
+                            $scope.enableScanButton();
+                            $scope.buttonLabel="registrationapp.biometrics.badscan";
                         });
                     }
+                    else {
+                        $scope.enableScanButton();
+                        $scope.buttonLabel="registrationapp.biometrics.badscan";
+                    }
+                },
+                function (error) {
+                    $scope.enableScanButton();
+                    $scope.buttonLabel="registrationapp.biometrics.badscan";
                 });
             };
 
