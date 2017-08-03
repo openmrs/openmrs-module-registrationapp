@@ -21,18 +21,23 @@ import java.util.List;
 public class RegistrationSummaryPageController extends AbstractRegistrationAppPageController {
 
     public Object controller(@RequestParam("patientId") Patient patient, PageModel model,
-                             @RequestParam(value = "appId", required = false) AppDescriptor app,
+                             // see: https://issues.openmrs.org/browse/RA-1405 for why we support both app and appId
+                             @RequestParam(value = "app", required = false) AppDescriptor app,
+                             @RequestParam(value = "appId", required = false) AppDescriptor appId,
                              @RequestParam(value = "search", required = false) String search,
                              @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                              @RequestParam(value = "breadcrumbOverrideProvider", required = false) String breadcrumbOverrideProvider,
                              @RequestParam(value = "breadcrumbOverridePage", required = false) String breadcrumbOverridePage,
                              @RequestParam(value = "breadcrumbOverrideLabel", required = false) String breadcrumbOverrideLabel,
-                             @RequestParam(value = "breadcrumbOverrideApp", required = false) String appId,
+                             @RequestParam(value = "breadcrumbOverrideApp", required = false) String breadcrumbOverrideAppId,
                              @InjectBeans PatientDomainWrapper patientDomainWrapper,
                              @SpringBean AppFrameworkService appFrameworkService,
                              @SpringBean("applicationEventService") ApplicationEventService applicationEventService,
                              UiUtils ui,
                              UiSessionContext sessionContext) {
+
+        // see: https://issues.openmrs.org/browse/RA-1405 for why we support both app and appId
+        app = app != null ? app : appId;
 
         // TODO handle error case of patient == null
         if (patient.isVoided() || patient.isPersonVoided()) {
@@ -42,7 +47,7 @@ public class RegistrationSummaryPageController extends AbstractRegistrationAppPa
         // generate the breadcrumb override if necessary--this is to support alternative entry points to this page
         if (StringUtils.isBlank(breadcrumbOverride) && StringUtils.isNotBlank(breadcrumbOverrideProvider)
                 && StringUtils.isNotBlank(breadcrumbOverridePage) && StringUtils.isNotBlank(breadcrumbOverrideLabel)) {
-            breadcrumbOverride = generateBreadcrumbOverride(breadcrumbOverrideLabel, breadcrumbOverrideProvider, breadcrumbOverridePage, appId, ui);
+            breadcrumbOverride = generateBreadcrumbOverride(breadcrumbOverrideLabel, breadcrumbOverrideProvider, breadcrumbOverridePage, breadcrumbOverrideAppId, ui);
         }
 
         patientDomainWrapper.setPatient(patient);
