@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by user on 02.08.17.
- */
 public class FingerprintM2sysFragmentController {
 
-    private static BiometricEngine biometricEngine;
+    private BiometricEngine biometricEngine;
 
     public void controller(@SpringBean("registrationCoreService") RegistrationCoreService service) {
         biometricEngine = service.getBiometricEngine();
@@ -28,7 +25,7 @@ public class FingerprintM2sysFragmentController {
         BiometricSubject response = biometricEngine.enroll(biometricSubject);
 
         SimpleObject result = new SimpleObject();
-        result.put("id",response.getSubjectId());
+        result.put("id", response.getSubjectId());
         return result;
     }
 
@@ -49,7 +46,7 @@ public class FingerprintM2sysFragmentController {
         BiometricSubject response = biometricEngine.update(biometricSubject);
 
         SimpleObject result = new SimpleObject();
-        result.put("id",response.getSubjectId());
+        result.put("id", response.getSubjectId());
         return result;
     }
 
@@ -58,7 +55,7 @@ public class FingerprintM2sysFragmentController {
         BiometricSubject response = biometricEngine.updateSubjectId(oldId, newId);
 
         SimpleObject result = new SimpleObject();
-        result.put("id",response.getSubjectId());
+        result.put("id", response.getSubjectId());
         return result;
     }
 
@@ -74,7 +71,7 @@ public class FingerprintM2sysFragmentController {
         BiometricSubject response = biometricEngine.lookup(id);
 
         SimpleObject result = new SimpleObject();
-        result.put("id",response.getSubjectId());
+        result.put("id", response.getSubjectId());
         return result;
     }
 
@@ -86,8 +83,8 @@ public class FingerprintM2sysFragmentController {
         List<SimpleObject> resultList = new ArrayList<SimpleObject>();
         for(BiometricMatch match : matches) {
             SimpleObject simpleObject = new SimpleObject();
-            simpleObject.put("subjectId",match.getSubjectId());
-            simpleObject.put("matchScore",match.getMatchScore());
+            simpleObject.put("subjectId", match.getSubjectId());
+            simpleObject.put("matchScore", match.getMatchScore());
             resultList.add(simpleObject);
         }
         return resultList;
