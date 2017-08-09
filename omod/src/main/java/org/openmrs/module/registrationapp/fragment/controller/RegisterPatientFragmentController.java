@@ -12,6 +12,7 @@ import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -25,6 +26,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientIdentifierException;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
@@ -36,9 +38,13 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
+import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
+import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -116,6 +122,7 @@ public class RegisterPatientFragmentController {
                             @SpringBean("encounterService") EncounterService encounterService,
                             @SpringBean("obsService") ObsService obsService,
                             @SpringBean("conceptService") ConceptService conceptService,
+                            @SpringBean("patientService") PatientService patientService,
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
@@ -153,13 +160,30 @@ public class RegisterPatientFragmentController {
 
         List<Relationship> relationships = null;
 
-        if(request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
+        if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
             relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+        }
+
+        RegistrationData registrationData = new RegistrationData();
+        registrationData.setPatient(patient);
+        registrationData.setRelationships(relationships);
+        registrationData.setIdentifier(patientIdentifier);
+        registrationData.setIdentifierLocation(sessionContext.getSessionLocation());
+
+        // Add any biometric data that was submitted
+        Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
+        for (Field fingerprintField : fingerprintData.keySet()) {
+            BiometricSubject subject = fingerprintData.get(fingerprintField);
+            PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+            if (identifierType == null) {
+                throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
+            }
+            registrationData.addBiometricData(new BiometricData(subject, identifierType));
         }
 
         try {
             // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
-            patient = registrationService.registerPatient(patient, relationships, patientIdentifier, sessionContext.getSessionLocation());
+            patient = registrationService.registerPatient(registrationData);
         }
         catch (Exception ex) {
 

@@ -229,7 +229,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                 // it fires unwantedly when we go to the next screen, so we need to use a plain event on the text field
                 // for this.)
                 var legalValues = element.data('legalValues');
-                if (element.val() && !(legalValues && _.contains(legalValues, element.val()))) {
+                if (element.val() && !((legalValues && legalValues.length > 0) && _.contains(legalValues, element.val()))) {
                     element.val('');
                     setTimeout(function () {
                         element.focus();

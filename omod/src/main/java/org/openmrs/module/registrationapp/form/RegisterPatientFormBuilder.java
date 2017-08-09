@@ -32,6 +32,8 @@ import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +52,8 @@ import java.util.Map;
 public class RegisterPatientFormBuilder {
 
 	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
+
+	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
 
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
@@ -61,12 +66,8 @@ public class RegisterPatientFormBuilder {
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
-		// preload the demographics section; if there is a user-specified demographics section, it will override this, but remain at the front by rules of a LinkedHashMap
-		Section demographics = new Section();
-		demographics.setId("demographics");
-		demographics.setLabel("registrationapp.patient.demographics.label");
-		formStructure.addSection(demographics);
-
+		// Get the ordered list of sections out of the configuration
+		Map<String, Section> configuredSections = new LinkedHashMap<String, Section>();
 		ArrayNode sections = (ArrayNode) app.getConfig().get("sections");
 		for (JsonNode i : sections) {
 			ObjectNode config = (ObjectNode) i;
@@ -93,8 +94,20 @@ public class RegisterPatientFormBuilder {
 				}
 			}
 
-			formStructure.addSection(section);
+			configuredSections.put(section.getId(), section);
 		}
+
+		// If no demographics section is explicitly included, ensure the default one is included first
+        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+            Section demographics = new Section();
+            demographics.setId(DEMOGRAPHICS_SECTION_ID);
+            demographics.setLabel("registrationapp.patient.demographics.label");
+            formStructure.addSection(demographics);
+        }
+
+        for (Section section : configuredSections.values()) {
+            formStructure.addSection(section);
+        }
 
 		return formStructure;
 	}
@@ -175,7 +188,7 @@ public class RegisterPatientFormBuilder {
 							log.warn("Multiple values for a single patient identifier type not supported, ignoring extra values");
 						}
 						String parameterValue = parameterValues[0];
-						if (parameterValue != null) {
+						if (StringUtils.isNotBlank(parameterValue)) {
 							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
 							if (identifierType  != null) {
 
@@ -197,4 +210,60 @@ public class RegisterPatientFormBuilder {
 			}
 		}
 	}
+
+    /**
+     * Extracts all BiometricSubject data out of the registration form
+     * This will only return data for fields that have actual biometric data extracted
+     */
+	public static Map<Field, BiometricSubject> extractBiometricDataFields(NavigableFormStructure form, Map<String, String[]> parameterMap) {
+
+	    Map<Field, BiometricSubject> ret = new LinkedHashMap<Field, BiometricSubject>();
+
+        // Iterate over all fingerprint fields from form structure
+        List<Field> fields = form.getFields();
+        if (fields != null) {
+            for (Field field : fields) {
+                if (StringUtils.equals(field.getType(), "fingerprint")) {
+
+                    log.debug("Found a fingerprint field defined: " + field);
+                    FragmentConfiguration config = field.getFragmentRequest().getConfiguration();
+                    String templateFormat = (String) config.get("format");
+                    List<Map<String, Object>> fingers = (List<Map<String, Object>>) config.get("fingers");
+
+                    // We configure a new BiometricSubject to hold any fingerprint data that we read out of the request
+                    BiometricSubject subject = new BiometricSubject();
+
+                    if (fingers != null) {
+                        log.debug("This field has: " + fingers.size() + " fingers defined.  Iterating across these");
+
+                        for (Map<String, Object> finger : fingers) {
+                            String[] fingerprintTemplates = parameterMap.get(finger.get("formFieldName"));
+                            if (fingerprintTemplates != null && fingerprintTemplates.length > 0) {
+                                if (fingerprintTemplates.length > 1) {
+                                    log.warn("Multiple values for a single fingerprint form field are not supported. Please ensure you configure unique form field names.");
+                                }
+                                String fpTemplate = fingerprintTemplates[0];
+                                if (StringUtils.isNotBlank(fpTemplate)) {
+                                    subject.addFingerprint(new Fingerprint((String) finger.get("type"), templateFormat, fpTemplate));
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        log.warn("Fingerprint field does not have any fingers defined.  Please check the app configuration.");
+                    }
+
+                    if (subject.getFingerprints().isEmpty()) {
+                        log.debug("No fingerprint templates found for this field.");
+                    }
+                    else {
+                        ret.put(field, subject);
+                        log.debug("Extracted " + subject.getFingerprints() + " fingerprints for field.");
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
 }
