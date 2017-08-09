@@ -21,8 +21,11 @@ public class FingerprintM2sysFragmentController {
     }
 
     public SimpleObject enroll() {
-        BiometricSubject biometricSubject = new BiometricSubject();
-        BiometricSubject response = biometricEngine.enroll(biometricSubject);
+        if (!isBiometricEngineEnable()) {
+            return null;
+        }
+
+        BiometricSubject response = biometricEngine.enroll(null);
 
         SimpleObject result = new SimpleObject();
         result.put("id", response.getSubjectId());
@@ -88,5 +91,9 @@ public class FingerprintM2sysFragmentController {
             resultList.add(simpleObject);
         }
         return resultList;
+    }
+
+    private boolean isBiometricEngineEnable() {
+        return biometricEngine != null;
     }
 }

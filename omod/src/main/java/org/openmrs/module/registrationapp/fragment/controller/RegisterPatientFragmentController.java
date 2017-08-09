@@ -117,6 +117,7 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
+                            @RequestParam(value="fingerprintSubjectId", required = false) String fingerprintSubjectId,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,

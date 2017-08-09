@@ -7,6 +7,6 @@
         ${ ui.message("registrationapp.biometrics.m2sys.enroll") }
     </a>
     <p>
-        <input type="text" name="fingerprintIdInput" class="invisible"/>
+        <input type="text" name="fingerprintSubjectId" class="invisible"/>
     </p>
 </div>
