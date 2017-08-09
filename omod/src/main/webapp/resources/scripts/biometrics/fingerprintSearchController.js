@@ -67,6 +67,10 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                                     jq('#patient-search-form').trigger('search:add', match.subjectId);
                                 })
                             }
+                            else {
+                                jq('#patient-search-form').trigger('search:no-matches');
+                            }
+
                             $scope.enableScanButton();
                             $scope.$digest();
                         },
