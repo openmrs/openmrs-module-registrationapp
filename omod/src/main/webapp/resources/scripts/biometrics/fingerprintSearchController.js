@@ -62,10 +62,12 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                         FingerprintService.matchFinger(data.template).then(function (data) {
                             if (data && data.length > 0) {
                                 // TODO sort by match score
+                                var identifiers = [];
                                 angular.forEach(data.reverse(), function (match) {
-                                    // TODO better way to do this than access jquery directly? how do we assure jquery is present?
-                                    jq('#patient-search-form').trigger('search:add', match.subjectId);
-                                })
+                                    identifiers.push(match.subjectId)
+                                });
+                                // TODO better way to do this than access jquery directly? how do we assure jquery is present?
+                                jq('#patient-search-form').trigger('search:identifiers', identifiers);
                             }
                             else {
                                 jq('#patient-search-form').trigger('search:no-matches');
