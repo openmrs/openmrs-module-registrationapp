@@ -1,12 +1,14 @@
 package org.openmrs.module.registrationapp.fragment.controller.field;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineStatus;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.ui.framework.SimpleObject;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
@@ -22,15 +24,24 @@ public class FingerprintM2sysFragmentController {
 
     public void controller() { }
 
-    public SimpleObject enroll() {
+    public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+        SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnable()) {
-            return null;
+            response.put("success", false);
+            response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
+            return response;
         }
-        BiometricSubject response = biometricEngine.enroll(null);
 
-        SimpleObject result = new SimpleObject();
-        result.put("id", response.getSubjectId());
-        return result;
+        try {
+            BiometricSubject result = biometricEngine.enroll(null);
+            response.put("success", true);
+            response.put("message",result.getSubjectId());
+        } catch (Exception ex) {
+            response.put("success", false);
+            response.put("message", ex.getMessage());
+        }
+
+        return response;
     }
 
     public SimpleObject getStatus() {

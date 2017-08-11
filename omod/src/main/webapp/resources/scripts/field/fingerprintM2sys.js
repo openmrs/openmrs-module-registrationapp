@@ -1,7 +1,15 @@
 function m2sysEnroll() {
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
     .success(function(data) {
-        $("[name='fingerprintSubjectId']").val(data['id']);
+        if (data['success'] == true) {
+            $("#fingerprintStatus").text("Success !");
+            $("#fingerprintError").text("");
+            $("[name='fingerprintSubjectId']").val(data['message']);
+        } else {
+            $("#fingerprintStatus").text("Failed !");
+            $("#fingerprintError").text(data['message']);
+            $("[name='fingerprintSubjectId']").val("");
+        }
     });
 }
 
