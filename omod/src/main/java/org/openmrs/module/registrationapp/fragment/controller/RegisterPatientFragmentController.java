@@ -182,7 +182,7 @@ public class RegisterPatientFragmentController {
             registrationData.addBiometricData(new BiometricData(subject, identifierType));
         }
 
-        if (fingerprintSubjectId != null) {
+        if (StringUtils.isNotBlank(fingerprintSubjectId)) {
             BiometricSubject biometricSubject = new BiometricSubject();
             biometricSubject.setSubjectId(fingerprintSubjectId);
             BiometricData biometricData = registrationService.generateBiometricData(biometricSubject);
