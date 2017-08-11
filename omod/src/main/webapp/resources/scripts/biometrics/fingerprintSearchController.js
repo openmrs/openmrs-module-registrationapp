@@ -9,16 +9,14 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
             .useSanitizeValueStrategy('escape');
     })
 
-    .controller('FingerprintSearchController', ['$scope', 'FingerprintService', '$translate',
+    .controller('FingerprintSearchController', ['$scope', '$q', 'FingerprintService', '$translate',
 
-        function($scope, FingerprintService, $translate) {
 
-            $scope.scannerStatus;
-            $scope.engineStatus;
-            $scope.selectedScanner = null;
-            $scope.buttonLabel = "registrationapp.biometrics.scan";
-            $scope.scanningFingerInProgress = false;
-            $scope.scanError = false;
+        function($scope, $q, FingerprintService, $translate) {
+
+            var scannerStatus;
+            var engineStatus;
+            var selectedScanner = null;
 
             $scope.init = function(config, locale) {
 
@@ -26,40 +24,34 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
                 $translate.use(locale);
 
-                FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
-                    $scope.scannerStatus = scannerStatus;
-                    if (scannerStatus.scanners.length) {
-                        $scope.selectedScanner = scannerStatus.scanners[0];
+                $q.all([
+                    FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
+                        $scope.scannerStatus = scannerStatus;
+                        if (scannerStatus.scanners.length) {
+                            $scope.selectedScanner = scannerStatus.scanners[0];
+                        }
+                    }),
+
+                    FingerprintService.getEngineStatus().then(function (engineStatus) {
+                        $scope.engineStatus = engineStatus.results;
+                    })
+                ])
+                .then(function() {
+                    if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
+                        $scope.scanFinger();
                     }
-                });
-
-                FingerprintService.getEngineStatus().then(function (engineStatus) {
-                    $scope.engineStatus = engineStatus.results;
-                });
+                })
             }
 
-            $scope.disableScanButton = function () {
-                $scope.scanningFingerInProgress = true;
-                $scope.buttonLabel = "registrationapp.biometrics.scanning";
-            }
-
-            $scope.enableScanButton = function() {
-                $scope.scanningFingerInProgress = false;
-                $scope.buttonLabel = "registrationapp.biometrics.scan";
-                jq('#patient-search-form').trigger('search:enable');
-            }
-
-            $scope.scanFinger = function(finger) {
-
-                jq('#patient-search-form').trigger('search:clear');
-                jq('#patient-search-form').trigger('search:disable');
-
-                $scope.scanError = false;
-                $scope.disableScanButton();
+            $scope.scanFinger = function() {
 
                 FingerprintService.scanFinger($scope.selectedScanner, { type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
                     if (data && data.template) {
+
+                        jq('#patient-search-form').trigger('search:clear');
+
                         FingerprintService.matchFinger(data.template).then(function (data) {
+
                             if (data && data.length > 0) {
                                 // TODO sort by match score
                                 var identifiers = [];
@@ -73,22 +65,18 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                                 jq('#patient-search-form').trigger('search:no-matches');
                             }
 
-                            $scope.enableScanButton();
-                            $scope.$digest();
+                            $scope.scanFinger();
                         },
                         function (error) {
-                            $scope.enableScanButton();
-                            $scope.buttonLabel="registrationapp.biometrics.badscan";
+                            $scope.scanFinger();
                         });
                     }
                     else {
-                        $scope.enableScanButton();
-                        $scope.buttonLabel="registrationapp.biometrics.badscan";
+                        $scope.scanFinger();
                     }
                 },
                 function (error) {
-                    $scope.enableScanButton();
-                    $scope.buttonLabel="registrationapp.biometrics.badscan";
+                    $scope.scanFinger();
                 });
             };
 

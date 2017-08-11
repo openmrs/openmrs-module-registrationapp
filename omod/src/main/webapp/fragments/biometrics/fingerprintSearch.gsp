@@ -9,18 +9,13 @@
     ui.includeJavascript("registrationapp", "biometrics/fingerprintService.js")
 %>
 
-<button id="fingerprint-search-icon"
-        class="scan-finger-button"
-        type="button"
+<div id="fingerprint-search"
         ng-controller="FingerprintSearchController"
-        ng-click="scanFinger()"
         ng-init='init(${ ui.toJson(config) }, "${ ui.locale }")'
-        ng-show="scannerStatus.enabled && engineStatus.enabled"
-        ng-disabled="scanningFingerInProgress">
-    {{ buttonLabel | translate }}
-</button>
+        ng-show="false">
 
+</div>
 
 <script>
-    angular.bootstrap("#fingerprint-search-icon", ["openmrs-module-registrationapp-fingerprint-search"])
+    angular.bootstrap("#fingerprint-search", ["openmrs-module-registrationapp-fingerprint-search"])
 </script>
