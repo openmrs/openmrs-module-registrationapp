@@ -18,6 +18,8 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
             var engineStatus;
             var selectedScanner = null;
 
+            $scope.message = "";
+
             $scope.init = function(config, locale) {
 
                 $scope.config = config;
@@ -38,6 +40,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                 ])
                 .then(function() {
                     if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
+                        $scope.message = "registrationapp.biometrics.scannerAvailable";
                         $scope.scanFinger();
                     }
                 })
@@ -65,17 +68,21 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                                 jq('#patient-search-form').trigger('search:no-matches');
                             }
 
+                            $scope.message = "registrationapp.biometrics.scannerAvailable";
                             $scope.scanFinger();
                         },
                         function (error) {
+                            $scope.message = "registrationapp.biometrics.badscan";
                             $scope.scanFinger();
                         });
                     }
                     else {
+                        $scope.message = "registrationapp.biometrics.badscan";
                         $scope.scanFinger();
                     }
                 },
                 function (error) {
+                    $scope.message = "registrationapp.biometrics.badscan";
                     $scope.scanFinger();
                 });
             };
