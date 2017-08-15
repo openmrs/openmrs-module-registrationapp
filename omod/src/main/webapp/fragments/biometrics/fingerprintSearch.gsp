@@ -12,7 +12,6 @@
 <div id="fingerprint-search"
         ng-controller="FingerprintSearchController"
         ng-init='init(${ ui.toJson(config) }, "${ ui.locale }")'>
-    {{ message | translate }}
 </div>
 
 <script>

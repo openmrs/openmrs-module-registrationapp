@@ -9,16 +9,14 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
             .useSanitizeValueStrategy('escape');
     })
 
-    .controller('FingerprintSearchController', ['$scope', '$q', 'FingerprintService', '$translate',
+    .controller('FingerprintSearchController', ['$scope', '$q', 'FingerprintService', '$translate', '$timeout',
 
+        function($scope, $q, FingerprintService, $translate, $timeout) {
 
-        function($scope, $q, FingerprintService, $translate) {
+            var TIMEOUT = 10000;
 
             var scannerStatus;
             var engineStatus;
-            var selectedScanner = null;
-
-            $scope.message = "";
 
             $scope.init = function(config, locale) {
 
@@ -29,9 +27,6 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                 $q.all([
                     FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
                         $scope.scannerStatus = scannerStatus;
-                        if (scannerStatus.scanners.length) {
-                            $scope.selectedScanner = scannerStatus.scanners[0];
-                        }
                     }),
 
                     FingerprintService.getEngineStatus().then(function (engineStatus) {
@@ -40,7 +35,11 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                 ])
                 .then(function() {
                     if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
-                        $scope.message = "registrationapp.biometrics.scannerAvailable";
+                        if ($scope.scannerStatus.scanners && $scope.scannerStatus.scanners.length > 0) {
+                            $translate('registrationapp.biometrics.search.placeholder').then(function (translation) {
+                                jq('#patient-search-form').trigger('search:placeholder', translation);
+                            });
+                        }
                         $scope.scanFinger();
                     }
                 })
@@ -48,7 +47,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
             $scope.scanFinger = function() {
 
-                FingerprintService.scanFinger($scope.selectedScanner, { type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
+                FingerprintService.scanFinger(null, { type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
                     if (data && data.template) {
 
                         jq('#patient-search-form').trigger('search:clear');
@@ -68,22 +67,19 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                                 jq('#patient-search-form').trigger('search:no-matches');
                             }
 
-                            $scope.message = "registrationapp.biometrics.scannerAvailable";
                             $scope.scanFinger();
                         },
                         function (error) {
-                            $scope.message = "registrationapp.biometrics.badscan";
-                            $scope.scanFinger();
+                            $timeout($scope.scanFinger, TIMEOUT);
                         });
                     }
                     else {
-                        $scope.message = "registrationapp.biometrics.badscan";
+                        // no match found, just return
                         $scope.scanFinger();
                     }
                 },
                 function (error) {
-                    $scope.message = "registrationapp.biometrics.badscan";
-                    $scope.scanFinger();
+                    $timeout($scope.scanFinger, TIMEOUT);
                 });
             };
 

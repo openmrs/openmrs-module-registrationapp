@@ -56,9 +56,9 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
             };
 
             this.scanFinger = function(scanner, finger, config) {
-                return $http.get(config.scanUrl, {"params" : {"deviceId": scanner.id, "type": finger.type, "format": finger.format}}).then(function(response) {
+                return $http.get(config.scanUrl, {"params" : {"deviceId": scanner != null ? scanner.id : null, "type": finger.type, "format": finger.format}}).then(function(response) {
                     if (response.status === 200) {
-                        var data = response.data;
+                        var data = response.data ? response.data : {};
                         data.type = data.type || finger.type;
                         data.format = data.format || finger.format;
                         return data;
@@ -67,9 +67,6 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
                         console.log('Error scanning fingerprint: ' + response.status);
                         return {};
                     }
-                }, function (error) {
-                    console.log("Unable to connect to " + config.scanUrl + ". Please ensure this is running.");
-                    return {};
                 });
             };
 
