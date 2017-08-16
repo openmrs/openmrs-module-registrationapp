@@ -12,6 +12,8 @@
 <div id="fingerprint-search"
         ng-controller="FingerprintSearchController"
         ng-init='init(${ ui.toJson(config) }, "${ ui.locale }")'>
+    <!-- TODO: use a style -->
+    <span style="color: red">{{ errorMessage | translate }}</span>
 </div>
 
 <script>

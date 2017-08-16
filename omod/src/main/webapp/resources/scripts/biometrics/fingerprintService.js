@@ -1,8 +1,19 @@
 angular.module('openmrs-module-registrationapp-fingerprint-service', [])
+    .constant('errors', {
+        '200': 'OK',
+        '-1': 'SERVICE_NOT_RUNNING',
+        '403': 'SERVICE_NOT_ENABLED',
+        '404': 'DEVICE_NOT_FOUND',
+        '500': 'UNKNOWN_ERROR',
+        '502': 'BAD_SCAN',
+        '504': 'DEVICE_TIMEOUT'
+    })
+    .service('FingerprintService', ['$q', '$http', 'errors',
 
-    .service('FingerprintService', ['$q', '$http',
+        // TODO fix the getEngineStatus and getScannerStatus and matchFinger to be consist/use the new error messaging?
+        // TODO fix the fingerprint.js/registration flow to use the new error mappings?
 
-        function($q, $http) {
+        function($q, $http, errors) {
 
             this.getEngineStatus = function() {
                 var url = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/registrationcore/biometrics/enginestatus";
@@ -61,14 +72,23 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
                         var data = response.data ? response.data : {};
                         data.type = data.type || finger.type;
                         data.format = data.format || finger.format;
+                        data.status = errors[response.status];
                         return data;
                     }
                     else {
-                        console.log('Error scanning fingerprint: ' + response.status);
-                        return {};
+                        return {
+                            status: errors[response.status]
+                        };
                     }
+                },
+                function(response) {
+                    return {
+                        status: errors[response.status]
+                    };
                 });
             };
+
+            // TODO add error codes here?
 
           this.matchFinger = function(template) {
                 var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/biometrics/biometrics/search.action';
