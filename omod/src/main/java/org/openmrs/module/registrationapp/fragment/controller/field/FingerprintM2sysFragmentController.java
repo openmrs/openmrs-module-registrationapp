@@ -9,12 +9,16 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FingerprintM2sysFragmentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FingerprintM2sysFragmentController.class);
 
     private BiometricEngine biometricEngine;
 
@@ -26,7 +30,7 @@ public class FingerprintM2sysFragmentController {
 
     public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService) {
         SimpleObject response = new SimpleObject();
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             response.put("success", false);
             response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
             return response;
@@ -39,13 +43,14 @@ public class FingerprintM2sysFragmentController {
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
+            LOGGER.error(ex.getMessage());
         }
 
         return response;
     }
 
     public SimpleObject getStatus() {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return null;
         }
         BiometricEngineStatus response = biometricEngine.getStatus();
@@ -59,7 +64,7 @@ public class FingerprintM2sysFragmentController {
     }
 
     public SimpleObject update(@RequestParam("id") String id) {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return null;
         }
         BiometricSubject biometricSubject = new BiometricSubject();
@@ -73,7 +78,7 @@ public class FingerprintM2sysFragmentController {
 
     public SimpleObject updateSubjectId(@RequestParam("oldId") String oldId,
                                         @RequestParam("newId") String newId) {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return null;
         }
         BiometricSubject response = biometricEngine.updateSubjectId(oldId, newId);
@@ -84,7 +89,7 @@ public class FingerprintM2sysFragmentController {
     }
 
     public List<SimpleObject> search(@RequestParam("id") String id) {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return null;
         }
         BiometricSubject biometricSubject = new BiometricSubject();
@@ -95,7 +100,7 @@ public class FingerprintM2sysFragmentController {
     }
 
     public SimpleObject lookup(@RequestParam("id") String id) {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return null;
         }
         BiometricSubject response = biometricEngine.lookup(id);
@@ -106,7 +111,7 @@ public class FingerprintM2sysFragmentController {
     }
 
     public void delete(@RequestParam("id") String id) {
-        if (!isBiometricEngineEnable()) {
+        if (!isBiometricEngineEnabled()) {
             return;
         }
         biometricEngine.delete(id);
@@ -123,7 +128,7 @@ public class FingerprintM2sysFragmentController {
         return resultList;
     }
 
-    private boolean isBiometricEngineEnable() {
+    private boolean isBiometricEngineEnabled() {
         return getBiometricEngine() != null;
     }
 
