@@ -45,11 +45,9 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
                 ])
                 .then(function() {
                     if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
-                        if ($scope.scannerStatus.scanners && $scope.scannerStatus.scanners.length > 0) {
-                            $translate('registrationapp.biometrics.search.placeholder').then(function (translation) {
-                                jq('#patient-search-form').trigger('search:placeholder', translation);
-                            });
-                        }
+                        $translate('registrationapp.biometrics.search.placeholder').then(function (translation) {
+                            jq('#patient-search-form').trigger('search:placeholder', translation);
+                        });
                         $scope.scanFinger();
                     }
                 })

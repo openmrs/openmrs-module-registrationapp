@@ -1,5 +1,5 @@
 angular.module('openmrs-module-registrationapp-fingerprint-service', [])
-    .constant('errors', {
+    .constant('statusCodes', {
         '200': 'OK',
         '-1': 'SERVICE_NOT_RUNNING',
         '403': 'SERVICE_NOT_ENABLED',
@@ -8,13 +8,11 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
         '502': 'BAD_SCAN',
         '504': 'DEVICE_TIMEOUT'
     })
-    .service('FingerprintService', ['$q', '$http', 'errors',
+    .service('FingerprintService', ['$q', '$http', 'statusCodes',
 
-        // TODO fix the getEngineStatus and getScannerStatus and matchFinger to be consist/use the new error messaging?
-        // TODO fix the fingerprint.js/registration flow to use the new error mappings?
+        function($q, $http, statusCodes) {
 
-        function($q, $http, errors) {
-
+            // TODO do we want to change this and/or match finger to return error codes like we do for the scanner-side services?
             this.getEngineStatus = function() {
                 var url = "/" + OPENMRS_CONTEXT_PATH + "/ws/rest/v1/registrationcore/biometrics/enginestatus";
                 return $http.get(url, {}).then(function (response) {
@@ -39,28 +37,24 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
             this.getScannerStatus = function (config) {
                 return $http.get(config.devicesUrl, {}).then(
                     function (response) {
-                        if (response.status === 200) {
-                            var scannerStatus = {};
-                            scannerStatus.enabled = true;
-                            scannerStatus.scanners = response.data;
-                            scannerStatus.statusMessage = '';
-                            return scannerStatus;
-                        }
-                        else {
-                            var scannerStatus = {};
-                            scannerStatus.enabled = true;
-                            scannerStatus.scanners = [];
-                            scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
-                            scannerStatus.errorDetails = response.status;
-                            return scannerStatus;
-                        }
-                    },
-                    function (error) {
+
                         var scannerStatus = {};
+                        scannerStatus.enabled = true;
+                        scannerStatus.scanners = [];
+                        scannerStatus.status = statusCodes[response.status];
+
+                        if (scannerStatus.status === 'OK') {
+                            scannerStatus.scanners = response.data;
+                        }
+
+                        return scannerStatus;
+                    },
+                    function (response) {
+                        var scannerStatus = {};
+
                         scannerStatus.enabled = false;
                         scannerStatus.scanners = [];
-                        scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
-                        scannerStatus.errorDetails = "registrationapp.biometrics.isScanningServiceRunning";
+                        scannerStatus.status = statusCodes[response.status];
                         return scannerStatus;
                     }
                 );
@@ -72,23 +66,21 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
                         var data = response.data ? response.data : {};
                         data.type = data.type || finger.type;
                         data.format = data.format || finger.format;
-                        data.status = errors[response.status];
+                        data.status = statusCodes[response.status];
                         return data;
                     }
                     else {
                         return {
-                            status: errors[response.status]
+                            status: statusCodes[response.status]
                         };
                     }
                 },
                 function(response) {
                     return {
-                        status: errors[response.status]
+                        status: statusCodes[response.status]
                     };
                 });
             };
-
-            // TODO add error codes here?
 
           this.matchFinger = function(template) {
                 var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/biometrics/biometrics/search.action';

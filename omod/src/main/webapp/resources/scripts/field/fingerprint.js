@@ -1,6 +1,15 @@
 
 angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 'pascalprecht.translate', 'openmrs-module-registrationapp-fingerprint-service'])
 
+    .constant('errorMessages', {
+        'SERVICE_NOT_RUNNING': 'registrationapp.biometrics.serviceNotRunning',
+        'SERVICE_NOT_ENABLED': 'registrationapp.biometrics.serviceNotEnabled',
+        'DEVICE_NOT_FOUND': 'registrationapp.biometrics.scannerNotFound',
+        'UNKNOWN_ERROR': 'registrationapp.biometrics.scannerError',
+        'BAD_SCAN': 'registrationapp.biometrics.badscan',
+        'DEVICE_TIMEOUT': ''
+    })
+
     .config(function ($translateProvider) {
         $translateProvider
             .useUrlLoader('/' +  OPENMRS_CONTEXT_PATH + '/module/uicommons/messages/messages.json',  {
@@ -9,9 +18,9 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
             .useSanitizeValueStrategy('escape');
     })
 
-    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintService', 'ngDialog', '$translate', '$filter',
+    .controller('FingerprintScanningController', ['$scope', '$interval', 'FingerprintService', 'ngDialog', '$translate', '$filter', 'errorMessages',
 
-        function($scope, $interval, FingerprintService, ngDialog, $translate, $filter) {
+        function($scope, $interval, FingerprintService, ngDialog, $translate, $filter, errorMessages) {
 
             $scope.refreshScannerStatus = function() {
                 $scope.refreshingScannerStatus = true;
@@ -20,6 +29,17 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                     if (scannerStatus.scanners.length > 0 && !$scope.selectedScanner) {
                         $scope.selectedScanner = scannerStatus.scanners[0];
                     }
+                    if ($scope.scannerStatus.status === 'OK') {
+                        $scope.scannerStatus.statusMessage = "";
+                        $scope.scannerStatus.errorDetails = "";
+                    }
+                    else {
+                        $scope.scannerStatus.statusMessage = "registrationapp.biometrics.unableToRetrieveScanners";
+                        if ($scope.scannerStatus.status in errorMessages) {
+                            $scope.scannerStatus.errorDetails = errorMessages[$scope.scannerStatus.status]
+                        }
+                    }
+
                     $scope.refreshingScannerStatus = false;
                 });
             };
@@ -35,18 +55,30 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
             // TODO: This seems hacky and should be improved
             $scope.updateBiometricMatches = function() {
                 var biometricData = ""
-                $scope.fingersToScan.forEach(function(finger) {
-                    biometricData += "&" + finger.formFieldName + "=" + encodeURIComponent($scope.scannedData[finger.index].template);
+                $scope.fingersToScan.forEach(function (finger) {
+                    if ($scope.scannedData[finger.index].template) {
+                        biometricData += "&" + finger.formFieldName + "=" + encodeURIComponent($scope.scannedData[finger.index].template);
+                    }
                 });
-                getBiometricMatches(biometricData);
+
+                if (biometricData) {
+                    getBiometricMatches(biometricData);
+                }
             }
 
             $scope.scanFinger = function(finger) {
+                $scope.scanErrorDetails = "";
+                $scope.scannedData[finger.index] = {};
                 $scope.scanningFingerInProgress = true;
                 $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
                 FingerprintService.scanFinger($scope.selectedScanner, finger, $scope.config).then(function(data) {
                     $scope.scanningFingerInProgress = false;
                     data.currentlyScanning = false;
+
+                    if (data.status in errorMessages) {
+                        $scope.scanErrorDetails = errorMessages[data.status]
+                    }
+
                     if (data.template) {
                         data.buttonLabel = "registrationapp.biometrics.rescan";
                         //NavigatorController.stepForward(); // TODO: Decide if and when we want to do this

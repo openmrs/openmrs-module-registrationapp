@@ -50,11 +50,13 @@
     <div class="engine-enabled-section" ng-show="engineStatus.enabled && scannerStatus.enabled && scannerStatus.scanners.length > 0">
 
         <div class="fingerprint-section fingerprint-capture-section" ng-repeat="finger in fingersToScan">
+            <!-- TODO: fix alignment when error messages appear -->
             <div class="finger-label">{{finger.label | translate}}</div>
-            <img data-ng-src="data:image/PNG;base64,{{ scannedData[finger.index].image }}" width="120" height="120"><br/>
+            <img ng-show="scannedData[finger.index].image" data-ng-src="data:image/PNG;base64,{{ scannedData[finger.index].image }}" width="120" height="120"><br/>
             <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress">
                 {{scannedData[finger.index].buttonLabel | translate}}
             </button>
+            <p style="color: red" ng-show="scanErrorDetails">{{ scanErrorDetails | translate }}</p>
             <p class="fingerprints-field">
                 <input type="text" size="40" name="{{ finger.formFieldName }}" value="{{scannedData[finger.index].template}}"/>
             </p>
