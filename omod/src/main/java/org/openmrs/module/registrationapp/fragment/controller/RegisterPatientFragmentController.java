@@ -69,9 +69,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.openmrs.module.registrationapp.RegistrationAppConstants.FINGERPRINT_IDENTIFIER_TYPE_NAME;
+
 public class RegisterPatientFragmentController {
 
     private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
+
+    private PatientService patientService;
+
+    public RegisterPatientFragmentController() {
+        patientService =  Context.getService(PatientService.class);
+    }
 
     class ObsGroupItem {
         String obsConcept = null;
@@ -117,6 +125,7 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
+                            @RequestParam(value="fingerprintSubjectId", required = false) String fingerprintSubjectId,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,
@@ -179,6 +188,13 @@ public class RegisterPatientFragmentController {
                 throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
             }
             registrationData.addBiometricData(new BiometricData(subject, identifierType));
+        }
+
+        if (StringUtils.isNotBlank(fingerprintSubjectId)) {
+            BiometricSubject biometricSubject = new BiometricSubject();
+            biometricSubject.setSubjectId(fingerprintSubjectId);
+            BiometricData biometricData = generateBiometricData(biometricSubject);
+            registrationData.getBiometrics().add(biometricData);
         }
 
         try {
@@ -271,6 +287,18 @@ public class RegisterPatientFragmentController {
         }
 
         return new SuccessResult(redirectUrl);
+    }
+
+    private BiometricData generateBiometricData(BiometricSubject biometricSubject) {
+        return new BiometricData(biometricSubject, getFingerprintIdentifierType());
+    }
+
+    private PatientIdentifierType getFingerprintIdentifierType() {
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByName(FINGERPRINT_IDENTIFIER_TYPE_NAME);
+        if (patientIdentifierType == null) {
+            throw new APIException("Local fingerprint identifier type not found");
+        }
+        return patientIdentifierType;
     }
 
     private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {
