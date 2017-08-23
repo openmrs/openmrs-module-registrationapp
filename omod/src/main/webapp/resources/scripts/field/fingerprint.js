@@ -26,9 +26,11 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                 $scope.refreshingScannerStatus = true;
                 FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
                     $scope.scannerStatus = scannerStatus;
-                    if (scannerStatus.scanners.length > 0 && !$scope.selectedScanner) {
+
+                    // currently we don't support selectig multiple scanners, s
+                    /* if (scannerStatus.scanners.length > 0 && !$scope.selectedScanner) {
                         $scope.selectedScanner = scannerStatus.scanners[0];
-                    }
+                    }*/
                     if ($scope.scannerStatus.status === 'OK') {
                         $scope.scannerStatus.statusMessage = "";
                         $scope.scannerStatus.errorDetails = "";
@@ -71,7 +73,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                 $scope.scannedData[finger.index] = {};
                 $scope.scanningFingerInProgress = true;
                 $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
-                FingerprintService.scanFinger($scope.selectedScanner, finger, $scope.config).then(function(data) {
+                FingerprintService.scanFinger(finger, $scope.config).then(function(data) {
                     $scope.scanningFingerInProgress = false;
                     data.currentlyScanning = false;
 

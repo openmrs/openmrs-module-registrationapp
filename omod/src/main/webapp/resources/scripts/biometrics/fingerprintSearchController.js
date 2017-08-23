@@ -55,7 +55,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
             $scope.scanFinger = function() {
 
-                FingerprintService.scanFinger(null, { type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
+                FingerprintService.scanFinger({ type: null, format: $scope.config.templateFormat }, $scope.config).then(function(data) {
 
                     // handle errors
                     if (!data) {

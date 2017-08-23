@@ -60,8 +60,9 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
                 );
             };
 
-            this.scanFinger = function(scanner, finger, config) {
-                return $http.get(config.scanUrl, {"params" : {"deviceId": scanner != null ? scanner.id : null, "type": finger.type, "format": finger.format}}).then(function(response) {
+            // note that scanning service currently doesn't support specifying device id, so this is ignored
+            this.scanFinger = function(finger, config) {
+                return $http.get(config.scanUrl, {"params" : {"type": finger.type, "format": finger.format}}).then(function(response) {
                     if (response.status === 200) {
                         var data = response.data ? response.data : {};
                         data.type = data.type || finger.type;

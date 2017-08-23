@@ -32,6 +32,8 @@
         <span ng-show="engineStatus.errorDetails"> - {{ engineStatus.errorDetails | translate }}</span>
     </div>
 
+    <!--  the scanner client currently doesn't support selecting a scanner, so disabling this  -->
+    <!--
     <div class="scanner-enabled-section" ng-show="scannerStatus.enabled">
         <b>${ui.message("registrationapp.biometrics.scanner")}: </b>
         <span ng-show="scannerStatus.scanners.length === 0">
@@ -46,6 +48,7 @@
 
         <i ng-show="refreshingScannerStatus" class="icon-spinner icon-spin"></i>
     </div>
+    -->
 
     <div class="engine-enabled-section" ng-show="engineStatus.enabled && scannerStatus.enabled && scannerStatus.scanners.length > 0">
 
