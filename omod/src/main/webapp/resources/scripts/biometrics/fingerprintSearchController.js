@@ -95,6 +95,10 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
                             // try again in all case if scan was successful, regardlesss of whether or not match was found
                             $scope.scanFinger();
+                        }, function (err) {
+                            // there was a problem contacting the matching engine, scan again
+                            $scope.errorMessage = 'registrationapp.biometrics.errorContactingMatchingServer';
+                            $scope.scanFinger();
                         });
                     }
                     else {

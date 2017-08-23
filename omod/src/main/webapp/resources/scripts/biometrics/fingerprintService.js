@@ -84,12 +84,10 @@ angular.module('openmrs-module-registrationapp-fingerprint-service', [])
             };
 
           this.matchFinger = function(template) {
-                var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/biometrics/biometrics/search.action';
-                var formData = "template="+ encodeURIComponent(template);
-                // TODO why jquery here? angular doesn't seem to work
-                return jq.post(biometricUrl, formData, function (data) {
-                    return data;
-                }, "json");
-            }
+            var biometricUrl = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/biometrics/biometrics/search.action';
+            var formData = "template="+ encodeURIComponent(template);
+            // TODO why jquery here? angular doesn't seem to work
+            return jq.post(biometricUrl, formData, null, "json");
+          }
         }
     ])
