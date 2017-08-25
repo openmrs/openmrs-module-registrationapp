@@ -1,11 +1,11 @@
-package org.openmrs.module.registrationapp.fragment.controller.summary;
+package org.openmrs.module.registrationapp.page.controller.biometrics;
 
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
-import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
@@ -13,8 +13,7 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineS
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.impl.RegistrationCoreProperties;
 import org.openmrs.ui.framework.annotation.SpringBean;
-import org.openmrs.ui.framework.fragment.FragmentConfiguration;
-import org.openmrs.ui.framework.fragment.FragmentModel;
+import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -23,31 +22,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BiometricsSummaryFragmentController {
+public class EditBiometricsPageController {
 
-    public void controller(FragmentConfiguration config,
-                           FragmentModel model,
-                           @SpringBean RegistrationCoreProperties registrationCoreProperties,
-                           @SpringBean("patientService") PatientService patientService,
-                           @SpringBean AppFrameworkService appFrameworkService,
-                           @RequestParam("patientId") Patient patient) throws Exception {
+    public void get(UiSessionContext sessionContext, PageModel model,
+                    @RequestParam("patientId") Patient patient,
+                    @RequestParam("registrationAppId") AppDescriptor registrationApp,
+                    @SpringBean RegistrationCoreProperties registrationCoreProperties,
+                    @SpringBean("patientService") PatientService patientService) throws Exception {
 
-        // TODO handle translating the rest of the fingerprint types?
-        // TODO handle permissioning
-        model.put("status", "");
+        // TODO: handle returnUrl?
+
         model.put("identifierToSubjectMap", null);
+        model.put("status", "");
+        model.put("registrationAppId", registrationApp.getId());
 
-        AppDescriptor app = appFrameworkService.getApp((String) config.get("app"));
-        String registrationAppId = app.getConfig().get("registrationAppId").getTextValue();
-        model.put("registrationAppId", registrationAppId);
-        AppDescriptor registrationApp = appFrameworkService.getApp(registrationAppId);
+        sessionContext.requireAuthentication();
+
         NavigableFormStructure form = RegisterPatientFormBuilder.buildFormStructure(registrationApp);
 
         BiometricEngine engine = registrationCoreProperties.getBiometricEngine();
         BiometricEngineStatus status =  engine.getStatus();
         if (!status.isEnabled()) {
             model.put("status", "registrationapp.biometrics.biometricsServiceNotEnabled");
-            return;  // don't bother going any further
+            model.put("identifierToSubjectMap", null);
+            return;  // don't go any further
         }
 
         List<PatientIdentifierType> biometricIdentifierTypes = new ArrayList<PatientIdentifierType>();
@@ -57,7 +55,6 @@ public class BiometricsSummaryFragmentController {
             biometricIdentifierTypes.add(patientService.getPatientIdentifierTypeByUuid(uuid));
         }
 
-
         // now get all biometric identifiers for this patient
         List<PatientIdentifier> biometricIdentifiers = new ArrayList<PatientIdentifier>();
 
@@ -65,7 +62,7 @@ public class BiometricsSummaryFragmentController {
             biometricIdentifiers.addAll(patient.getPatientIdentifiers(type));
         }
 
-         engine = registrationCoreProperties.getBiometricEngine();
+        engine = registrationCoreProperties.getBiometricEngine();
 
         Map<PatientIdentifier, BiometricSubject> identifierToSubjectMap = new HashMap<PatientIdentifier, BiometricSubject>();
 
@@ -85,6 +82,8 @@ public class BiometricsSummaryFragmentController {
         }
 
         model.put("identifierToSubjectMap", identifierToSubjectMap);
+
     }
+
 
 }

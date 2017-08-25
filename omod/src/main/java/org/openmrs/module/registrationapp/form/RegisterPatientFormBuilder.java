@@ -266,4 +266,23 @@ public class RegisterPatientFormBuilder {
 
         return ret;
     }
+
+	/**
+	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics
+	 */
+	static public List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
+
+		List<String> biometricIdentifierUuids = new ArrayList<String>();
+
+		List<Field> fields = form.getFields();
+		if (fields != null) {
+			for (Field field : fields) {
+				if (StringUtils.equals(field.getType(), "fingerprint")) {
+					biometricIdentifierUuids.add(field.getUuid());
+				}
+			}
+		}
+
+		return biometricIdentifierUuids;
+	}
 }
