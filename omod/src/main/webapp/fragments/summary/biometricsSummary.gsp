@@ -9,20 +9,22 @@
     <div class="info-body summary-section">
         ${ ui.message(status) }
 
-        <ul>
-            <% if (identifierToSubjectMap) {
-                identifierToSubjectMap.each { identifier, subject ->
-                    def fingers = []
-                    subject.fingerprints.each {
-                        fingers.push(ui.message('registrationapp.biometrics.' + it.type) != 'registrationapp.biometrics.' + it.type ? ui.message('registrationapp.biometrics.' + it.type) : it.type)
-                    }
-            %>
-                    <li>
-                        ${ fingers.join(", ") }
-                        <div class="tag">${ ui.format(identifier.dateCreated) }</div>
-                    </li>
-            <% }
-            } %>
-        </ul>
+        <% if (identifierToSubjectMap) { %>
+            <ul>
+                   <% identifierToSubjectMap.each { identifier, subject ->
+                        def fingers = []
+                        subject.fingerprints.each {
+                            fingers.push(ui.message('registrationapp.biometrics.' + it.type) != 'registrationapp.biometrics.' + it.type ? ui.message('registrationapp.biometrics.' + it.type) : it.type)
+                        }
+                %>
+                        <li>
+                            ${ fingers.join(", ") }
+                            <div class="tag">${ ui.format(identifier.dateCreated) }</div>
+                        </li>
+                <% } %>
+            </ul>
+        <% } else { %>
+            ${ ui.message('registrationapp.biometrics.noneCollected') }
+        <% } %>
     </div>
 </div>

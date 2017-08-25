@@ -63,7 +63,9 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                     }
                 });
 
-                if (biometricData) {
+                // this depends on getBiometricMatches being available--it's defined in global scope in registerPatient.js
+                // it will *not* we available in the 'editSection' use case
+                if (biometricData && angular.isDefined(window.getBiometricMatches)) {
                     getBiometricMatches(biometricData);
                 }
             }

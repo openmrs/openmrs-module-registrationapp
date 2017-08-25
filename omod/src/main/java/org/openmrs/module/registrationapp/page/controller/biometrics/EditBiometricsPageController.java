@@ -15,6 +15,7 @@ import org.openmrs.module.registrationcore.api.impl.RegistrationCoreProperties;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
@@ -69,7 +70,13 @@ public class EditBiometricsPageController {
         try {
 
             for (PatientIdentifier identifier : biometricIdentifiers) {
-                BiometricSubject subject = engine.lookup(identifier.getIdentifier());
+                BiometricSubject subject = null;
+                try {
+                    subject = engine.lookup(identifier.getIdentifier());
+                }
+                catch (HttpClientErrorException e) {
+                    // ignore errors (specifically 404 which will be returns if no matching biometric is found
+                }
                 if (subject != null) {
                     identifierToSubjectMap.put(identifier, subject);
                 }

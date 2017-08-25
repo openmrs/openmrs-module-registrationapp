@@ -19,6 +19,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.session.Session;
@@ -75,7 +76,10 @@ public class EditSectionPageControllerComponentTest extends BaseModuleWebContext
     private ProviderService providerService;
 
     @Autowired @Qualifier("adminService")
-    AdministrationService administrationService;
+    private AdministrationService administrationService;
+
+    @Autowired
+    private RegistrationCoreService registrationCoreService;
 
     @Autowired
     EmrApiProperties emrApiProperties;
@@ -147,7 +151,7 @@ public class EditSectionPageControllerComponentTest extends BaseModuleWebContext
         request.addParameter("patientIdentifierField", "123abcd");
 
         String result = controller.post(sessionContext, model, patient, null, null, 30, 0, app, "mainSection", "successUrl",
-                patientService, administrationService, request, messageSourceService, session, patientValidator, uiUtils);
+                patientService, registrationCoreService, administrationService, request, messageSourceService, session, patientValidator, uiUtils);
 
         PatientIdentifierType pit = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
 

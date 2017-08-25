@@ -8,6 +8,7 @@ import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -35,4 +36,24 @@ public class BiometricsFragmentController {
         }
         return results;
     }
-}
+
+    public SimpleObject delete(@SpringBean("registrationCoreService") RegistrationCoreService service,
+                            @RequestParam("uuid") String uuidToDelete) throws Exception {
+
+        try {
+            BiometricEngine biometricEngine = service.getBiometricEngine();
+
+            if (biometricEngine != null && biometricEngine.getStatus().isEnabled()) {
+                biometricEngine.delete(uuidToDelete);
+                return SimpleObject.create("success", true);
+            }
+            return SimpleObject.create("success", false);
+        }
+        catch (Exception e) {
+            return SimpleObject.create("success", false);
+        }
+
+    }
+ }
+
+
