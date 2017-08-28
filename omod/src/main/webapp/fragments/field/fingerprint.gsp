@@ -61,7 +61,8 @@
             </button>
             <p style="color: red" ng-show="scanErrorDetails">{{ scanErrorDetails | translate }}</p>
             <p class="fingerprints-field">
-                <input type="text" size="40" name="{{ finger.formFieldName }}" value="{{scannedData[finger.index].template}}"/>
+                <!-- "disabled: first" is a hack to so that you don't have to tab through each of the fingerprint fields -->
+                <input ng-class="{disabled: !\$first}" type="text" size="40" name="{{ finger.formFieldName }}" value="{{scannedData[finger.index].template}}"/>
             </p>
         </div>
 

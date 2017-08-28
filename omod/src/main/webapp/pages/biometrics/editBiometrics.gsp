@@ -100,9 +100,12 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient, activeVis
 
     <br/>
 
-    <!-- TODO can we avoid hardcoding patient-biometrics-section? -->
+    <!-- TODO can we avoid hardcoding "patient-biometrics-section"? -->
     <button class="confirm"  onclick="location.href='${ui.pageLink("registrationapp", "editSection", [patientId: patient.id, sectionId: "patient-biometrics-section", appId: registrationAppId, returnUrl: ui.pageLink("registrationapp", "biometrics/editBiometrics", [patientId: patient.id, registrationAppId: registrationAppId]) ])}'">
         ${ ui.message('registrationapp.biometrics.add')}
+    </button>
+    <button class="cancel" onclick="location.href='${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.id, appId: registrationAppId])}'">
+        ${ ui.message('uicommons.return')}
     </button>
 
 </div>

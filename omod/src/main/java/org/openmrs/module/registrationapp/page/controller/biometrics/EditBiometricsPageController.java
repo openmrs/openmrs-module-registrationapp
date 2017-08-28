@@ -31,7 +31,7 @@ public class EditBiometricsPageController {
                     @SpringBean RegistrationCoreProperties registrationCoreProperties,
                     @SpringBean("patientService") PatientService patientService) throws Exception {
 
-        // TODO: handle returnUrl?
+        // TODO: handle returnUrl? right now assumption is that it comes from the registraton summary page
 
         model.put("identifierToSubjectMap", null);
         model.put("status", "");
