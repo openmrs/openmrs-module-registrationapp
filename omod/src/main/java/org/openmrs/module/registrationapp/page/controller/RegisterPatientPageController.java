@@ -6,6 +6,8 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.domain.Extension;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.AddressSupportCompatibility;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class RegisterPatientPageController extends AbstractRegistrationAppPageController {
 
@@ -29,13 +32,14 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
+                    @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                     UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride);
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
@@ -62,6 +66,10 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
+
+        List<Extension> includeJavaScriptFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeJavaScriptFragments");
+        Collections.sort(includeJavaScriptFragments);
+        model.addAttribute("includeJavaScriptFragments", includeJavaScriptFragments);
     }
 
 }
