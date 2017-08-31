@@ -27,8 +27,8 @@
     def identifierSectionFound = false
 %>
 
-<% if(includeJavaScriptFragments){
-    includeJavaScriptFragments.each{ %>
+<% if(includeFragments){
+    includeFragments.each{ %>
         ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment)}
 <%   }
 } %>

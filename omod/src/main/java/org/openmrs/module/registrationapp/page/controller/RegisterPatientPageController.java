@@ -67,9 +67,9 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
 
-        List<Extension> includeJavaScriptFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeJavaScriptFragments");
-        Collections.sort(includeJavaScriptFragments);
-        model.addAttribute("includeJavaScriptFragments", includeJavaScriptFragments);
+        List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments");
+        Collections.sort(includeFragments);
+        model.addAttribute("includeFragments", includeFragments);
     }
 
 }
