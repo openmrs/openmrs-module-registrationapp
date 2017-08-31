@@ -27,6 +27,12 @@
     def identifierSectionFound = false
 %>
 
+<% if(includeFragments){
+    includeFragments.each{ %>
+        ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment)}
+<%   }
+} %>
+
 <!-- used within registerPatient.js -->
 <%= ui.includeFragment("appui", "messages", [ codes: [
         'emr.gender.M',
