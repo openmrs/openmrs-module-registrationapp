@@ -27,7 +27,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                 FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
                     $scope.scannerStatus = scannerStatus;
 
-                    // currently we don't support selectig multiple scanners, s
+                    // currently we don't support selecting multiple scanners, s
                     /* if (scannerStatus.scanners.length > 0 && !$scope.selectedScanner) {
                         $scope.selectedScanner = scannerStatus.scanners[0];
                     }*/
