@@ -52,6 +52,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             jq('#registration-submit').addClass("disabled");
         })
 
+        // clicking the save form link should have the same functionality as clicking on the confirmation section title (ie, jumps to confirmation)
+        jq('#save-form').click(function() {
+            NavigatorController.getSectionById("confirmation").title.click();
+        })
+
     });
 </script>
 
@@ -69,14 +74,18 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ ui.message(section.label)  }
     </h2>
 
-    <% if (returnUrl) { %>
     <div id="exit-form-container">
-        <a href="${ ui.escapeAttribute(returnUrl) }">
-            <i class="icon-signout small"></i>
-            ${ ui.message("htmlformentryui.exitForm") }
+        <a id="save-form">
+            <i class="icon-save small"></i>
+            ${ ui.message("htmlformentryui.saveForm") }
         </a>
+        <% if (returnUrl) { %>
+            <a href="${ ui.escapeAttribute(returnUrl) }">
+                <i class="icon-signout small"></i>
+                ${ ui.message("htmlformentryui.exitForm") }
+            </a>
+        <% } %>
     </div>
-    <% } %>
 
     <form id="registration-section-form" class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
         <!-- read configurable sections from the json config file-->
