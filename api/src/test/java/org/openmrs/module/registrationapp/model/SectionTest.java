@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -16,6 +17,7 @@ public class SectionTest {
         Section parsed = new ObjectMapper().readValue(getClass().getClassLoader().getResourceAsStream("section.json"), Section.class);
         assertThat(parsed.getId(), is("contactInfo"));
         assertThat(parsed.getLabel(), is("emr.patientDashBoard.contactinfo"));
+        assertTrue(parsed.getSkipConfirmation());
         assertThat(parsed.getQuestions().size(), is(1));
         assertThat(parsed.getQuestions().get(0).getLegend(), is("emr.person.telephoneNumber"));
         assertThat(parsed.getQuestions().get(0).getFields().size(), is(1));

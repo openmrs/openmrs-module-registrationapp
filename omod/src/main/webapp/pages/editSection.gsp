@@ -87,7 +87,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <% } %>
     </div>
 
-    <form id="registration-section-form" class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
+    <form id="registration-section-form" class="simple-form-ui ${section.skipConfirmation ? 'skip-confirmation-section' : ''}" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
         <!-- read configurable sections from the json config file-->
         <section id="${section.id}" class="non-collapsible">
             <span class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>

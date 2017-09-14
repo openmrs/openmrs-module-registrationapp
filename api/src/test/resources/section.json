@@ -1,6 +1,7 @@
 {
     "id": "contactInfo",
     "label": "emr.patientDashBoard.contactinfo",
+    "skipConfirmation": true,
     "questions": [
         {
             "legend": "emr.person.telephoneNumber",
