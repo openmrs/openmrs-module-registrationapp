@@ -4,11 +4,11 @@ function m2sysEnroll() {
         if (data['success'] == true) {
             $("#fingerprintStatus").text("Success!");
             $("#fingerprintError").text("");
-            $("[name='fingerprintSubjectId']").val(data['message']);
+            $("[name='fingerprintSubjectId']").val(data['message']).trigger('change');
         } else {
             $("#fingerprintStatus").text("Failed!");
             $("#fingerprintError").text(data['message']);
-            $("[name='fingerprintSubjectId']").val("");
+            $("[name='fingerprintSubjectId']").val("").trigger('change');
         }
     });
 }
