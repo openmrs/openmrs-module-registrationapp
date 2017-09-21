@@ -2,11 +2,11 @@ function m2sysEnroll() {
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
     .success(function(data) {
         if (data['success'] == true) {
-            $("#fingerprintStatus").text("Success !");
+            $("#fingerprintStatus").text("Success!");
             $("#fingerprintError").text("");
             $("[name='fingerprintSubjectId']").val(data['message']);
         } else {
-            $("#fingerprintStatus").text("Failed !");
+            $("#fingerprintStatus").text("Failed!");
             $("#fingerprintError").text(data['message']);
             $("[name='fingerprintSubjectId']").val("");
         }
@@ -23,8 +23,16 @@ function m2sysUpdate(idValue) {
         {
             id: idValue
         }
-    );
-    //TODO add success method
+    )
+    .success(function(data) {
+        if (data['success'] == true) {
+            $("#fingerprintStatus").text("Success!");
+            $("#fingerprintError").text("");
+        } else {
+            $("#fingerprintStatus").text("Failed!");
+            $("#fingerprintError").text(data['message']);
+        }
+     });
 }
 
 function m2sysUpdateSubjectId(oldIdValue, newIdValue) {
@@ -62,4 +70,21 @@ function m2sysDelete(idValue) {
         }
     );
     //TODO add success method
+}
+
+function savePatientIdentifier(patientId, identifierTypeId, identifierValue) {
+	var returnValue;
+	emr.getFragmentActionWithCallback('coreapps', 'editPatientIdentifier', 'editPatientIdentifier'
+	    , { patientId: patientId,
+	        identifierTypeId: identifierTypeId,
+	        identifierValue: identifierValue
+	    }
+	    , function(data) {
+	        emr.successMessage(data.message);
+	        returnValue = "success";
+	    },function(err){
+	        emr.handleError(err);
+	        returnValue = "err";
+	    });
+	return returnValue;
 }

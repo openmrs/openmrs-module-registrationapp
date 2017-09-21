@@ -40,6 +40,7 @@ import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
@@ -68,8 +69,6 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.openmrs.module.registrationapp.RegistrationAppConstants.FINGERPRINT_IDENTIFIER_TYPE_NAME;
 
 public class RegisterPatientFragmentController {
 
@@ -294,9 +293,9 @@ public class RegisterPatientFragmentController {
     }
 
     private PatientIdentifierType getFingerprintIdentifierType() {
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByName(FINGERPRINT_IDENTIFIER_TYPE_NAME);
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(Context.getAdministrationService().getGlobalProperty(RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID));
         if (patientIdentifierType == null) {
-            throw new APIException("Local fingerprint identifier type not found");
+            throw new APIException("Local fingerprint identifier type not found. Make sure the registrationcore.biometrics.personIdentifierTypeUuid global property is set.");
         }
         return patientIdentifierType;
     }
