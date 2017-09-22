@@ -71,20 +71,3 @@ function m2sysDelete(idValue) {
     );
     //TODO add success method
 }
-
-function savePatientIdentifier(patientId, identifierTypeId, identifierValue) {
-	var returnValue;
-	emr.getFragmentActionWithCallback('coreapps', 'editPatientIdentifier', 'editPatientIdentifier'
-	    , { patientId: patientId,
-	        identifierTypeId: identifierTypeId,
-	        identifierValue: identifierValue
-	    }
-	    , function(data) {
-	        emr.successMessage(data.message);
-	        returnValue = "success";
-	    },function(err){
-	        emr.handleError(err);
-	        returnValue = "err";
-	    });
-	return returnValue;
-}
