@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -48,6 +50,23 @@ public class RegistrationAppUiUtils {
 			if (attr != null) {
 				return attr.getValue();
 			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the patient identifier value for the specified person for the identifierTypeUuid
+	 * that matches the specified uuid
+	 *
+	 * @return the identifier value
+	 */
+	public String getIdentifier(Patient patient, String identifierTypeUuid) {
+		if (patient != null) {
+				PatientIdentifier patientIdentifier = patient.getPatientIdentifier(Context.getPatientService().getPatientIdentifierTypeByUuid(identifierTypeUuid));
+				if (patientIdentifier != null) {
+					return patientIdentifier.getIdentifier();
+				}
 		}
 		
 		return null;

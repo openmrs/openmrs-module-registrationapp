@@ -175,6 +175,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                         }else if(field.type == 'personAttribute'){
                             configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
                         }
+                        else if (field.type == "patientIdentifier") {
+                            configOptions.initialValue = uiUtils.getIdentifier(patient, field.uuid)
+                        }
                     %>
                     ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                     <% } %>

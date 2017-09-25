@@ -68,6 +68,9 @@
                         else if (field.type == 'personAddress') {
                             displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
                         }
+                        else if (field.type == "patientIdentifier") {
+                            displayValue = uiUtils.getIdentifier(patient.patient, field.uuid)
+                        }
                         // TODO support other types besides personAttribute and personAddress
                     %>
                         ${ displayValue ?: ''}&nbsp;
