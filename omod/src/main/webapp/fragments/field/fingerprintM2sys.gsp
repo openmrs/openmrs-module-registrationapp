@@ -13,6 +13,6 @@
 	        ${ ui.message("registrationapp.biometrics.m2sys.register.button.label") }
 	    </a>
     <p>
-        <input type="text" name="fingerprintSubjectId" class="invisible"/>
+        <input type="text" name="fingerprintSubjectId" style="display: none" />
     </p>
 </div>
