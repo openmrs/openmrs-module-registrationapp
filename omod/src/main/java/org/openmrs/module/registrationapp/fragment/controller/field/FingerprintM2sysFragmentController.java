@@ -63,17 +63,26 @@ public class FingerprintM2sysFragmentController {
         return result;
     }
 
-    public SimpleObject update(@RequestParam("id") String id) {
+    public SimpleObject update(@RequestParam("id") String id, @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+    	SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnabled()) {
-            return null;
+            response.put("success", false);
+            response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
+            return response;
         }
-        BiometricSubject biometricSubject = new BiometricSubject();
-        biometricSubject.setSubjectId(id);
-        BiometricSubject response = biometricEngine.update(biometricSubject);
 
-        SimpleObject result = new SimpleObject();
-        result.put("id", response.getSubjectId());
-        return result;
+        try {
+	        BiometricSubject biometricSubject = new BiometricSubject();
+	        biometricSubject.setSubjectId(id);
+	        BiometricSubject result = biometricEngine.update(biometricSubject);
+	        response.put("success", true);
+	        response.put("message",result.getSubjectId());
+	    } catch (Exception ex) {
+	        response.put("success", false);
+	        response.put("message", ex.getMessage());
+	        LOGGER.error(ex.getMessage());
+	    }
+        return response;
     }
 
     public SimpleObject updateSubjectId(@RequestParam("oldId") String oldId,

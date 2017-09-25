@@ -2,13 +2,13 @@ function m2sysEnroll() {
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
     .success(function(data) {
         if (data['success'] == true) {
-            $("#fingerprintStatus").text("Success !");
+            $("#fingerprintStatus").text("Success!");
             $("#fingerprintError").text("");
-            $("[name='fingerprintSubjectId']").val(data['message']);
+            $("[name='fingerprintSubjectId']").val(data['message']).trigger('change');
         } else {
-            $("#fingerprintStatus").text("Failed !");
+            $("#fingerprintStatus").text("Failed!");
             $("#fingerprintError").text(data['message']);
-            $("[name='fingerprintSubjectId']").val("");
+            $("[name='fingerprintSubjectId']").val("").trigger('change');
         }
     });
 }
@@ -23,8 +23,16 @@ function m2sysUpdate(idValue) {
         {
             id: idValue
         }
-    );
-    //TODO add success method
+    )
+    .success(function(data) {
+        if (data['success'] == true) {
+            $("#fingerprintStatus").text("Success!");
+            $("#fingerprintError").text("");
+        } else {
+            $("#fingerprintStatus").text("Failed!");
+            $("#fingerprintError").text(data['message']);
+        }
+     });
 }
 
 function m2sysUpdateSubjectId(oldIdValue, newIdValue) {
