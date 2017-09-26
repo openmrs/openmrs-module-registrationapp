@@ -19,8 +19,6 @@
                     }
                     configs << [patient: patient, patientId: patient.patient.id, app: it.appId, appId: appId, returnUrl: returnUrl ]
             %>
-
-            %>
                     ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, configs)}
             <% }
             } %>
