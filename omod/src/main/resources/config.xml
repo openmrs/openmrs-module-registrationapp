@@ -72,6 +72,10 @@
 		<lang>de</lang>
 		<file>messages_de.properties</file>
 	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
 	<!-- /Internationalization -->
 
 	<privilege>
