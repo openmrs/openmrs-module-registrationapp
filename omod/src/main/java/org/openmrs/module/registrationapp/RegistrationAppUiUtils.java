@@ -13,17 +13,24 @@
  */
 package org.openmrs.module.registrationapp;
 
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.IdentifierNotUniqueException;
+import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.idgen.EmptyIdentifierPoolException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class RegistrationAppUiUtils {
 	
@@ -124,4 +131,27 @@ public class RegistrationAppUiUtils {
 			}
 		}
 	}
+
+	public static void checkForIdentifierExceptions(Exception ex, Errors errors) {
+		// add any patient identifier validation exceptions
+		if (ex instanceof PatientIdentifierException) {
+			if (ex instanceof InvalidCheckDigitException) {
+				errors.reject("registrationapp.error.identifier.invalidCheckDigit");
+			}
+			else if (ex instanceof DuplicateIdentifierException) {
+				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((DuplicateIdentifierException) ex).getPatientIdentifier()).toArray(), null);
+			}
+			else if (ex instanceof IdentifierNotUniqueException) {
+				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((IdentifierNotUniqueException) ex).getPatientIdentifier()).toArray(), null);
+			}
+			else {
+				errors.reject("registrationapp.error.identifier.general");
+			}
+		}
+		else if (ex instanceof EmptyIdentifierPoolException) {
+			errors.reject("registrationapp.error.identifier.emptyIdentifierPool");
+		}
+	}
+
+
 }

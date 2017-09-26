@@ -36,6 +36,7 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.validator.PatientIdentifierValidator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -192,6 +193,17 @@ public class RegisterPatientFormBuilder {
 							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
 							if (identifierType  != null) {
 
+								// see if there is existing identifier with this value, if so, no need to update
+								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+									if (oldIdentifier.getIdentifier().equals(parameterValue)) {
+										return;
+									}
+								}
+
+								// validate the new identifier before saving
+								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
+								PatientIdentifierValidator.validateIdentifier(identifier);
+
 								// void any existing identifiers of this type
 								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
 									oldIdentifier.setVoided(true);
@@ -201,7 +213,6 @@ public class RegisterPatientFormBuilder {
 								}
 
 								// add the new identifier
-								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
 								patient.addIdentifier(identifier);
 							}
 						}

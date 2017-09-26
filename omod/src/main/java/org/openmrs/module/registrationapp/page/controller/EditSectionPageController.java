@@ -122,7 +122,13 @@ public class EditSectionPageController {
 
         if (formStructure != null) {
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
-            RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+
+            try {
+                RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+            }
+            catch (Exception ex) {
+                RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
+            }
 
             // handle any biometrics data that has been added
             Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
