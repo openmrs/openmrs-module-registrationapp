@@ -176,7 +176,7 @@ public class MatchingPatientsFragmentController {
 
     private void addIdentifiersToPatientSimple(Patient patientEntry, SimpleObject patientSimple) {
         LinkedList<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
-        for (PatientIdentifier identifier : patientEntry.getIdentifiers()) {
+        for (PatientIdentifier identifier : patientEntry.getActiveIdentifiers()) {
             SimpleObject identifierEntry = new SimpleObject();
             identifierEntry.put("name", identifier.getIdentifierType().getName());
             identifierEntry.put("value", identifier.getIdentifier());
