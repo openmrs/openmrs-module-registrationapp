@@ -158,7 +158,7 @@ public class MatchingPatientsFragmentController {
                 } else {
                     patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
                 }
-                addIdentifiersToPatientSimple(patientEntry, patientSimple);
+                addIdentifiersToPatientSimple(app, patientEntry, patientSimple);
                 results.add(patientSimple);
             }
         }
@@ -174,19 +174,48 @@ public class MatchingPatientsFragmentController {
         return false;
     }
 
-    private void addIdentifiersToPatientSimple(Patient patientEntry, SimpleObject patientSimple) {
+    private void addIdentifiersToPatientSimple(AppDescriptor app, Patient patientEntry, SimpleObject patientSimple) {
+
         LinkedList<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
+        List<String> identifierTypesToInclude = null;
+
+        if (app.getConfig().get("identifierTypesToDisplay") != null) {
+            identifierTypesToInclude = new ArrayList<String>();
+            Iterator<JsonNode> i = app.getConfig().get("identifierTypesToDisplay").getElements();
+            while (i.hasNext()) {
+                identifierTypesToInclude.add(i.next().getTextValue());
+            }
+        }
+
         for (PatientIdentifier identifier : patientEntry.getActiveIdentifiers()) {
-            SimpleObject identifierEntry = new SimpleObject();
-            identifierEntry.put("name", identifier.getIdentifierType().getName());
-            identifierEntry.put("value", identifier.getIdentifier());
-            if (identifier.isPreferred()) {
-                identifiersList.addFirst(identifierEntry);
-            } else {
-                identifiersList.add(identifierEntry);
+
+            if (shouldIncludeIdentifier(identifier, identifierTypesToInclude)) {
+                SimpleObject identifierEntry = new SimpleObject();
+                identifierEntry.put("name", identifier.getIdentifierType().getName());
+                identifierEntry.put("value", identifier.getIdentifier());
+                if (identifier.isPreferred()) {
+                    identifiersList.addFirst(identifierEntry);
+                } else {
+                    identifiersList.add(identifierEntry);
+                }
             }
         }
         patientSimple.put("identifiers", identifiersList);
+    }
+
+    private boolean shouldIncludeIdentifier(PatientIdentifier identifier, List<String> identifierTypesToInclude) {
+        // if the parameter has not been specified, show all
+        if (identifierTypesToInclude == null) {
+            return true;
+        }
+
+        for (String identifierType : identifierTypesToInclude) {
+            if (identifier.getIdentifierType().getUuid().equals(identifierType) ||
+                    identifier.getIdentifierType().getName().equals(identifierType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String [] determinePropertiesToInclude(AppDescriptor app, String[] defaultProperties) {

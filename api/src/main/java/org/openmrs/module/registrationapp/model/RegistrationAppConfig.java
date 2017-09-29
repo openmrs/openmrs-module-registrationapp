@@ -35,6 +35,11 @@ public class RegistrationAppConfig {
     @JsonProperty
     private List<String> matchingPatientsPropertiesToDisplay;
 
+    // identifier types (specified by uuid or name) to display when displaying lists of similar or exact patient matches
+    // (if null, displays all identifiers)
+    @JsonProperty
+    private List<String> identifierTypesToDisplay;
+
     // maximum number of patients to return when doing similar and exact searches (default is 10)
     @JsonProperty
     private Integer maxPatientSearchResults;
@@ -88,6 +93,14 @@ public class RegistrationAppConfig {
 
     public void setMatchingPatientsPropertiesToDisplay(List<String> matchingPatientsPropertiesToDisplay) {
         this.matchingPatientsPropertiesToDisplay = matchingPatientsPropertiesToDisplay;
+    }
+
+    public List<String> getIdentifierTypesToDisplay() {
+        return identifierTypesToDisplay;
+    }
+
+    public void setIdentifierTypesToDisplay(List<String> identifierTypesToDisplay) {
+        this.identifierTypesToDisplay = identifierTypesToDisplay;
     }
 
     public Integer getMaxPatientSearchResults() {
