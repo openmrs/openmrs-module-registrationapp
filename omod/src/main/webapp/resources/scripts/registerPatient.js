@@ -96,9 +96,18 @@ jq(function() {
 
             var button;
             if (isMpi) {
+                idToUse = item.uuid
+                for (var i = 0; i < item.identifiers.length; i += 1) {
+                    identifier = item.identifiers[i];
+                    if (identifier.name === 'ECID') {
+                        idToUse = identifier.value;
+                        break;
+                    }
+                }
+
                 button = $('#matchedPatientTemplates .mpi_button').clone();
-                button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
-            } else {
+                button.attr("onclick", "importMpiPatient('" + idToUse + "')");
+            } else {0
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
                 link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;
