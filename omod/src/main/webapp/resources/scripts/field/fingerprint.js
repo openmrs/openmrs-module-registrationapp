@@ -135,6 +135,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
                     finger.index = index;
                     $scope.fingersToScan[index] = finger;
                     $scope.scanStatus[index] = {"currentlyScanning": false, "buttonLabel": "registrationapp.biometrics.scan"};
+                    $scope.scannedData[index] = {};
                 });
             }
         }
