@@ -6,8 +6,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
         'SERVICE_NOT_ENABLED': 'registrationapp.biometrics.serviceNotEnabled',
         'DEVICE_NOT_FOUND': 'registrationapp.biometrics.scannerNotFound',
         'UNKNOWN_ERROR': 'registrationapp.biometrics.scannerError',
-        'BAD_SCAN': 'registrationapp.biometrics.badscan',
-        'DEVICE_TIMEOUT': ''
+        'BAD_SCAN': 'registrationapp.biometrics.badscan'
     })
 
     .config(function ($translateProvider) {
@@ -71,29 +70,55 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
             }
 
             $scope.scanFinger = function(finger) {
-                $scope.scanErrorDetails = "";
-                $scope.scannedData[finger.index] = {};
-                $scope.scanningFingerInProgress = true;
-                $scope.scannedData[finger.index] = {"currentlyScanning": true, "buttonLabel": "registrationapp.biometrics.scanning"};
-                FingerprintService.scanFinger(finger, $scope.config).then(function(data) {
-                    $scope.scanningFingerInProgress = false;
-                    data.currentlyScanning = false;
+
+                // if we are currently in a scan, the scan finger button acts as a cancel button
+                if ($scope.scanningFingerInProgress) {
+                    $scope.cancelScan = true;
+                }
+                else {
+                    $scope.scanningFingerInProgress = true;
+                    $scope.cancelScan = false;
+                    $scope.scanErrorDetails = "";
+                    $scope.scannedData[finger.index] = {};
+                    $scope.scanStatus[finger.index] = {
+                        "currentlyScanning": true,
+                        "buttonLabel": "registrationapp.biometrics.cancel"
+                    };
+                    scanFingerHelper(finger);
+                }
+            };
+
+            var scanFingerHelper = function(finger) {
+                FingerprintService.scanFinger(finger, $scope.config).then(function (data) {
 
                     if (data.status in errorMessages) {
+                        stopScan(finger);
                         $scope.scanErrorDetails = errorMessages[data.status]
-                    }
 
-                    if (data.template) {
-                        data.buttonLabel = "registrationapp.biometrics.rescan";
+                    }
+                    else if (data.template) {
+                        stopScan(finger);
+                        $scope.scannedData[finger.index] = data;
+                        $scope.updateBiometricMatches();
                         //NavigatorController.stepForward(); // TODO: Decide if and when we want to do this
                     }
-                    else {
-                        data.buttonLabel = "registrationapp.biometrics.scan";
+                    else if ($scope.cancelScan) {
+                        stopScan(finger);
                     }
-                    $scope.scannedData[finger.index] = data;
-                    $scope.updateBiometricMatches();
+                    else {
+                      scanFingerHelper(finger);
+                    }
+
                 });
-            };
+            }
+
+            var stopScan = function (finger) {
+                $scope.scanningFingerInProgress = false;
+                $scope.scanStatus[finger.index] = {
+                    currentlyScanning: false,
+                    buttonLabel: "registrationapp.biometrics.rescan"
+                }
+            }
 
             $scope.init = function(config, locale) {
                 $translate.use(locale);
@@ -104,10 +129,12 @@ angular.module('openmrs-module-registrationapp-fingerprint-field', ['ngDialog', 
 
                 $scope.fingersToScan = [];
                 $scope.scannedData = [];
+                $scope.scanStatus = [];
+
                 $scope.config.fingers.forEach(function(finger, index) {
                     finger.index = index;
                     $scope.fingersToScan[index] = finger;
-                    $scope.scannedData[index] = {"currentlyScanning": false, "buttonLabel": "registrationapp.biometrics.scan"};
+                    $scope.scanStatus[index] = {"currentlyScanning": false, "buttonLabel": "registrationapp.biometrics.scan"};
                 });
             }
         }

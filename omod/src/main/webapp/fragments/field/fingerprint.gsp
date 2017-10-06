@@ -58,8 +58,8 @@
             <img ng-show="scannedData[finger.index].image" data-ng-src="data:image/PNG;base64,{{ scannedData[finger.index].image }}" width="120" height="120">
             <img ng-show="!scannedData[finger.index].image" width="120" height="120">
             <br/>
-            <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress">
-                {{scannedData[finger.index].buttonLabel | translate}}
+            <button class="scan-finger-button task" style="min-width: 120px;" type="button" ng-click="scanFinger(finger)" ng-disabled="scanningFingerInProgress && !scanStatus[finger.index].currentlyScanning">
+                {{scanStatus[finger.index].buttonLabel | translate}}
             </button>
             <p style="color: red" ng-show="scanErrorDetails">{{ scanErrorDetails | translate }}</p>
             <p class="fingerprints-field">
