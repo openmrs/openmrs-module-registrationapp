@@ -10,7 +10,15 @@ jq(function() {
     jq('#fingerprint_search_button').click(function() {
         jq.getJSON('${ ui.actionLink("getPatients") }', {})
         .success(function(data) {
-            alert(data);
+            if (data) {
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    result = data[i];
+                    addPatientToResults(result.patientIdentifier);
+                }
+            } else {
+                alert("No matches");
+            }
         })
         .error(function(xhr, status, err) {
             alert('AJAX error ' + err);

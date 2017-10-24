@@ -12,7 +12,8 @@ import java.util.List;
 
 public class M2SysSearchFragmentController {
 
-    private static final String[] PROPERTIES_FOR_VIEW = { "patient.id", "patient.givenName", "patient.familyName" ,"score" };
+    private static final String[] PROPERTIES_FOR_VIEW = { "patient.id", "patient.givenName", "patient.familyName" ,
+            "score", "patientIdentifier" };
 
     public void controller(FragmentModel model) {
         model.addAttribute("test", "testval");
