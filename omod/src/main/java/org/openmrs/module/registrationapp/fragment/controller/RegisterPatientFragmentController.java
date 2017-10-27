@@ -263,7 +263,7 @@ public class RegisterPatientFragmentController {
             }
         }
 
-        InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
+        InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
         redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid().toString());
