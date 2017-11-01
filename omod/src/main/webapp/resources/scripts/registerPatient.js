@@ -9,7 +9,7 @@ function importMpiPatient(id) {
     $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
         .success(function (response) {
             var link = patientDashboardLink;
-            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message;
+            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message + '&appId=' + appId;
             location.href = link;
         })
         .error(function (xhr, status, err) {
@@ -96,9 +96,18 @@ jq(function() {
 
             var button;
             if (isMpi) {
+                idToUse = item.uuid
+                for (var i = 0; i < item.identifiers.length; i += 1) {
+                    identifier = item.identifiers[i];
+                    if (identifier.name === 'ECID') {
+                        idToUse = identifier.value;
+                        break;
+                    }
+                }
+
                 button = $('#matchedPatientTemplates .mpi_button').clone();
-                button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
-            } else {
+                button.attr("onclick", "importMpiPatient('" + idToUse + "')");
+            } else {0
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
                 link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;

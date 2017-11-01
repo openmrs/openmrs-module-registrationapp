@@ -74,6 +74,10 @@ public class MatchingPatientsFragmentController {
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+
+        RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+
         List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(app, ui, matches);
     }
