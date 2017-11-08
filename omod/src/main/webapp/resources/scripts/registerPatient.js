@@ -9,7 +9,7 @@ function importMpiPatient(id) {
     $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
         .success(function (response) {
             var link = patientDashboardLink;
-            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message;
+            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message + '&appId=' + appId;
             location.href = link;
         })
         .error(function (xhr, status, err) {
