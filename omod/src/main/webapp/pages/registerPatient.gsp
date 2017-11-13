@@ -87,7 +87,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';
-    var appId = '${ui.escapeJs(appId)}';
+    var appId = '${ui.encodeJavaScript(appId)}';
 
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js
     var sections =  [];
