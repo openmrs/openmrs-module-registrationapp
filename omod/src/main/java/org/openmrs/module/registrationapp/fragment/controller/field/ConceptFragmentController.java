@@ -15,21 +15,20 @@ import org.openmrs.util.LocaleUtility;
 
 public class ConceptFragmentController {
 
-	public void controller(FragmentModel model, @FragmentParam(required = true, value = "conceptId") Integer conceptId) throws Exception {
+	public void controller(FragmentModel model, @FragmentParam(required = true, value = "conceptId") Concept concept) throws Exception {
 		
-		Concept concept = Context.getConceptService().getConcept(conceptId);
+		Collection<Map<String, String>> collection = new ArrayList<Map<String, String>>();
 		if(concept == null){
-			model.put("conceptAnswers", new ArrayList<Map<String, String>>());
+			model.put("conceptAnswers", collection);
 		} else{
-			Collection<Map<String, String>> collection = new ArrayList<Map<String, String>>();
 			Map<String, String> conceptMap;
-			Locale locale = LocaleUtility.getDefaultLocale();
+			Locale locale = Context.getLocale();
 			
 			Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
-			
+			String fullname = null;
 			for (ConceptAnswer conceptAnswer : conceptAnswers) {
 				conceptMap = new HashMap<String, String>();
-				String fullname = conceptAnswer.getAnswerConcept().getFullySpecifiedName(locale).getName();
+				fullname = conceptAnswer.getAnswerConcept().getFullySpecifiedName(locale).getName();
 				conceptMap.put("label", fullname);
 				conceptMap.put("value", fullname);
 				collection.add(conceptMap);

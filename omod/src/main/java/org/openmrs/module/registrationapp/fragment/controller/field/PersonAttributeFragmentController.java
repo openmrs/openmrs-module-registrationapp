@@ -12,7 +12,7 @@ public class PersonAttributeFragmentController {
 		
 		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(uuid);
 		
-		if(personAttributeType.getFormat().contentEquals(Concept.class.getCanonicalName())){
+		if(personAttributeType.getFormat().equals(Concept.class.getName())){
 			int foreignKey = personAttributeType.getForeignKey();
 			model.put("foreignKey", foreignKey);
 			model.put("codedPersonAttribute", true);
