@@ -28,7 +28,7 @@ public class ConceptFragmentController {
 			String fullname = null;
 			for (ConceptAnswer conceptAnswer : conceptAnswers) {
 				conceptMap = new HashMap<String, String>();
-				fullname = conceptAnswer.getAnswerConcept().getFullySpecifiedName(locale).getName();
+				fullname = conceptAnswer.getAnswerConcept().getName().getName();
 				conceptMap.put("label", fullname);
 				conceptMap.put("value", fullname);
 				collection.add(conceptMap);
