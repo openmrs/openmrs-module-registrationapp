@@ -27,7 +27,7 @@ jq(function() {
 </script>
 
 <div id="fingerprint-fragment" style="display:inline;margin-top:10px;margin-left:5px;margin-right:5px;margin-bottom:10px;">
-    <button id="ffingerprint_search_button">
+    <button id="fingerprint_search_button">
         <i class="icon-hand-up"></i><span id="fingerprintButtonLabel"></span>
     </button>
     <input type="text" name="fingerprintSubjectId" class="invisible" size="1" style="min-width:1em;"/>
