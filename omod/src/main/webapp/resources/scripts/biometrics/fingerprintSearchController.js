@@ -32,25 +32,30 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
                 $scope.config = config;
 
-                $translate.use(locale);
+                // we don't do the rest of initializatio until $translate.use is complete, because otherwise the translate
+                // call to display the placeholder message may fail if the transaltions have not been loaded
+                $translate.use(locale)
+                    .then(function() {
+                        $q.all([
+                            FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
+                                $scope.scannerStatus = scannerStatus;
+                            }),
 
-                $q.all([
-                    FingerprintService.getScannerStatus($scope.config).then(function (scannerStatus) {
-                        $scope.scannerStatus = scannerStatus;
-                    }),
-
-                    FingerprintService.getEngineStatus().then(function (engineStatus) {
-                        $scope.engineStatus = engineStatus.results;
-                    })
-                ])
-                .then(function() {
-                    if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
-                        $translate('registrationapp.biometrics.search.placeholder').then(function (translation) {
-                            jq('#patient-search-form').trigger('search:placeholder', translation);
-                        });
-                        $scope.scanFinger();
-                    }
+                            FingerprintService.getEngineStatus().then(function (engineStatus) {
+                                $scope.engineStatus = engineStatus.results;
+                            })
+                        ])
+                            .then(function() {
+                                if ($scope.scannerStatus.enabled && $scope.engineStatus.enabled) {
+                                    $translate('registrationapp.biometrics.search.placeholder').then(function (translation) {
+                                        jq('#patient-search-form').trigger('search:placeholder', translation);
+                                    });
+                                    $scope.scanFinger();
+                                }
+                            })
                 })
+
+
             }
 
             $scope.scanFinger = function() {
