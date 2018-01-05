@@ -173,7 +173,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             configOptions.addressTemplate = addressTemplate
                             configOptions.initialValue = patient.personAddress
                         }else if(field.type == 'personAttribute'){
-                            configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
+                            configOptions.initialValue = ui.escapeAttribute(uiUtils.getAttribute(patient, field.uuid));
                         }
                         else if (field.type == "patientIdentifier") {
                             configOptions.initialValue = uiUtils.getIdentifier(patient, field.uuid)
