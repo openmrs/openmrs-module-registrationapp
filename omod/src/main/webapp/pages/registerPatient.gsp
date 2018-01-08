@@ -305,6 +305,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                 configOptions.formFieldName = field.formFieldName
                                 configOptions.left = true
                                 configOptions.classes = field.cssClasses
+                                if (field.type == 'personAttribute') {
+                                    configOptions.uuid = field.uuid
+                                }
 
                                 if (field.type == 'personAddress') {
                                     configOptions.addressTemplate = addressTemplate
