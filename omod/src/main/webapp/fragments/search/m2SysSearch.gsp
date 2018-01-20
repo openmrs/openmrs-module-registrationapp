@@ -9,12 +9,12 @@ jq(function() {
     jq('#fingerprint_search_button').click(function() {
         jq.getJSON('${ ui.actionLink("getPatients") }', {})
         .success(function(data) {
+            patientSearchWidget.reset();
             if (data) {
-                var i;
-                for (i = 0; i < data.length; i++) {
-                    result = data[i];
-                    addPatientToResults(result.patientIdentifier);
+                if (data && data.length === 0) {
+                    data = undefined;
                 }
+                patientSearchWidget.updateSearchResults(data);
             } else {
                 alert("No matches");
             }
