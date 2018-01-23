@@ -11,9 +11,6 @@ jq(function() {
         .success(function(data) {
             patientSearchWidget.reset();
             if (data) {
-                if (data && data.length === 0) {
-                    data = undefined;
-                }
                 patientSearchWidget.updateSearchResults(data);
             } else {
                 alert("No matches");
