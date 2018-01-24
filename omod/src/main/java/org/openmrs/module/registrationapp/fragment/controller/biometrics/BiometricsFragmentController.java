@@ -8,7 +8,6 @@ import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
-import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,8 +19,6 @@ public class BiometricsFragmentController {
 
     public List<SimpleObject> search(@SpringBean("registrationCoreService") RegistrationCoreService service,
             HttpServletRequest request, UiUtils ui) throws Exception {
-
-        Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 
         List<SimpleObject> results = new ArrayList<SimpleObject>();
         BiometricEngine biometricEngine = service.getBiometricEngine();
@@ -41,9 +38,7 @@ public class BiometricsFragmentController {
     }
 
     public SimpleObject delete(@SpringBean("registrationCoreService") RegistrationCoreService service,
-                               @RequestParam("uuid") String uuidToDelete) throws Exception {
-
-        Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+                            @RequestParam("uuid") String uuidToDelete) throws Exception {
 
         try {
             BiometricEngine biometricEngine = service.getBiometricEngine();
