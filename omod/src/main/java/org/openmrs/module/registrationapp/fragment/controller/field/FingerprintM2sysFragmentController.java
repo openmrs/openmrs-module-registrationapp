@@ -7,6 +7,7 @@ import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineStatus;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.slf4j.Logger;
@@ -37,9 +38,10 @@ public class FingerprintM2sysFragmentController {
         }
 
         try {
-            BiometricSubject result = biometricEngine.enroll(null);
+            EnrollmentResult result = biometricEngine.enroll(null);
             response.put("success", true);
-            response.put("message",result.getSubjectId());
+            response.put("message", result.getBiometricSubject().getSubjectId());
+            response.put("status", result.getEnrollmentStatus().name());
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
