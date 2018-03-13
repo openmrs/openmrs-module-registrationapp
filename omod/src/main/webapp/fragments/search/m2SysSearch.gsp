@@ -11,8 +11,10 @@ jq(function() {
     searchButton.click(function() {
         toggleFingerprintButtonDisplay(searchButton);
         jq.getJSON('${ ui.actionLink("getPatients") }', {})
-        .success(function(data) {
+        .always(function(xhr, status, err) {
             toggleFingerprintButtonDisplay(searchButton);
+        })
+        .success(function(data) {
             patientSearchWidget.reset();
             if (data) {
                 patientSearchWidget.updateSearchResults(data);
@@ -21,7 +23,6 @@ jq(function() {
             }
         })
         .error(function(xhr, status, err) {
-            toggleFingerprintButtonDisplay(searchButton);
             alert('AJAX error ' + err);
         })
     });
