@@ -11,7 +11,7 @@ jq(function() {
     searchButton.click(function() {
         toggleFingerprintButtonDisplay(searchButton);
         jq.getJSON('${ ui.actionLink("getPatients") }', {})
-        .always(function(xhr, status, err) {
+        .always(function() {
             toggleFingerprintButtonDisplay(searchButton);
         })
         .success(function(data) {
