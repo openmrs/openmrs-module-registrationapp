@@ -166,7 +166,11 @@ public class FingerprintM2sysFragmentController {
 
 	private Patient findByLocalFpId(String subjectId) {
 		String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-		return registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+		Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+		if (patient == null) {
+			throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
+		}
+		return patient;
 	}
 
 	private String getGlobalProperty(String propertyName) {
