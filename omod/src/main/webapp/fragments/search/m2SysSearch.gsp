@@ -1,14 +1,18 @@
 <%
     ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
+    ui.includeJavascript("registrationapp", "fingerprintUtils.js")
 %>
 
 <script>
 jq = jQuery;
 
 jq(function() {
-    jq('#fingerprint_search_button').click(function() {
+    var searchButton = jq('#fingerprint_search_button');
+    searchButton.click(function() {
+        toggleFingerprintButtonDisplay(searchButton);
         jq.getJSON('${ ui.actionLink("getPatients") }', {})
         .success(function(data) {
+            toggleFingerprintButtonDisplay(searchButton);
             patientSearchWidget.reset();
             if (data) {
                 patientSearchWidget.updateSearchResults(data);
@@ -17,12 +21,14 @@ jq(function() {
             }
         })
         .error(function(xhr, status, err) {
+            toggleFingerprintButtonDisplay(searchButton);
             alert('AJAX error ' + err);
         })
     });
 });
 </script>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div id="fingerprint-fragment" style="display:inline;margin-top:10px;margin-left:5px;margin-right:5px;margin-bottom:10px;">
     <button id="fingerprint_search_button">
         <i class="icon-hand-up"></i><span id="fingerprintButtonLabel"></span>

@@ -1,6 +1,8 @@
 <%
     ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
+    ui.includeJavascript("registrationapp", "fingerprintUtils.js")
 %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div id="fingerprint-fragment" style="margin-top:10px;margin-left:5px;margin-right:5px;margin-bottom:10px;">
     <p>
     	<span id="fingerprintStatus"></span>
@@ -34,9 +36,9 @@
 		
 		jq(fingerprintButton).click(function() {
 			if (enrollOrUpdate == "update") {
-          		m2sysUpdate(biometricID);
+          		m2sysUpdate(biometricID, this);
         	} else {
-				m2sysEnroll();
+				m2sysEnroll(this);
         	}
 		});
 		

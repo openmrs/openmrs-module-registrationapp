@@ -1,6 +1,8 @@
-function m2sysEnroll() {
+function m2sysEnroll(button) {
+    toggleFingerprintButtonDisplay(button);
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
     .success(function(data) {
+        toggleFingerprintButtonDisplay(button);
         if (data['success'] == true) {
             $("#fingerprintStatus").text("Success!");
             $("#fingerprintError").text("");
@@ -18,13 +20,15 @@ function m2sysGetStatus() {
     //TODO add success method
 }
 
-function m2sysUpdate(idValue) {
+function m2sysUpdate(idValue, button) {
+    toggleFingerprintButtonDisplay(button);
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/update.action',
         {
             id: idValue
         }
     )
     .success(function(data) {
+        toggleFingerprintButtonDisplay(button);
         if (data['success'] == true) {
             $("#fingerprintStatus").text("Success!");
             $("#fingerprintError").text("");
