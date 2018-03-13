@@ -1,35 +1,54 @@
 
+function m2SysSetSubjectIdInput(value) {
+    $("[name='fingerprintSubjectId']").val(value).trigger('change');
+}
 
-$(document).ready(function() {
-  var dialog = emr.setupConfirmationDialog({
-    selector: '#imported-patient-dialog',
-    actions: {
-      confirm: function() {
-        var patientUrl = '/' + OPENMRS_CONTEXT_PATH + '/coreapps/clinicianfacing/patient.page?patientId=d491b4f6-1e89-4580-933f-9e2fbd26b630';
-        $(location).attr('href', patientUrl);
-      },
-      cancel: function() {
-        dialog.close();
-      }
-    }
-  });
+function m2SysSubjectIdInput() {
+    m2SysSetSubjectIdInput('');
+}
 
-  dialog.show();
-});
+function m2SysError(errorDetails) {
+    $("#fingerprintStatus").text('Failure!');
+    $("#fingerprintError").text(errorDetails);
+    m2SysSubjectIdInput();
+}
+
+function m2SysSuccess(subjectId) {
+    $("#fingerprintStatus").text('Success!');
+    $("#fingerprintError").text("");
+    m2SysSetSubjectIdInput(subjectId)
+}
+
+function m2SysShowAlreadyExistingFingerprintsDialog(data) {
+     emr.setupConfirmationDialog({
+        selector: '#imported-patient-dialog',
+        actions: {
+            confirm: function () {
+                var patientUrl = '/' + OPENMRS_CONTEXT_PATH + '/coreapps/clinicianfacing/patient.page?patientId='
+                        + data['patientUuid'];
+                $(location).attr('href', patientUrl);
+            },
+            cancel: function () {
+                m2SysError('Fingerprints already registered, you cannot register the same fingerprints again!');
+            }
+        }
+    }).show();
+}
 
 function m2sysEnroll() {
+    m2SysSubjectIdInput();
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
-    .success(function(data) {
-        if (data['success'] === true) {
-            $("#fingerprintStatus").text("Success!");
-            $("#fingerprintError").text("");
-            $("[name='fingerprintSubjectId']").val(data['message']).trigger('change');
-        } else {
-            $("#fingerprintStatus").text("Failed!");
-            $("#fingerprintError").text(data['message']);
-            $("[name='fingerprintSubjectId']").val("").trigger('change');
-        }
-    });
+        .success(function(data) {
+            if (data['success'] === true) {
+                if (data['status'] === 'ALREADY_REGISTERED') {
+                    m2SysShowAlreadyExistingFingerprintsDialog(data);
+                } else {
+                    m2SysSuccess(data['message']);
+                }
+            } else {
+                m2SysError(data['message']);
+            }
+        });
 }
 
 function m2sysGetStatus() {

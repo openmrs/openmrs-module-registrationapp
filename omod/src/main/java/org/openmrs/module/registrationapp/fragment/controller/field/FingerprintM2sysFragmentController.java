@@ -1,5 +1,13 @@
 package org.openmrs.module.registrationapp.fragment.controller.field;
 
+import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Patient;
+import org.openmrs.api.APIException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
@@ -8,14 +16,12 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineS
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
+import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentStatus;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FingerprintM2sysFragmentController {
 
@@ -23,13 +29,20 @@ public class FingerprintM2sysFragmentController {
 
     private BiometricEngine biometricEngine;
 
+    private AdministrationService adminService;
+
+    private RegistrationCoreService registrationCoreService;
+
     public FingerprintM2sysFragmentController() {
-        biometricEngine = Context.getService(RegistrationCoreService.class).getBiometricEngine();
-    }
+		adminService = Context.getAdministrationService();
+		registrationCoreService = Context.getService(RegistrationCoreService.class);
+		biometricEngine = registrationCoreService.getBiometricEngine();
+	}
 
     public void controller() { }
 
-    public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+    public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
+			@SpringBean RegistrationCoreService registrationCoreService) {
         SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnabled()) {
             response.put("success", false);
@@ -42,6 +55,10 @@ public class FingerprintM2sysFragmentController {
             response.put("success", true);
             response.put("message", result.getBiometricSubject().getSubjectId());
             response.put("status", result.getEnrollmentStatus().name());
+            if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
+            	Patient patient = findByLocalFpId(result.getBiometricSubject().getSubjectId());
+                response.put("patientUuid", patient.getUuid());
+            }
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
@@ -147,7 +164,16 @@ public class FingerprintM2sysFragmentController {
         return biometricEngine;
     }
 
-    public void setBiometricEngine(BiometricEngine biometricEngine) {
-        this.biometricEngine = biometricEngine;
-    }
+	private Patient findByLocalFpId(String subjectId) {
+		String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+		return registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+	}
+
+	private String getGlobalProperty(String propertyName) {
+		String propertyValue = adminService.getGlobalProperty(propertyName);
+		if (StringUtils.isBlank(propertyValue)) {
+			throw new APIException(String.format("Property value for '%s' is not set", propertyName));
+		}
+		return propertyValue;
+	}
 }

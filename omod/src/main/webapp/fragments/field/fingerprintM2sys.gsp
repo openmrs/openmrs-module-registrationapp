@@ -17,11 +17,11 @@
     </p>
 	<div style="display:none" id="imported-patient-dialog" class="dialog">
 		<div class="dialog-header">
-			${ ui.message("registrationapp.biometrics.m2sys.register.mpiImportingQuestion.header") }
+			${ ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.label") }
 		</div>
 		<div class="dialog-content">
 			<p>
-				${ ui.message("registrationapp.biometrics.m2sys.register.mpiImportingQuestion.description")}
+				${ ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.description")}
 			</p>
 			<br/>
 			<div class="buttons">
