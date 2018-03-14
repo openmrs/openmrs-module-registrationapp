@@ -1,20 +1,20 @@
 function m2sysEnroll(button) {
 	toggleFingerprintButtonDisplay(button);
 	jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
-	    .always(function() {
-	    	toggleFingerprintButtonDisplay(button);
-	    })
-	    .success(function(data) {
-	    	if (data['success'] == true) {
-	    		$("#fingerprintStatus").text("Success!");
-	    		$("#fingerprintError").text("");
-	    		$("[name='fingerprintSubjectId']").val(data['message']).trigger('change');
-	    	} else {
-	    		$("#fingerprintStatus").text("Failed!");
-	    		$("#fingerprintError").text(data['message']);
-	    		$("[name='fingerprintSubjectId']").val("").trigger('change');
-	    	}
-	    });
+		.always(function() {
+			toggleFingerprintButtonDisplay(button);
+		})
+		.success(function(data) {
+			if (data['success'] == true) {
+				$("#fingerprintStatus").text("Success!");
+				$("#fingerprintError").text("");
+				$("[name='fingerprintSubjectId']").val(data['message']).trigger('change');
+			} else {
+				$("#fingerprintStatus").text("Failed!");
+				$("#fingerprintError").text(data['message']);
+				$("[name='fingerprintSubjectId']").val("").trigger('change');
+			}
+		});
 }
 
 function m2sysGetStatus() {
@@ -25,18 +25,18 @@ function m2sysGetStatus() {
 function m2sysUpdate(idValue, button) {
 	toggleFingerprintButtonDisplay(button);
 	jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/update.action', { id: idValue })
-	    .always(function() {
-	    	toggleFingerprintButtonDisplay(button);
-	    })
-	    .success(function(data) {
-	    	if (data['success'] == true) {
-	    		$("#fingerprintStatus").text("Success!");
-	    		$("#fingerprintError").text("");
-	    	} else {
-	    		$("#fingerprintStatus").text("Failed!");
-	    		$("#fingerprintError").text(data['message']);
-	    	}
-	    });
+		.always(function() {
+			toggleFingerprintButtonDisplay(button);
+		})
+		.success(function(data) {
+			if (data['success'] == true) {
+				$("#fingerprintStatus").text("Success!");
+				$("#fingerprintError").text("");
+			} else {
+				$("#fingerprintStatus").text("Failed!");
+				$("#fingerprintError").text(data['message']);
+			}
+		});
 }
 
 function m2sysUpdateSubjectId(oldIdValue, newIdValue) {
