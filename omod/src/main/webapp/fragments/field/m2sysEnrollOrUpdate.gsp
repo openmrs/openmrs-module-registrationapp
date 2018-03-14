@@ -27,7 +27,7 @@
 
 		jq(document).ready(function() {
 			if (enrollOrUpdate == "update") {
-		  		jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
+				jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
 			} else {
 				jq('#fingerprintButtonLabel').text(buttonLabelEnroll);
 			}
@@ -35,7 +35,7 @@
 
 		jq(fingerprintButton).click(function() {
 			if (enrollOrUpdate == "update") {
-		  		m2sysUpdate(biometricID, this);
+				m2sysUpdate(biometricID, this);
 			} else {
 				m2sysEnroll(this);
 			}
@@ -44,19 +44,19 @@
 		jq(fingerprintSubjectIdField).change(function() {
 			biometricID = jq(fingerprintSubjectIdField).val();
 			if (biometricID) {
-			    emr.getFragmentActionWithCallback('coreapps', 'editPatientIdentifier', 'editPatientIdentifier',
-				    { patientId: ${ patient.id },
+				emr.getFragmentActionWithCallback('coreapps', 'editPatientIdentifier', 'editPatientIdentifier',
+					{ patientId: ${ patient.id },
 						identifierTypeId: ${ biometricPatientIdentifierType.id },
 						identifierValue: biometricID
 					},
-				    function(data) {
+					function(data) {
 						emr.successMessage(data.message);
 						enrollOrUpdate = "update";
 						jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
 					},
 					function(err){
 						emr.handleError(err);
-				    }
+					}
 				);
 			}
 		});
