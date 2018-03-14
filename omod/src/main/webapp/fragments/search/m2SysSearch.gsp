@@ -11,20 +11,20 @@ jq(function() {
 	searchButton.click(function() {
 		toggleFingerprintButtonDisplay(searchButton);
 		jq.getJSON('${ ui.actionLink("getPatients") }', {})
-		.always(function() {
-			toggleFingerprintButtonDisplay(searchButton);
-		})
-		.success(function(data) {
-			patientSearchWidget.reset();
-			if (data) {
-				patientSearchWidget.updateSearchResults(data);
-			} else {
-				alert("No matches");
-			}
-		})
-		.error(function(xhr, status, err) {
-			alert('AJAX error ' + err);
-		})
+		    .always(function() {
+		    	toggleFingerprintButtonDisplay(searchButton);
+		    })
+		    .success(function(data) {
+		    	patientSearchWidget.reset();
+		    	if (data) {
+		    		patientSearchWidget.updateSearchResults(data);
+		    	} else {
+		    		alert("No matches");
+		    	}
+		    })
+		    .error(function(xhr, status, err) {
+		    	alert('AJAX error ' + err);
+		    })
 	});
 });
 </script>
