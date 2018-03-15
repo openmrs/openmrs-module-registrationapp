@@ -1,7 +1,13 @@
 <%
     ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
 %>
-
+<script type="text/javascript">
+    emr.loadMessages([
+        'registrationapp.biometrics.m2sys.register.success',
+        'registrationapp.biometrics.m2sys.register.failure',
+        'registrationapp.biometrics.m2sys.register.alreadyExists.failure'
+	]);
+</script>
 <div>
     <span id="fingerprintStatus"></span>
     <span id="fingerprintError" class="field-error"></span>

@@ -8,13 +8,13 @@ function m2SysSubjectIdInput() {
 }
 
 function m2SysError(errorDetails) {
-    $("#fingerprintStatus").text('Failure!');
+    $("#fingerprintStatus").text(emr.message('registrationapp.biometrics.m2sys.register.failure'));
     $("#fingerprintError").text(errorDetails);
     m2SysSubjectIdInput();
 }
 
 function m2SysSuccess(subjectId) {
-    $("#fingerprintStatus").text('Success!');
+    $("#fingerprintStatus").text(emr.message('registrationapp.biometrics.m2sys.register.success'));
     $("#fingerprintError").text("");
     m2SysSetSubjectIdInput(subjectId)
 }
@@ -29,7 +29,7 @@ function m2SysShowAlreadyExistingFingerprintsDialog(data) {
                 $(location).attr('href', patientUrl);
             },
             cancel: function () {
-                m2SysError('Fingerprints already registered, you cannot register the same fingerprints again!');
+                m2SysError(emr.message('registrationapp.biometrics.m2sys.register.alreadyExists.failure'));
             }
         }
     }).show();
