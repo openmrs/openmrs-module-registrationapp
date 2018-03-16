@@ -1,6 +1,10 @@
 <%
     ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
+    ui.includeJavascript("registrationapp", "fingerprintUtils.js")
 %>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <script type="text/javascript">
     emr.loadMessages([
         'registrationapp.biometrics.m2sys.register.success',
@@ -8,16 +12,17 @@
         'registrationapp.biometrics.m2sys.register.alreadyExists.failure'
 	]);
 </script>
+
 <div>
     <span id="fingerprintStatus"></span>
     <span id="fingerprintError" class="field-error"></span>
 	   <p>
 	        ${ ui.message("registrationapp.biometrics.m2sys.register.question") }
 	    </p>
-	    <a class="button app big" onClick="m2sysEnroll();">
+	    <button class="button app big" onClick="m2sysEnroll(this);">
 	        <i class="icon-hand-up"></i>
 	        ${ ui.message("registrationapp.biometrics.m2sys.register.button.label") }
-	    </a>
+	    </button>
     <p>
         <input type="text" name="fingerprintSubjectId" style="display: none" />
     </p>

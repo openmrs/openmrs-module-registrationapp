@@ -1,52 +1,57 @@
-
 function m2SysSetSubjectIdInput(value) {
     $("[name='fingerprintSubjectId']").val(value).trigger('change');
 }
 
-function m2SysSubjectIdInput() {
+function m2SysClearSubjectIdInput() {
     m2SysSetSubjectIdInput('');
 }
 
-function m2SysError(errorDetails) {
+function m2SysErrorMessage(errorDetails) {
     $("#fingerprintStatus").text(emr.message('registrationapp.biometrics.m2sys.register.failure'));
     $("#fingerprintError").text(errorDetails);
-    m2SysSubjectIdInput();
 }
 
-function m2SysSuccess(subjectId) {
+function m2SysSuccess() {
     $("#fingerprintStatus").text(emr.message('registrationapp.biometrics.m2sys.register.success'));
     $("#fingerprintError").text("");
-    m2SysSetSubjectIdInput(subjectId)
 }
 
 function m2SysShowAlreadyExistingFingerprintsDialog(data) {
-     emr.setupConfirmationDialog({
+    emr.setupConfirmationDialog({
         selector: '#imported-patient-dialog',
         actions: {
             confirm: function () {
-                var patientUrl = '/' + OPENMRS_CONTEXT_PATH + '/coreapps/clinicianfacing/patient.page?patientId='
+                var patientUrl = '/' + OPENMRS_CONTEXT_PATH
+                        + '/coreapps/clinicianfacing/patient.page?patientId='
                         + data['patientUuid'];
                 $(location).attr('href', patientUrl);
             },
             cancel: function () {
-                m2SysError(emr.message('registrationapp.biometrics.m2sys.register.alreadyExists.failure'));
+                m2SysErrorMessage(emr.message(
+                        'registrationapp.biometrics.m2sys.register.alreadyExists.failure'));
             }
         }
     }).show();
 }
 
-function m2sysEnroll() {
-    m2SysSubjectIdInput();
+function m2sysEnroll(button) {
+    m2SysClearSubjectIdInput();
+    toggleFingerprintButtonDisplay(button);
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enroll.action')
-        .success(function(data) {
+        .always(function () {
+            toggleFingerprintButtonDisplay(button);
+        })
+        .success(function (data) {
             if (data['success'] === true) {
                 if (data['status'] === 'ALREADY_REGISTERED') {
                     m2SysShowAlreadyExistingFingerprintsDialog(data);
                 } else {
-                    m2SysSuccess(data['message']);
+                    m2SysSuccess();
+                    m2SysSetSubjectIdInput(data['message'])
                 }
             } else {
-                m2SysError(data['message']);
+                m2SysErrorMessage(data['message']);
+                m2SysClearSubjectIdInput();
             }
         });
 }
@@ -56,21 +61,19 @@ function m2sysGetStatus() {
     //TODO add success method
 }
 
-function m2sysUpdate(idValue) {
-    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/update.action',
-        {
-            id: idValue
-        }
-    )
-    .success(function(data) {
-        if (data['success'] == true) {
-            $("#fingerprintStatus").text("Success!");
-            $("#fingerprintError").text("");
-        } else {
-            $("#fingerprintStatus").text("Failed!");
-            $("#fingerprintError").text(data['message']);
-        }
-     });
+function m2sysUpdate(idValue, button) {
+    toggleFingerprintButtonDisplay(button);
+    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/update.action', {id: idValue})
+        .always(function () {
+            toggleFingerprintButtonDisplay(button);
+        })
+        .success(function (data) {
+            if (data['success'] === true) {
+                m2SysSuccess();
+            } else {
+                m2SysErrorMessage(data['message']);
+            }
+        });
 }
 
 function m2sysUpdateSubjectId(oldIdValue, newIdValue) {
