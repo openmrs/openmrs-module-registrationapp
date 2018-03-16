@@ -124,7 +124,8 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
-                            @RequestParam(value="fingerprintSubjectId", required = false) String fingerprintSubjectId,
+                            @RequestParam(value="localBiometricSubjectId", required = false) String localBiometricSubjectId,
+                            @RequestParam(value="nationalBiometricSubjectId", required = false) String nationalBiometricSubjectId,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,
@@ -189,10 +190,14 @@ public class RegisterPatientFragmentController {
             registrationData.addBiometricData(new BiometricData(subject, identifierType));
         }
 
-        if (StringUtils.isNotBlank(fingerprintSubjectId)) {
-            BiometricSubject biometricSubject = new BiometricSubject();
-            biometricSubject.setSubjectId(fingerprintSubjectId);
-            BiometricData biometricData = generateBiometricData(biometricSubject);
+        if (StringUtils.isNotBlank(localBiometricSubjectId)) {
+            BiometricData biometricData = generateBiometricData(localBiometricSubjectId,
+                    RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+            registrationData.getBiometrics().add(biometricData);
+        }
+        if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
+            BiometricData biometricData = generateBiometricData(nationalBiometricSubjectId,
+                    RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
             registrationData.getBiometrics().add(biometricData);
         }
 
@@ -288,14 +293,19 @@ public class RegisterPatientFragmentController {
         return new SuccessResult(redirectUrl);
     }
 
-    private BiometricData generateBiometricData(BiometricSubject biometricSubject) {
-        return new BiometricData(biometricSubject, getFingerprintIdentifierType());
+    private BiometricData generateBiometricData(String subjectId, String globalProperty) {
+        BiometricSubject biometricSubject = new BiometricSubject(subjectId);
+        PatientIdentifierType patientIdentifierType = getIdentifierTypeByGlobalProperty(globalProperty);
+        return new BiometricData(biometricSubject, patientIdentifierType);
     }
 
-    private PatientIdentifierType getFingerprintIdentifierType() {
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(Context.getAdministrationService().getGlobalProperty(RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID));
+    private PatientIdentifierType getIdentifierTypeByGlobalProperty(String globalProperty) {
+        String identifierTypeUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(identifierTypeUuid);
         if (patientIdentifierType == null) {
-            throw new APIException("Local fingerprint identifier type not found. Make sure the registrationcore.biometrics.personIdentifierTypeUuid global property is set.");
+            throw new APIException(String.format(
+                    "Local fingerprint identifier type not found. Make sure the global property %s is set.",
+                    globalProperty));
         }
         return patientIdentifierType;
     }
