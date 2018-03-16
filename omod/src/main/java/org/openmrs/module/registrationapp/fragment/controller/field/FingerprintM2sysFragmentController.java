@@ -34,15 +34,16 @@ public class FingerprintM2sysFragmentController {
     private RegistrationCoreService registrationCoreService;
 
     public FingerprintM2sysFragmentController() {
-		adminService = Context.getAdministrationService();
-		registrationCoreService = Context.getService(RegistrationCoreService.class);
-		biometricEngine = registrationCoreService.getBiometricEngine();
-	}
+        adminService = Context.getAdministrationService();
+        registrationCoreService = Context.getService(RegistrationCoreService.class);
+        biometricEngine = registrationCoreService.getBiometricEngine();
+    }
 
-    public void controller() { }
+    public void controller() {
+    }
 
     public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
-			@SpringBean RegistrationCoreService registrationCoreService) {
+            @SpringBean RegistrationCoreService registrationCoreService) {
         SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnabled()) {
             response.put("success", false);
@@ -56,7 +57,7 @@ public class FingerprintM2sysFragmentController {
             response.put("message", result.getBiometricSubject().getSubjectId());
             response.put("status", result.getEnrollmentStatus().name());
             if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
-            	Patient patient = findByLocalFpId(result.getBiometricSubject().getSubjectId());
+                Patient patient = findByLocalFpId(result.getBiometricSubject().getSubjectId());
                 response.put("patientUuid", patient.getUuid());
             }
         } catch (Exception ex) {
@@ -82,8 +83,9 @@ public class FingerprintM2sysFragmentController {
         return result;
     }
 
-    public SimpleObject update(@RequestParam("id") String id, @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
-    	SimpleObject response = new SimpleObject();
+    public SimpleObject update(@RequestParam("id") String id,
+            @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+        SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnabled()) {
             response.put("success", false);
             response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
@@ -91,21 +93,21 @@ public class FingerprintM2sysFragmentController {
         }
 
         try {
-	        BiometricSubject biometricSubject = new BiometricSubject();
-	        biometricSubject.setSubjectId(id);
-	        BiometricSubject result = biometricEngine.update(biometricSubject);
-	        response.put("success", true);
-	        response.put("message",result.getSubjectId());
-	    } catch (Exception ex) {
-	        response.put("success", false);
-	        response.put("message", ex.getMessage());
-	        LOGGER.error(ex.getMessage());
-	    }
+            BiometricSubject biometricSubject = new BiometricSubject();
+            biometricSubject.setSubjectId(id);
+            BiometricSubject result = biometricEngine.update(biometricSubject);
+            response.put("success", true);
+            response.put("message", result.getSubjectId());
+        } catch (Exception ex) {
+            response.put("success", false);
+            response.put("message", ex.getMessage());
+            LOGGER.error(ex.getMessage());
+        }
         return response;
     }
 
     public SimpleObject updateSubjectId(@RequestParam("oldId") String oldId,
-                                        @RequestParam("newId") String newId) {
+            @RequestParam("newId") String newId) {
         if (!isBiometricEngineEnabled()) {
             return null;
         }
@@ -147,7 +149,7 @@ public class FingerprintM2sysFragmentController {
 
     private List<SimpleObject> toSimpleObjectList(List<BiometricMatch> matches) {
         List<SimpleObject> resultList = new ArrayList<SimpleObject>();
-        for(BiometricMatch match : matches) {
+        for (BiometricMatch match : matches) {
             SimpleObject simpleObject = new SimpleObject();
             simpleObject.put("subjectId", match.getSubjectId());
             simpleObject.put("matchScore", match.getMatchScore());
@@ -164,20 +166,20 @@ public class FingerprintM2sysFragmentController {
         return biometricEngine;
     }
 
-	private Patient findByLocalFpId(String subjectId) {
-		String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-		Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
-		if (patient == null) {
-			throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
-		}
-		return patient;
-	}
+    private Patient findByLocalFpId(String subjectId) {
+        String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+        Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+        if (patient == null) {
+            throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
+        }
+        return patient;
+    }
 
-	private String getGlobalProperty(String propertyName) {
-		String propertyValue = adminService.getGlobalProperty(propertyName);
-		if (StringUtils.isBlank(propertyValue)) {
-			throw new APIException(String.format("Property value for '%s' is not set", propertyName));
-		}
-		return propertyValue;
-	}
+    private String getGlobalProperty(String propertyName) {
+        String propertyValue = adminService.getGlobalProperty(propertyName);
+        if (StringUtils.isBlank(propertyValue)) {
+            throw new APIException(String.format("Property value for '%s' is not set", propertyName));
+        }
+        return propertyValue;
+    }
 }
