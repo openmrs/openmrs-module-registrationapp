@@ -32,7 +32,7 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
                 $scope.config = config;
 
-                // we don't do the rest of initializatio until $translate.use is complete, because otherwise the translate
+                // we don't do the rest of initialization until $translate.use is complete, because otherwise the translate
                 // call to display the placeholder message may fail if the transaltions have not been loaded
                 $translate.use(locale)
                     .then(function() {
