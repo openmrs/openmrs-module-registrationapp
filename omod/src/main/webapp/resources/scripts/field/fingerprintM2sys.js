@@ -1,9 +1,10 @@
-function m2SysSetSubjectIdInput(value) {
-    $("[name='fingerprintSubjectId']").val(value).trigger('change');
+function m2SysSetSubjectIdInput(localSubjectId, nationalSubjectId) {
+    $("[name='localBiometricSubjectId']").val(localSubjectId).trigger('change');
+    $("[name='nationalBiometricSubjectId']").val(nationalSubjectId).trigger('change');
 }
 
 function m2SysClearSubjectIdInput() {
-    m2SysSetSubjectIdInput('');
+    m2SysSetSubjectIdInput('', '');
 }
 
 function m2SysErrorMessage(errorDetails) {
@@ -47,7 +48,7 @@ function m2sysEnroll(button) {
                     m2SysShowAlreadyExistingFingerprintsDialog(data);
                 } else {
                     m2SysSuccess();
-                    m2SysSetSubjectIdInput(data['message'])
+                    m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId'])
                 }
             } else {
                 m2SysErrorMessage(data['message']);

@@ -26,7 +26,8 @@
     </button>
 
     <p>
-        <input type="text" name="fingerprintSubjectId" style="display: none"/>
+        <input type="text" name="localBiometricSubjectId" style="display: none"/>
+        <input type="text" name="nationalBiometricSubjectId" style="display: none"/>
     </p>
 
     <div style="display:none" id="imported-patient-dialog" class="dialog">
