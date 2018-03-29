@@ -30,6 +30,10 @@ public final class PropertiesUtil {
         return getGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
+    public static boolean localFpTypeUuidSet() {
+        return globalPropertySet(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+    }
+
     public static String getLocalFpTypeUuid() {
         return getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
     }
