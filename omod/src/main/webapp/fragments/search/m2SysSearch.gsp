@@ -4,14 +4,7 @@
 %>
 
 <script>
-    jq = jQuery;
-
-    var handlePatientRowSelection = new function() {
-        this.handle = function (patient) {
-            var uuid = patient.uuid;
-            location.href = emr.pageLink('coreapps', 'clinicianfacing/patient', { patientId: uuid });
-        }
-    };
+    var jq = jQuery;
 
     jq(function () {
         var searchButton = jq('#fingerprint_search_button');
@@ -35,6 +28,40 @@
                 })
         });
     });
+
+    var handlePatientRowSelection = new function () {
+        this.handle = function (patient) {
+            if (patientExistingOnlyNationally(patient)) {
+                showImportingDialog(patient)
+            } else {
+                redirectToPatient(patient)
+            }
+        }
+    };
+
+    function patientExistingOnlyNationally(patient) {
+        var isLocally = patient.localFingerprintPatientIdentifier !== null;
+        var isNationally = patient.nationalFingerprintPatientIdentifier !== null;
+        return !isLocally && isNationally;
+    }
+
+    function showImportingDialog(patient) {
+        emr.setupConfirmationDialog({
+            selector: '#patient-importing-dialog',
+            actions: {
+                confirm: function () {
+                    redirectToPatient(patient.uuid);
+                },
+                cancel: function () {
+                }
+            }
+        }).show();
+    }
+
+    function redirectToPatient(patientId) {
+        var url = emr.pageLink('coreapps', 'clinicianfacing/patient', { patientId: patientId.uuid });
+        jq(location).attr('href', url);
+    }
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -43,4 +70,22 @@
         <i class="icon-hand-up"></i><span id="fingerprintButtonLabel"></span>
     </button>
     <input type="text" name="fingerprintSubjectId" class="invisible" size="1" style="min-width:1em;"/>
+</div>
+
+<div style="display:none" id="patient-importing-dialog" class="dialog">
+    <div class="dialog-header">
+        ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.label")}
+    </div>
+
+    <div class="dialog-content">
+        <p>
+            ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.description")}
+        </p>
+        <br/>
+
+        <div class="buttons">
+            <button class="confirm right">${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.redirectButton")}</button>
+            <button class="cancel">${ui.message("registrationapp.cancel")}</button>
+        </div>
+    </div>
 </div>
