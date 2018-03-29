@@ -5,13 +5,10 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.registrationapp.PropertiesUtil;
-import org.openmrs.module.registrationapp.fragment.controller.field.FingerprintM2sysFragmentController;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
-import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -101,9 +98,8 @@ public class M2SysSearchFragmentController {
 
     private PatientIdentifier getNationalFpId(Patient patient) {
         PatientIdentifier nationalFpIdentifier = null;
-        if (PropertiesUtil.nationalFpTypeUuidSet()) {
-            PatientIdentifierType nationalFpPit = Context.getPatientService()
-                    .getPatientIdentifierTypeByUuid(PropertiesUtil.getNationalFpTypeUuid());
+        if (PropertiesUtil.nationalFpTypeSet()) {
+            PatientIdentifierType nationalFpPit = PropertiesUtil.getNationalFpType();
             nationalFpIdentifier = patient.getPatientIdentifier(nationalFpPit);
         }
         return nationalFpIdentifier;
@@ -111,9 +107,8 @@ public class M2SysSearchFragmentController {
 
     private PatientIdentifier getLocalFpId(Patient patient) {
         PatientIdentifier localFpIdentifier = null;
-        if (PropertiesUtil.localFpTypeUuidSet()) {
-            PatientIdentifierType localFpPit = Context.getPatientService()
-                    .getPatientIdentifierTypeByUuid(PropertiesUtil.getLocalFpTypeUuid());
+        if (PropertiesUtil.localFpTypeSet()) {
+            PatientIdentifierType localFpPit = PropertiesUtil.getLocalFpType();
             localFpIdentifier = patient.getPatientIdentifier(localFpPit);
         }
         return localFpIdentifier;

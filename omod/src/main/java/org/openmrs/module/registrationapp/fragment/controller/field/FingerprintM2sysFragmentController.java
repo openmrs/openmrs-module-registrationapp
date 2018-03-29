@@ -3,6 +3,7 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 import java.util.ArrayList;
 import java.util.List;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -166,8 +167,8 @@ public class FingerprintM2sysFragmentController {
     }
 
     private Patient findByLocalFpId(String subjectId) {
-        String identifierUuid = PropertiesUtil.getLocalFpTypeUuid();
-        Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+        PatientIdentifierType identifierType = PropertiesUtil.getLocalFpType();
+        Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierType.getUuid());
         if (patient == null) {
             throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
         }

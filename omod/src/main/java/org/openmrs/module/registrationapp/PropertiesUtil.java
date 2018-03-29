@@ -4,6 +4,7 @@ import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_B
 import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
@@ -22,20 +23,30 @@ public final class PropertiesUtil {
         return !StringUtils.isBlank(propertyValue);
     }
 
-    public static boolean nationalFpTypeUuidSet() {
+    public static boolean nationalFpTypeSet() {
         return globalPropertySet(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
-    public static String getNationalFpTypeUuid() {
-        return getGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
+    public static PatientIdentifierType getNationalFpType() {
+        return getIdetifierTypeByGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
-    public static boolean localFpTypeUuidSet() {
+    public static boolean localFpTypeSet() {
         return globalPropertySet(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
-    public static String getLocalFpTypeUuid() {
-        return getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+    public static PatientIdentifierType getLocalFpType() {
+        return getIdetifierTypeByGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+    }
+
+    public static PatientIdentifierType getIdetifierTypeByGlobalProperty(String globalProperty) {
+        String uuid = getGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
+        PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
+        if (patientIdentifierType == null) {
+            throw new APIException(String.format("Patient identifier type relevant to "
+                    + "'%s' Global Property with '%s' value does not exist", globalProperty, uuid));
+        }
+        return patientIdentifierType;
     }
 
     private PropertiesUtil() {

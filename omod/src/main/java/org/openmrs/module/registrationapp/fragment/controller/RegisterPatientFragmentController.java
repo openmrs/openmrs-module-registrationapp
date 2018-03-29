@@ -296,19 +296,8 @@ public class RegisterPatientFragmentController {
 
     private BiometricData generateBiometricData(String subjectId, String globalProperty) {
         BiometricSubject biometricSubject = new BiometricSubject(subjectId);
-        PatientIdentifierType patientIdentifierType = getIdentifierTypeByGlobalProperty(globalProperty);
+        PatientIdentifierType patientIdentifierType = PropertiesUtil.getIdetifierTypeByGlobalProperty(globalProperty);
         return new BiometricData(biometricSubject, patientIdentifierType);
-    }
-
-    private PatientIdentifierType getIdentifierTypeByGlobalProperty(String globalProperty) {
-        String identifierTypeUuid = Context.getAdministrationService().getGlobalProperty(globalProperty);
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(identifierTypeUuid);
-        if (patientIdentifierType == null) {
-            throw new APIException(String.format(
-                    "Local fingerprint identifier type not found. Make sure the global property %s is set.",
-                    globalProperty));
-        }
-        return patientIdentifierType;
     }
 
     private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {
