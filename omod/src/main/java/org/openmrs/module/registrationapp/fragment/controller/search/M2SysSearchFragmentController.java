@@ -1,11 +1,13 @@
 package org.openmrs.module.registrationapp.fragment.controller.search;
 
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
@@ -33,46 +35,36 @@ public class M2SysSearchFragmentController {
 
     public List<SimpleObject> getPatients(@SpringBean("registrationCoreService") RegistrationCoreService registrationCoreService,
                                           UiUtils ui) {
-        List<PatientAndMatchQuality> matches = registrationCoreService.findByBiometricMatch(new BiometricSubject());
+        List<PatientAndMatchQuality> patients = registrationCoreService.findByBiometricMatch(new BiometricSubject());
 
-        List<Patient> patients = toPatientList(matches);
         return simplify(ui, patients);
     }
 
-    public FragmentActionResult importMpiPatient(@RequestParam("nationalFingerprintId") String personId,
+    public FragmentActionResult importMpiPatient(@RequestParam("nationalFingerprintId") String nationalId,
             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
             HttpSession session) {
         FragmentActionResult result;
         try {
-            registrationService.importMpiPatient(personId);
-            result = new SuccessResult();
+            String newUuid = registrationService.importMpiPatient(nationalId, PropertiesUtil.getNationalFpType().getUuid());
+            result = new SuccessResult(newUuid);
         } catch (Exception ex) {
-            String message = "Error during importing patient by national fingerprint id. Details:" + ex.getMessage();
+            String message = "Error during importing patient by national fingerprint id. Details: " + ex.getMessage();
             LOGGER.error(message, ex);
             result = new FailureResult(message);
         }
         return result;
     }
 
-    private List<Patient> toPatientList(List<PatientAndMatchQuality> matches) {
-        List<Patient> patients = new ArrayList<Patient>();
-
-        for (PatientAndMatchQuality match : matches) {
-            patients.add(match.getPatient());
-        }
-
-        return patients;
-    }
-
-    private List<SimpleObject> simplify(UiUtils ui, List<Patient> results) {
+    private List<SimpleObject> simplify(UiUtils ui, List<PatientAndMatchQuality> results) {
         List<SimpleObject> patients = new ArrayList<SimpleObject>(results.size());
-        for (Patient patient : results) {
+        for (PatientAndMatchQuality patient : results) {
             patients.add(simplify(ui, patient));
         }
         return patients;
     }
 
-    private SimpleObject simplify(UiUtils ui, Patient patient) {
+    private SimpleObject simplify(UiUtils ui, PatientAndMatchQuality patientAndMatchQuality) {
+        Patient patient = patientAndMatchQuality.getPatient();
         PersonName name = patient.getPersonName();
         SimpleObject preferredName = SimpleObject.fromObject(name, ui, "givenName", "middleName",
                 "familyName", "familyName2");
@@ -83,17 +75,30 @@ public class M2SysSearchFragmentController {
         personObj.put("personName", preferredName);
 
         PatientIdentifier primaryIdentifier = patient.getPatientIdentifier();
-        PatientIdentifier localFpIdentifier = getLocalFpId(patient);
         PatientIdentifier nationalFpIdentifier = getNationalFpId(patient);
 
         SimpleObject patientObj = SimpleObject.fromObject(patient, ui, "patientId", "uuid");
 
         patientObj.put("person", personObj);
         patientObj.put("patientIdentifier", prepareSimpleObjectForPatientId(primaryIdentifier, ui));
-        patientObj.put("localFingerprintPatientIdentifier", prepareSimpleObjectForPatientId(localFpIdentifier, ui));
         patientObj.put("nationalFingerprintPatientIdentifier", prepareSimpleObjectForPatientId(nationalFpIdentifier, ui));
+        patientObj.put("onlyInMpi", isPatientOnlyInMpi(patientAndMatchQuality));
 
         return patientObj;
+    }
+
+    private boolean isPatientOnlyInMpi(PatientAndMatchQuality patient) {
+        boolean isNational = false;
+        boolean isLocal = false;
+        for (String field : patient.getMatchedFields()) {
+            if (StringUtils.equals(field, RegistrationCoreConstants.NATIONAL_FINGERPRINT)) {
+                isNational = true;
+            }
+            if (StringUtils.equals(field, RegistrationCoreConstants.LOCAL_FINGERPRINT)) {
+                isLocal = true;
+            }
+        }
+        return !isLocal && isNational;
     }
 
     private PatientIdentifier getNationalFpId(Patient patient) {
@@ -103,15 +108,6 @@ public class M2SysSearchFragmentController {
             nationalFpIdentifier = patient.getPatientIdentifier(nationalFpPit);
         }
         return nationalFpIdentifier;
-    }
-
-    private PatientIdentifier getLocalFpId(Patient patient) {
-        PatientIdentifier localFpIdentifier = null;
-        if (PropertiesUtil.localFpTypeSet()) {
-            PatientIdentifierType localFpPit = PropertiesUtil.getLocalFpType();
-            localFpIdentifier = patient.getPatientIdentifier(localFpPit);
-        }
-        return localFpIdentifier;
     }
 
     private SimpleObject prepareSimpleObjectForPatientId(PatientIdentifier patientIdentifier, UiUtils ui) {

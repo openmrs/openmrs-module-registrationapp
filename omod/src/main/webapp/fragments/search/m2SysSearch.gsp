@@ -31,19 +31,13 @@
 
     var handlePatientRowSelection = new function () {
         this.handle = function (patient) {
-            if (patientExistingOnlyNationally(patient)) {
+            if (patient.onlyInMpi === true) {
                 showImportingDialog(patient)
             } else {
-                redirectToPatient(patient)
+                redirectToPatient(patient.uuid)
             }
         }
     };
-
-    function patientExistingOnlyNationally(patient) {
-        var isLocally = patient.localFingerprintPatientIdentifier !== null;
-        var isNationally = patient.nationalFingerprintPatientIdentifier !== null;
-        return !isLocally && isNationally;
-    }
 
     function showImportingDialog(patient) {
         emr.setupConfirmationDialog({
@@ -61,20 +55,20 @@
     function importMpiPatient(patient) {
         emr.getFragmentActionWithCallback(
                 "registrationapp", "search/m2SysSearch", "importMpiPatient",
-                { nationalFingerprintId: patient.nationalFingerprintPatientIdentifier },
+                { nationalFingerprintId: patient.nationalFingerprintPatientIdentifier.identifier },
                 function (successResponse) {
-                    redirectToPatient();
+                    redirectToPatient(successResponse.message);
                 },
                 function (failResponse) {
                     emr.handleError(failResponse);
                 });
     }
 
-    function redirectToPatient(patient) {
+    function redirectToPatient(patientUuid) {
         emr.navigateTo({
             provider: 'coreapps',
             page: 'clinicianfacing/patient',
-            query: { patientId: patient.uuid }
+            query: { patientId: patientUuid }
         });
     }
 </script>
