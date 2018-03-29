@@ -34,6 +34,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.idgen.EmptyIdentifierPoolException;
+import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;

@@ -1,15 +1,13 @@
 package org.openmrs.module.registrationapp.fragment.controller.field;
 
-import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
-
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineStatus;
@@ -163,24 +161,16 @@ public class FingerprintM2sysFragmentController {
         return getBiometricEngine() != null;
     }
 
-    public BiometricEngine getBiometricEngine() {
+    private BiometricEngine getBiometricEngine() {
         return biometricEngine;
     }
 
     private Patient findByLocalFpId(String subjectId) {
-        String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+        String identifierUuid = PropertiesUtil.getLocalFpTypeUuid();
         Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
         if (patient == null) {
             throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
         }
         return patient;
-    }
-
-    private String getGlobalProperty(String propertyName) {
-        String propertyValue = adminService.getGlobalProperty(propertyName);
-        if (StringUtils.isBlank(propertyValue)) {
-            throw new APIException(String.format("Property value for '%s' is not set", propertyName));
-        }
-        return propertyValue;
     }
 }
