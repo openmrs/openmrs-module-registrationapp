@@ -1,14 +1,17 @@
 package org.openmrs.module.registrationapp.fragment.controller.search;
 
+import javax.servlet.http.HttpSession;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationapp.fragment.controller.field.FingerprintM2sysFragmentController;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
+import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -16,8 +19,16 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class M2SysSearchFragmentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(M2SysSearchFragmentController.class);
 
     public void controller(FragmentModel model) {
         model.addAttribute("test", "testval");
@@ -29,6 +40,21 @@ public class M2SysSearchFragmentController {
 
         List<Patient> patients = toPatientList(matches);
         return simplify(ui, patients);
+    }
+
+    public FragmentActionResult importMpiPatient(@RequestParam("nationalFingerprintId") String personId,
+            @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
+            HttpSession session) {
+        FragmentActionResult result;
+        try {
+            registrationService.importMpiPatient(personId);
+            result = new SuccessResult();
+        } catch (Exception ex) {
+            String message = "Error during importing patient by national fingerprint id. Details:" + ex.getMessage();
+            LOGGER.error(message, ex);
+            result = new FailureResult(message);
+        }
+        return result;
     }
 
     private List<Patient> toPatientList(List<PatientAndMatchQuality> matches) {

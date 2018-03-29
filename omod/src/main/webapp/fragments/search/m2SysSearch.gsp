@@ -50,7 +50,7 @@
             selector: '#patient-importing-dialog',
             actions: {
                 confirm: function () {
-                    redirectToPatient(patient.uuid);
+                    importMpiPatient(patient);
                 },
                 cancel: function () {
                 }
@@ -58,9 +58,24 @@
         }).show();
     }
 
-    function redirectToPatient(patientId) {
-        var url = emr.pageLink('coreapps', 'clinicianfacing/patient', { patientId: patientId.uuid });
-        jq(location).attr('href', url);
+    function importMpiPatient(patient) {
+        emr.getFragmentActionWithCallback(
+                "registrationapp", "search/m2SysSearch", "importMpiPatient",
+                { nationalFingerprintId: patient.nationalFingerprintPatientIdentifier },
+                function (successResponse) {
+                    redirectToPatient();
+                },
+                function (failResponse) {
+                    emr.handleError(failResponse);
+                });
+    }
+
+    function redirectToPatient(patient) {
+        emr.navigateTo({
+            provider: 'coreapps',
+            page: 'clinicianfacing/patient',
+            query: { patientId: patient.uuid }
+        });
     }
 </script>
 
