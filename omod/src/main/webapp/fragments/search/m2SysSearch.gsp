@@ -7,8 +7,8 @@
     jq = jQuery;
 
     var handlePatientRowSelection =  new function() {
-        this.handle = function (row) {
-            var uuid = row.uuid;
+        this.handle = function (patient) {
+            var uuid = patient.uuid;
             location.href = emr.pageLink('coreapps', 'clinicianfacing/patient', { patientId: uuid });
         }
     };

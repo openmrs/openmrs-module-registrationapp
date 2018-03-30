@@ -64,7 +64,7 @@ public class FingerprintM2sysFragmentController {
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
-            LOGGER.error(ex.getMessage());
+            LOGGER.error("Fingerprints enrollment failed", ex);
         }
 
         return response;
