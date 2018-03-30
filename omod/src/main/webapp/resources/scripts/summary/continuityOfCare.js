@@ -1,13 +1,5 @@
-function isCCDAvailable() {
-    return true;
-}
-
-function getCCDDate() {
-    return "DD/MM/YYYY"
-}
-
 function viewCCD() {
-    alert("Document is being viewed.");
+    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/summary/continuityOfCare/viewCCD.action');
 }
 
 function importCCD() {
@@ -15,7 +7,7 @@ function importCCD() {
         selector: '#ccd-import-dialog',
         actions: {
             confirm: function () {
-                alert("Document is being downloaded.");
+                jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/summary/continuityOfCare/importCCD.action');
                 $.modal.close();
             }
         }
