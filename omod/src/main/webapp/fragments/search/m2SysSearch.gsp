@@ -24,7 +24,7 @@
                 .success(function (data) {
                     patientSearchWidget.reset();
                     if (data) {
-                        //patientSearchWidget.setHandleRowSelection(handlePatientRowSelection);
+                        patientSearchWidget.setHandleRowSelection(handlePatientRowSelection);
                         patientSearchWidget.updateSearchResults(data);
                     } else {
                         alert("No matches");
@@ -43,8 +43,4 @@
         <i class="icon-hand-up"></i><span id="fingerprintButtonLabel"></span>
     </button>
     <input type="text" name="fingerprintSubjectId" class="invisible" size="1" style="min-width:1em;"/>
-    <div id="fingerprint-status">
-        <span id="fingerprintStatus"></span>
-        <span id="fingerprintError" class="field-error"></span>
-    </div>
 </div>
