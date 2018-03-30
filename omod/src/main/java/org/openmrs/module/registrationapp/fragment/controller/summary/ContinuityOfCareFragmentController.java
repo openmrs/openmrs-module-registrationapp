@@ -11,7 +11,7 @@ public class ContinuityOfCareFragmentController {
     public void controller(FragmentModel model) {
 
         model.addAttribute("CCDDate", getCCDDate());
-        model.addAttribute("isCCDAvailable", String.valueOf(isCCDAvailable()));
+        model.addAttribute("isCCDAvailable", isCCDAvailable());
     }
 
     private String getCCDDate() {
@@ -19,7 +19,7 @@ public class ContinuityOfCareFragmentController {
     }
 
     private boolean isCCDAvailable() {
-        return true;
+        return false;
     }
 
     public void viewCCD() {
