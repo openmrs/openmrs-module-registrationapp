@@ -40,16 +40,18 @@
     };
 
     function showImportingDialog(patient) {
-        emr.setupConfirmationDialog({
+        var emrDialog = emr.setupConfirmationDialog({
             selector: '#patient-importing-dialog',
             actions: {
                 confirm: function () {
+                    emrDialog.close();
                     importMpiPatient(patient);
                 },
                 cancel: function () {
                 }
             }
-        }).show();
+        });
+        emrDialog.show();
     }
 
     function importMpiPatient(patient) {
