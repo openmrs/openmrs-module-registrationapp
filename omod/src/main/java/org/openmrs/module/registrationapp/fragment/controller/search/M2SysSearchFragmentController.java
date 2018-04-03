@@ -56,7 +56,7 @@ public class M2SysSearchFragmentController {
             Patient registeredPatient = registrationService.findByPatientIdentifier(
                     enrollmentResult.getLocalBiometricSubject().getSubjectId(),
                     PropertiesUtil.getLocalFpType().getUuid());
-            result = new SuccessResult(registeredPatient.getPatientIdentifier().getUuid());
+            result = new SuccessResult(registeredPatient.getUuid());
         } catch (Exception ex) {
             String message = "Error during importing patient by national fingerprint id. Details: " + ex.getMessage();
             LOGGER.error(message, ex);
