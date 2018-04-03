@@ -52,7 +52,11 @@ public class M2SysSearchFragmentController {
             TempFingerprint fingerprint = tempFingerprintService.findOneByBiometricId(nationalId);
             EnrollmentResult enrollmentResult = registrationService.getBiometricEngine()
                     .enroll(fingerprint.getBiometricXml());
-            result = new SuccessResult(enrollmentResult.getLocalBiometricSubject().getSubjectId());
+
+            Patient registeredPatient = registrationService.findByPatientIdentifier(
+                    enrollmentResult.getLocalBiometricSubject().getSubjectId(),
+                    PropertiesUtil.getLocalFpType().getUuid());
+            result = new SuccessResult(registeredPatient.getPatientIdentifier().getUuid());
         } catch (Exception ex) {
             String message = "Error during importing patient by national fingerprint id. Details: " + ex.getMessage();
             LOGGER.error(message, ex);
