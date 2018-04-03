@@ -6,10 +6,13 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
+import org.openmrs.module.m2sysbiometrics.model.TempFingerprint;
+import org.openmrs.module.m2sysbiometrics.service.TempFingerprintService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
@@ -42,11 +45,14 @@ public class M2SysSearchFragmentController {
 
     public FragmentActionResult importMpiPatient(@RequestParam("nationalFingerprintId") String nationalId,
             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
+            @SpringBean("tempFingerprintService") TempFingerprintService tempFingerprintService,
             HttpSession session) {
         FragmentActionResult result;
         try {
-            String newUuid = registrationService.importMpiPatient(nationalId, PropertiesUtil.getNationalFpType().getUuid());
-            result = new SuccessResult(newUuid);
+            TempFingerprint fingerprint = tempFingerprintService.findOneByBiometricId(nationalId);
+            EnrollmentResult enrollmentResult = registrationService.getBiometricEngine()
+                    .enroll(fingerprint.getBiometricXml());
+            result = new SuccessResult(enrollmentResult.getLocalBiometricSubject().getSubjectId());
         } catch (Exception ex) {
             String message = "Error during importing patient by national fingerprint id. Details: " + ex.getMessage();
             LOGGER.error(message, ex);
