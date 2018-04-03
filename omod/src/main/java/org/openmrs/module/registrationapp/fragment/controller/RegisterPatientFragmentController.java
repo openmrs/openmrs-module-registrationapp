@@ -296,7 +296,7 @@ public class RegisterPatientFragmentController {
 
     private BiometricData generateBiometricData(String subjectId, String globalProperty) {
         BiometricSubject biometricSubject = new BiometricSubject(subjectId);
-        PatientIdentifierType patientIdentifierType = PropertiesUtil.getIdetifierTypeByGlobalProperty(globalProperty);
+        PatientIdentifierType patientIdentifierType = PropertiesUtil.getIdentifierTypeByGlobalProperty(globalProperty);
         return new BiometricData(biometricSubject, patientIdentifierType);
     }
 

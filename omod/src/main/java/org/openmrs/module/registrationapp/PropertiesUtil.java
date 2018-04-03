@@ -28,7 +28,7 @@ public final class PropertiesUtil {
     }
 
     public static PatientIdentifierType getNationalFpType() {
-        return getIdetifierTypeByGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
+        return getIdentifierTypeByGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
     public static boolean localFpTypeSet() {
@@ -36,10 +36,10 @@ public final class PropertiesUtil {
     }
 
     public static PatientIdentifierType getLocalFpType() {
-        return getIdetifierTypeByGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
+        return getIdentifierTypeByGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
     }
 
-    public static PatientIdentifierType getIdetifierTypeByGlobalProperty(String globalProperty) {
+    public static PatientIdentifierType getIdentifierTypeByGlobalProperty(String globalProperty) {
         String uuid = getGlobalProperty(globalProperty);
         PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
         if (patientIdentifierType == null) {
