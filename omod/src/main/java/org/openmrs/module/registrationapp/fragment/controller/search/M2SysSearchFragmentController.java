@@ -91,10 +91,10 @@ public class M2SysSearchFragmentController {
         boolean isNational = false;
         boolean isLocal = false;
         for (String field : patient.getMatchedFields()) {
-            if (StringUtils.equals(field, RegistrationCoreConstants.NATIONAL_FINGERPRINT)) {
+            if (StringUtils.equals(field, RegistrationCoreConstants.NATIONAL_FINGERPRINT_NAME)) {
                 isNational = true;
             }
-            if (StringUtils.equals(field, RegistrationCoreConstants.LOCAL_FINGERPRINT)) {
+            if (StringUtils.equals(field, RegistrationCoreConstants.LOCAL_FINGERPRINT_NAME)) {
                 isLocal = true;
             }
         }
