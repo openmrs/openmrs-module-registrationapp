@@ -51,7 +51,7 @@ public class FingerprintM2sysFragmentController {
         }
 
         try {
-            EnrollmentResult result = biometricEngine.enroll(null);
+            EnrollmentResult result = biometricEngine.enroll();
             response.put("success", true);
             response.put("localBiometricSubjectId", result.getLocalBiometricSubject().getSubjectId());
             response.put("nationalBiometricSubjectId", result.getNationalBiometricSubject().getSubjectId());
