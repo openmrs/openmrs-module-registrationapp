@@ -1,15 +1,14 @@
 package org.openmrs.module.registrationapp.fragment.controller.field;
 
-import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
-
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineStatus;
@@ -52,7 +51,7 @@ public class FingerprintM2sysFragmentController {
         }
 
         try {
-            EnrollmentResult result = biometricEngine.enroll(null);
+            EnrollmentResult result = biometricEngine.enroll();
             response.put("success", true);
             response.put("localBiometricSubjectId", result.getLocalBiometricSubject().getSubjectId());
             response.put("nationalBiometricSubjectId", result.getNationalBiometricSubject().getSubjectId());
@@ -64,7 +63,7 @@ public class FingerprintM2sysFragmentController {
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
-            LOGGER.error(ex.getMessage());
+            LOGGER.error("Fingerprints enrollment failed", ex);
         }
 
         return response;
@@ -163,24 +162,16 @@ public class FingerprintM2sysFragmentController {
         return getBiometricEngine() != null;
     }
 
-    public BiometricEngine getBiometricEngine() {
+    private BiometricEngine getBiometricEngine() {
         return biometricEngine;
     }
 
     private Patient findByLocalFpId(String subjectId) {
-        String identifierUuid = getGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-        Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierUuid);
+        PatientIdentifierType identifierType = PropertiesUtil.getLocalFpType();
+        Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierType.getUuid());
         if (patient == null) {
             throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
         }
         return patient;
-    }
-
-    private String getGlobalProperty(String propertyName) {
-        String propertyValue = adminService.getGlobalProperty(propertyName);
-        if (StringUtils.isBlank(propertyValue)) {
-            throw new APIException(String.format("Property value for '%s' is not set", propertyName));
-        }
-        return propertyValue;
     }
 }

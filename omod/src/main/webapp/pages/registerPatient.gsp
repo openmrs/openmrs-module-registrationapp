@@ -111,26 +111,30 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ ui.message("registrationapp.registration.label") }
     </h2>
 
-	<div id="similarPatients" class="highlighted" style="display: none;">
-		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
-		   <div class="clear"></div>
-	</div>
+    <div id="similarPatients" class="highlighted" style="display: none;">
+            <div class="left" style="padding: 6px">
+                <span id="similarPatientsCount"></span>
+                ${ ui.message("registrationapp.similarPatientsFound") }
+            </div>
+            <button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
+            <div class="clear"></div>
+    </div>
 
     <div id="similarPatientsSlideView" style="display: none;">
-        <ul id="similarPatientsSelect" class="matchingPatientContainer select" style="width: auto;">
-
-        </ul>
+        <ul id="similarPatientsSelect" class="matchingPatientContainer select" style="width: auto;"></ul>
     </div>
 
     <div id="biometricPatients" class="highlighted" style="display: none;">
-        <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometrics.matchingPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
+        <div class="left" style="padding: 6px">
+            <span id="biometricPatientsCount"></span>
+            ${ ui.message("registrationapp.biometrics.matchingPatientsFound") }
+        </div>
+        <button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
         <div class="clear"></div>
     </div>
 
     <div id="biometricPatientsSlideView" style="display: none;">
-        <ul id="biometricPatientsSelect" class="matchingPatientContainer select" style="width: auto;">
-
-        </ul>
+        <ul id="biometricPatientsSelect" class="matchingPatientContainer select" style="width: auto;"></ul>
     </div>
 
     <div id="matchedPatientTemplates" style="display:none;">
