@@ -40,7 +40,7 @@ public final class PropertiesUtil {
     }
 
     public static PatientIdentifierType getIdetifierTypeByGlobalProperty(String globalProperty) {
-        String uuid = getGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
+        String uuid = getGlobalProperty(globalProperty);
         PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
         if (patientIdentifierType == null) {
             throw new APIException(String.format("Patient identifier type relevant to "

@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>m2sys-biometrics-api</artifactId>
-			<version>1.0.0</version>
+			<version>${m2SysVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
