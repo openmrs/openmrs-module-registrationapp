@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class ContinuityOfCareFragmentController {
 
@@ -25,7 +24,8 @@ public class ContinuityOfCareFragmentController {
         Ccd ccd = ccdService.getLocallyStoredCcd(patient);
         boolean isCCDAvailable = ccd != null;
 
-        model.addAttribute("isCCDAvailable", isCCDAvailable);
+        model.addAttribute("isCCDAvailable", true);
+        model.addAttribute("CCDDate", "xd");
         if (isCCDAvailable) {
             model.addAttribute("CCDDate", ccd.getDownloadDate().toString());
         }
@@ -35,14 +35,8 @@ public class ContinuityOfCareFragmentController {
         LOGGER.info("View CCD");
     }
 
-    public void importCCD(@RequestParam("patientId") Integer patientId) {
-        try {
-            String filename = "/tmp/openmrs/registrationapp/ccd/patient" + patientId + "-ccd.pdf";
-            FileOutputStream stream = new FileOutputStream(new File(filename), false);
-            CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
-            service.downloadCcdAsPDF(stream, Context.getPatientService().getPatient(patientId));
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+    public void importCCD(@RequestParam("patientId") Integer patientId, OutputStream response) {
+        CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
+        service.downloadCcdAsPDF(response, Context.getPatientService().getPatient(patientId));
     }
 }
