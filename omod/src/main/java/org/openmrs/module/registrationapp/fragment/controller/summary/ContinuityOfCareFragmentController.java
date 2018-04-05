@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 public class ContinuityOfCareFragmentController {
 
@@ -34,8 +34,12 @@ public class ContinuityOfCareFragmentController {
         LOGGER.info("View CCD");
     }
 
-    public void importCCD(@RequestParam("patientId") Integer patientId, OutputStream response) {
-        CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
-        service.downloadCcdAsPDF(response, Context.getPatientService().getPatient(patientId));
+    public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) {
+        try {
+            CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
+            service.downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
     }
 }
