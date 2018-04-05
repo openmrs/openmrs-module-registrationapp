@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class ContinuityOfCareFragmentController {
 
@@ -34,12 +35,8 @@ public class ContinuityOfCareFragmentController {
         LOGGER.info("View CCD");
     }
 
-    public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) {
-        try {
-            CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
-            service.downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+    public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException {
+        CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
+        service.downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
     }
 }
