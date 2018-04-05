@@ -24,8 +24,7 @@ public class ContinuityOfCareFragmentController {
         Ccd ccd = ccdService.getLocallyStoredCcd(patient);
         boolean isCCDAvailable = ccd != null;
 
-        model.addAttribute("isCCDAvailable", true);
-        model.addAttribute("CCDDate", "xd");
+        model.addAttribute("isCCDAvailable", isCCDAvailable);
         if (isCCDAvailable) {
             model.addAttribute("CCDDate", ccd.getDownloadDate().toString());
         }
