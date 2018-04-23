@@ -21,8 +21,7 @@ public class ContinuityOfCareFragmentController {
 
         Patient patient = Context.getPatientService().getPatient(patientId);
 
-        CcdService ccdService = Context.getRegisteredComponent("ccdService", CcdService.class);
-        Ccd ccd = ccdService.getLocallyStoredCcd(patient);
+        Ccd ccd = getCcdService().getLocallyStoredCcd(patient);
         boolean isCCDAvailable = ccd != null;
 
         model.addAttribute("isCCDAvailable", isCCDAvailable);
@@ -36,7 +35,10 @@ public class ContinuityOfCareFragmentController {
     }
 
     public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException {
-        CcdService service = Context.getRegisteredComponent("ccdService", CcdService.class);
-        service.downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
+        getCcdService().downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
+    }
+    
+    private CcdService getCcdService() {
+        return Context.getRegisteredComponent("xdsSender.CcdService", CcdService.class);
     }
 }
