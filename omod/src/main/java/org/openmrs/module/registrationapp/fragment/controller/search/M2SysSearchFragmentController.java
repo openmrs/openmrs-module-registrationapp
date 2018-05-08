@@ -57,7 +57,7 @@ public class M2SysSearchFragmentController {
                     enrollmentResult.getLocalBiometricSubject().getSubjectId(),
                     PropertiesUtil.getLocalFpType().getUuid());
             if (registrationService.importCcd(registeredPatient) == null) {
-                throw new RuntimeException("Ccd import failure");
+                LOGGER.error("Ccd import failure");
             }
             result = new SuccessResult(registeredPatient.getUuid());
         } catch (Exception ex) {
