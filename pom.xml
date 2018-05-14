@@ -55,6 +55,7 @@
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <m2SysVersion>1.0.0</m2SysVersion>
+        <xds-senderVersion>1.0.0</xds-senderVersion>
     </properties>
 
     <dependencyManagement>
@@ -283,7 +284,6 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-
 
         <!-- End OpenMRS modules -->
 

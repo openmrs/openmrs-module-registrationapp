@@ -1,32 +1,44 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
+import org.openmrs.Patient;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.xdssender.api.domain.Ccd;
+import org.openmrs.module.xdssender.api.service.CcdService;
+import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class ContinuityOfCareFragmentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContinuityOfCareFragmentController.class);
 
-    public void controller(FragmentModel model) {
+    public void controller(FragmentModel model, @FragmentParam("patientId") Integer patientId) {
 
-        model.addAttribute("CCDDate", getCCDDate());
-        model.addAttribute("isCCDAvailable", isCCDAvailable());
-    }
+        Patient patient = Context.getPatientService().getPatient(patientId);
 
-    private String getCCDDate() {
-        return "DD/MM/YYYY";
-    }
+        Ccd ccd = getCcdService().getLocallyStoredCcd(patient);
+        boolean isCCDAvailable = ccd != null;
 
-    private boolean isCCDAvailable() {
-        return false;
+        model.addAttribute("isCCDAvailable", isCCDAvailable);
+        if (isCCDAvailable) {
+            model.addAttribute("CCDDate", ccd.getDownloadDate().toString());
+        }
     }
 
     public void viewCCD() {
         LOGGER.info("View CCD");
     }
 
-    public void importCCD() {
-        LOGGER.info("Import CCD");
+    public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException {
+        getCcdService().downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
+    }
+    
+    private CcdService getCcdService() {
+        return Context.getRegisteredComponent("xdsSender.CcdService", CcdService.class);
     }
 }
