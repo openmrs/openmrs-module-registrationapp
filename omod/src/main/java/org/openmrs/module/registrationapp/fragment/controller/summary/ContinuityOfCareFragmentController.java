@@ -30,8 +30,9 @@ public class ContinuityOfCareFragmentController {
         }
     }
 
-    public void viewCCD() {
-        LOGGER.info("View CCD");
+    public String viewCCD(@RequestParam("patientId") Integer patientId) {
+        Patient patient = Context.getPatientService().getPatient(patientId);
+        return getCcdService().getLocallyStoredCcd(patient).getDocument();
     }
 
     public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException {
