@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div id="buttons">
-                <button type="button" class="confirm" onclick="viewCCD()">
+                <button type="button" class="confirm" onclick="viewCCD(${ config.patientId })">
                     ${ ui.message("registrationapp.continuityOfCare.document.view") }
                 </button>
                 <button class="submitButton right" onclick="importCCD(${ config.patientId })")>

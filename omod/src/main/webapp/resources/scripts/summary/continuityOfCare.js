@@ -1,5 +1,13 @@
-function viewCCD() {
-    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/summary/continuityOfCare/viewCCD.action');
+function viewCCD(patientId) {
+    jq.getJSON(
+        '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/summary/continuityOfCare/viewCCD.action',
+        {patientId: patientId},
+        function(ccdContent) {
+            var x = window.open();
+            x.document.write('<title>Ccd document</title>' + ccdContent);
+            x.document.close();
+        }
+    );
 }
 
 function importCCD(patientId) {
