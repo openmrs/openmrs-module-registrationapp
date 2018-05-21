@@ -18,6 +18,11 @@
 
 </div>
 <script type="text/javascript">
+    emr.loadMessages([
+        'registrationapp.biometrics.m2sys.register.success',
+        'registrationapp.biometrics.m2sys.register.failure',
+        'registrationapp.biometrics.m2sys.register.alreadyExists.failure'
+    ]);
 	var fingerprintSubjectIdField = jq("[name='fingerprintSubjectId']");
 	var buttonLabelEnroll = "${ ui.message("registrationapp.biometrics.m2sys.register.button.label") }";
 	var buttonLabelUpdate = "${ ui.message("registrationapp.biometrics.m2sys.update.button.label") }";
@@ -35,9 +40,13 @@
 
 		jq(fingerprintButton).click(function() {
 			if (enrollOrUpdate == "update") {
-				m2sysUpdate(biometricID, this);
+			    m2sysUpdate(biometricID, this);
 			} else {
-				m2sysEnroll(this);
+                m2sysEnrollAndSave('${ patient.id }', this, function(biometricIdentifier) {
+                    jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
+                    enrollOrUpdate = "update";
+                    biometricID = biometricIdentifier;
+                });
 			}
 		});
 
