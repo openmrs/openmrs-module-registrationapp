@@ -42,11 +42,11 @@
 			if (enrollOrUpdate == "update") {
 			    m2sysUpdate(biometricID, this);
 			} else {
-                m2sysEnrollAndSave('${ patient.id }', this, function(biometricIdentifier) {
-                    jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
-                    enrollOrUpdate = "update";
-                    biometricID = biometricIdentifier;
-                });
+			    m2sysEnrollAndSave('${ patient.id }', this, function(biometricIdentifier) {
+			        jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
+			        enrollOrUpdate = "update";
+			        biometricID = biometricIdentifier;
+			    });
 			}
 		});
 
