@@ -19,8 +19,14 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
@@ -81,8 +87,9 @@ public class M2SysSearchFragmentController {
         preferredName.put("display", ui.format(name));
 
         SimpleObject personObj = SimpleObject.fromObject(patient, ui, "patientId", "gender", "age",
-                "birthdate", "birthdateEstimated");
+                "birthdateEstimated");
         personObj.put("personName", preferredName);
+        personObj.put("birthdate", formatDate(patient.getBirthdate()));
 
         PatientIdentifier primaryIdentifier = patient.getPatientIdentifier();
         PatientIdentifier nationalFpIdentifier = getNationalFpId(patient);
@@ -126,5 +133,15 @@ public class M2SysSearchFragmentController {
             simpleObject =  SimpleObject.fromObject(patientIdentifier, ui, "uuid", "identifier");
         }
         return simpleObject;
+    }
+
+    private String formatDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getDefault());
+        return dateFormat.format(date);
     }
 }
