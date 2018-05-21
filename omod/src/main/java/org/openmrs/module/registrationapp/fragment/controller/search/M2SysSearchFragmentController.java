@@ -91,7 +91,7 @@ public class M2SysSearchFragmentController {
         personObj.put("personName", preferredName);
         personObj.put("birthdate", formatDate(patient.getBirthdate()));
 
-        PatientIdentifier primaryIdentifier = patient.getPatientIdentifier();
+        PatientIdentifier primaryIdentifier = patient.getPatientIdentifier(PropertiesUtil.getIsantePlusIdType());
         PatientIdentifier nationalFpIdentifier = getNationalFpId(patient);
 
         SimpleObject patientObj = SimpleObject.fromObject(patient, ui, "patientId", "uuid");
