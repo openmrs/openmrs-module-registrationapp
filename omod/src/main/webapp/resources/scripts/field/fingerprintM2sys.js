@@ -57,6 +57,30 @@ function m2sysEnroll(button) {
         });
 }
 
+function m2sysEnrollAndSave(patientId, button, callback) {
+    m2SysClearSubjectIdInput();
+    toggleFingerprintButtonDisplay(button);
+    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/enrollAndSave.action',
+        { patientId: patientId })
+        .always(function () {
+            toggleFingerprintButtonDisplay(button);
+        })
+        .success(function (data) {
+            if (data['success'] === true) {
+                if (data['status'] === 'ALREADY_REGISTERED') {
+                    m2SysShowAlreadyExistingFingerprintsDialog(data);
+                } else {
+                    m2SysSuccess();
+                    m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId'])
+                }
+                callback(data['localBiometricSubjectId']);
+            } else {
+                m2SysErrorMessage(data['message']);
+                m2SysClearSubjectIdInput();
+            }
+        });
+}
+
 function m2sysGetStatus() {
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/getStatus.action');
     //TODO add success method

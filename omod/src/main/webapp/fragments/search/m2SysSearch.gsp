@@ -6,6 +6,24 @@
 <script>
     var jq = jQuery;
 
+    function redirectToPatient(patientUuid) {
+      emr.navigateTo({
+        provider: 'coreapps',
+        page: 'clinicianfacing/patient',
+        query: { patientId: patientUuid }
+      });
+    }
+
+    var handlePatientRowSelection = new function () {
+      this.handle = function (patient) {
+        if (patient.onlyInMpi === true) {
+          showImportingDialog(patient)
+        } else {
+          redirectToPatient(patient.uuid)
+        }
+      }
+    };
+
     jq(function () {
         var searchButton = jq('#fingerprint_search_button');
         searchButton.click(function () {
@@ -29,31 +47,6 @@
         });
     });
 
-    var handlePatientRowSelection = new function () {
-        this.handle = function (patient) {
-            if (patient.onlyInMpi === true) {
-                showImportingDialog(patient)
-            } else {
-                redirectToPatient(patient.uuid)
-            }
-        }
-    };
-
-    function showImportingDialog(patient) {
-        var emrDialog = emr.setupConfirmationDialog({
-            selector: '#patient-importing-dialog',
-            actions: {
-                confirm: function () {
-                    emrDialog.close();
-                    importMpiPatientWithCcd(patient);
-                },
-                cancel: function () {
-                }
-            }
-        });
-        emrDialog.show();
-    }
-
     function importMpiPatientWithCcd(patient) {
         emr.getFragmentActionWithCallback(
                 "registrationapp", "search/m2SysSearch", "importMpiPatientWithCcd",
@@ -66,12 +59,19 @@
                 });
     }
 
-    function redirectToPatient(patientUuid) {
-        emr.navigateTo({
-            provider: 'coreapps',
-            page: 'clinicianfacing/patient',
-            query: { patientId: patientUuid }
-        });
+    function showImportingDialog(patient) {
+      var emrDialog = emr.setupConfirmationDialog({
+        selector: '#patient-importing-dialog',
+        actions: {
+          confirm: function () {
+            emrDialog.close();
+            importMpiPatientWithCcd(patient);
+          },
+          cancel: function () {
+          }
+        }
+      });
+      emrDialog.show();
     }
 </script>
 

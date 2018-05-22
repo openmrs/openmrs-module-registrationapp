@@ -49,6 +49,11 @@ public final class PropertiesUtil {
         return patientIdentifierType;
     }
 
+    public static PatientIdentifierType getIsantePlusIdType() {
+        return Context.getPatientService().getPatientIdentifierTypeByUuid(
+                "05a29f94-c0ed-11e2-94be-8c13b969e334");
+    }
+
     private PropertiesUtil() {
     }
 }
