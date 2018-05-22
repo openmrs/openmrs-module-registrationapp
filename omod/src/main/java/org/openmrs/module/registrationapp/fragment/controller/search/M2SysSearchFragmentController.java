@@ -49,7 +49,7 @@ public class M2SysSearchFragmentController {
         return simplify(ui, patients);
     }
 
-    public FragmentActionResult importMpiPatient(@RequestParam("nationalFingerprintId") String nationalId,
+    public FragmentActionResult importMpiPatientWithCcd(@RequestParam("nationalFingerprintId") String nationalId,
             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
             @SpringBean("tempFingerprintService") TempFingerprintService tempFingerprintService,
             HttpSession session) {
@@ -62,9 +62,13 @@ public class M2SysSearchFragmentController {
             Patient registeredPatient = registrationService.findByPatientIdentifier(
                     enrollmentResult.getLocalBiometricSubject().getSubjectId(),
                     PropertiesUtil.getLocalFpType().getUuid());
+            if (registrationService.importCcd(registeredPatient) == null) {
+                LOGGER.error("Ccd import failure");
+            }
             result = new SuccessResult(registeredPatient.getUuid());
         } catch (Exception ex) {
-            String message = "Error during importing patient by national fingerprint id. Details: " + ex.getMessage();
+            String message = "Error during importing patient with ccd by national fingerprint id. Details: " + ex
+                    .getMessage();
             LOGGER.error(message, ex);
             result = new FailureResult(message);
         }

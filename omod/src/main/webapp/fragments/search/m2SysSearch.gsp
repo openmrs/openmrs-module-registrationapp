@@ -47,9 +47,9 @@
         });
     });
 
-    function importMpiPatient(patient) {
+    function importMpiPatientWithCcd(patient) {
         emr.getFragmentActionWithCallback(
-                "registrationapp", "search/m2SysSearch", "importMpiPatient",
+                "registrationapp", "search/m2SysSearch", "importMpiPatientWithCcd",
                 { nationalFingerprintId: patient.nationalFingerprintPatientIdentifier.identifier },
                 function (successResponse) {
                     redirectToPatient(successResponse.message);
@@ -65,7 +65,7 @@
         actions: {
           confirm: function () {
             emrDialog.close();
-            importMpiPatient(patient);
+            importMpiPatientWithCcd(patient);
           },
           cancel: function () {
           }
