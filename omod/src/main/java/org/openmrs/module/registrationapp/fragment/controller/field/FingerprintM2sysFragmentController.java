@@ -2,15 +2,23 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.event.Event;
+import org.openmrs.event.EventMessage;
+import org.openmrs.module.registrationapp.PropertiesUtil;
+
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricEngineStatus;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
@@ -32,10 +40,13 @@ public class FingerprintM2sysFragmentController {
 
     private RegistrationCoreService registrationCoreService;
 
+    private PatientService patientService;
+
     public FingerprintM2sysFragmentController() {
         adminService = Context.getAdministrationService();
         registrationCoreService = Context.getService(RegistrationCoreService.class);
         biometricEngine = registrationCoreService.getBiometricEngine();
+        patientService =  Context.getService(PatientService.class);
     }
 
     public void controller() {
@@ -60,6 +71,59 @@ public class FingerprintM2sysFragmentController {
                 Patient patient = findByLocalFpId(result.getLocalBiometricSubject().getSubjectId());
                 response.put("patientUuid", patient.getUuid());
             }
+        } catch (Exception ex) {
+            response.put("success", false);
+            response.put("message", ex.getMessage());
+            LOGGER.error("Fingerprints enrollment failed", ex);
+        }
+
+        return response;
+    }
+
+    public SimpleObject enrollAndSave(@RequestParam("patientId") Integer patientId, @SpringBean("messageSourceService")
+            MessageSourceService messageSourceService, @SpringBean RegistrationCoreService registrationCoreService) {
+        SimpleObject response = new SimpleObject();
+        if (!isBiometricEngineEnabled()) {
+            response.put("success", false);
+            response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
+            return response;
+        }
+
+        try {
+            EnrollmentResult result = biometricEngine.enroll();
+            response.put("success", true);
+            response.put("localBiometricSubjectId", result.getLocalBiometricSubject().getSubjectId());
+            response.put("nationalBiometricSubjectId", result.getNationalBiometricSubject().getSubjectId());
+            response.put("status", result.getEnrollmentStatus().name());
+            if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
+                Patient patient = findByLocalFpId(result.getLocalBiometricSubject().getSubjectId());
+                response.put("patientUuid", patient.getUuid());
+            }
+            Patient patient = patientService.getPatient(patientId);
+
+            if (patient == null) {
+                throw new APIException(String.format("Patient with id '%d' has not been found", patientId));
+            }
+
+            if (StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
+                BiometricData localBiometricData = new BiometricData();
+                localBiometricData.setIdentifierType(PropertiesUtil.getLocalFpType());
+                localBiometricData.setSubject(result.getLocalBiometricSubject());
+                registrationCoreService.saveBiometricsForPatient(patient, localBiometricData);
+            }
+
+            if (StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId())) {
+                BiometricData nationalBiometricData = new BiometricData();
+                nationalBiometricData.setIdentifierType(PropertiesUtil.getNationalFpType());
+                nationalBiometricData.setSubject(result.getNationalBiometricSubject());
+                registrationCoreService.saveBiometricsForPatient(patient, nationalBiometricData);
+            }
+
+            EventMessage eventMessage = new EventMessage();
+            eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
+
+            Event.fireEvent(RegistrationCoreConstants.PATIENT_EDIT_EVENT_TOPIC_NAME, eventMessage);
+
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
