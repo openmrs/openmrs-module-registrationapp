@@ -1,11 +1,11 @@
 function viewCCD(patientId) {
-    jq.getJSON(
+  var newWindow = window.open();
+  jq.getJSON(
         '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/summary/continuityOfCare/viewCCD.action',
         {patientId: patientId},
         function(ccdContent) {
-            var x = window.open();
-            x.document.write('<title>Ccd document</title>' + ccdContent);
-            x.document.close();
+            newWindow.document.write('<title>Ccd document</title>' + ccdContent);
+            newWindow.document.close();
         }
     );
 }

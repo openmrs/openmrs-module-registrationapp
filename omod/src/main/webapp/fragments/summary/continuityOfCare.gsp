@@ -22,10 +22,6 @@
                 <button type="button" class="confirm" onclick="viewCCD(${ config.patientId })">
                     ${ ui.message("registrationapp.continuityOfCare.document.view") }
                 </button>
-                <button class="submitButton right" onclick="importCCD(${ config.patientId })")>
-                    <i class="icon-download"></i>
-                    ${ ui.message("registrationapp.continuityOfCare.document.import") }
-                </button>
             </div>
         </div>
 
