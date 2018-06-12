@@ -32,8 +32,10 @@ import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
+/* CCSY EDITED
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
+*/
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 
@@ -211,10 +213,14 @@ public class RegisterPatientFormBuilder {
 		}
 	}
 
-    /**
+/* CCSY EDITED
+
+    */
+/**
      * Extracts all BiometricSubject data out of the registration form
      * This will only return data for fields that have actual biometric data extracted
-     */
+     *//*
+
 	public static Map<Field, BiometricSubject> extractBiometricDataFields(NavigableFormStructure form, Map<String, String[]> parameterMap) {
 
 	    Map<Field, BiometricSubject> ret = new LinkedHashMap<Field, BiometricSubject>();
@@ -266,4 +272,6 @@ public class RegisterPatientFormBuilder {
 
         return ret;
     }
+    */
 }
+

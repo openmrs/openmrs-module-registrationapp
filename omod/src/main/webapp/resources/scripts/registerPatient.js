@@ -136,10 +136,11 @@ jq(function() {
     jq('input').change(getSimilarPatients);
     jq('select').change(getSimilarPatients);
 
+/*  CCSY EDITED
     // Biometric matching
     // TODO: This is mostly copied from similar patients above.  Refactor into shared, common functionality as appropriate
 
-    /* Biometric patient functionality */
+    *//* Biometric patient functionality *//*
     reviewBiometricPatients = emr.setupConfirmationDialog({
         selector: '#reviewBiometricPatients',
         actions: {
@@ -228,6 +229,7 @@ jq(function() {
             //jq("#biometricPatientsSlideView").show();
         }, "json");
     };
+*/
 
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {

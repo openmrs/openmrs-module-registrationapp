@@ -1,7 +1,9 @@
 package org.openmrs.module.registrationapp;
 
+/* CCSY EDITED
 import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID;
 import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
+*/
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PatientIdentifierType;
@@ -22,7 +24,7 @@ public final class PropertiesUtil {
         String propertyValue = Context.getAdministrationService().getGlobalProperty(propertyName);
         return !StringUtils.isBlank(propertyValue);
     }
-
+/* CCSY EDITED
     public static boolean nationalFpTypeSet() {
         return globalPropertySet(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
@@ -37,7 +39,7 @@ public final class PropertiesUtil {
 
     public static PatientIdentifierType getLocalFpType() {
         return getIdentifierTypeByGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-    }
+    }*/
 
     public static PatientIdentifierType getIdentifierTypeByGlobalProperty(String globalProperty) {
         String uuid = getGlobalProperty(globalProperty);
