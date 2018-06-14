@@ -84,7 +84,7 @@ public class RegisterPatientFormBuilder {
 							String providerName = widget.get("providerName").getTextValue();
 							String fragmentId = widget.get("fragmentId").getTextValue();
 							JsonNode fieldConfig = widget.get("config");
-							//Groovy doesn't know how to handle ArrayNode and ObjectNode therefore we need to convert 
+							//Groovy doesn't know how to handle ArrayNode and ObjectNode therefore we need to convert
 							//them to List and Map respectively. Also TextNode.toString() includes quotes, we need
 							//to extract the actual text value excluding the quotes
 							FragmentConfiguration fragConfig = new FragmentConfiguration((Map) flatten(fieldConfig));
@@ -99,16 +99,16 @@ public class RegisterPatientFormBuilder {
 		}
 
 		// If no demographics section is explicitly included, ensure the default one is included first
-        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
-            Section demographics = new Section();
-            demographics.setId(DEMOGRAPHICS_SECTION_ID);
-            demographics.setLabel("registrationapp.patient.demographics.label");
-            formStructure.addSection(demographics);
-        }
+		if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+			Section demographics = new Section();
+			demographics.setId(DEMOGRAPHICS_SECTION_ID);
+			demographics.setLabel("registrationapp.patient.demographics.label");
+			formStructure.addSection(demographics);
+		}
 
-        for (Section section : configuredSections.values()) {
-            formStructure.addSection(section);
-        }
+		for (Section section : configuredSections.values()) {
+			formStructure.addSection(section);
+		}
 
 		return formStructure;
 	}
@@ -152,7 +152,7 @@ public class RegisterPatientFormBuilder {
 	}
 
 	public static void resolvePersonAttributeFields(NavigableFormStructure form, Person person,
-													Map<String, String[]> parameterMap) {
+			Map<String, String[]> parameterMap) {
 		List<Field> fields = form.getFields();
 		if (fields != null && fields.size() > 0) {
 			for (Field field : fields) {
@@ -178,7 +178,7 @@ public class RegisterPatientFormBuilder {
 	}
 
 	public static void resolvePatientIdentifierFields(NavigableFormStructure form, Patient patient,
-													Map<String, String[]> parameterMap) {
+			Map<String, String[]> parameterMap) {
 		List<Field> fields = form.getFields();
 		if (fields != null && fields.size() > 0) {
 			for (Field field : fields) {
@@ -193,17 +193,6 @@ public class RegisterPatientFormBuilder {
 							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
 							if (identifierType  != null) {
 
-								// see if there is existing identifier with this value, if so, no need to update
-								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
-									if (oldIdentifier.getIdentifier().equals(parameterValue)) {
-										return;
-									}
-								}
-
-								// validate the new identifier before saving
-								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
-								PatientIdentifierValidator.validateIdentifier(identifier);
-
 								// void any existing identifiers of this type
 								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
 									oldIdentifier.setVoided(true);
@@ -213,6 +202,7 @@ public class RegisterPatientFormBuilder {
 								}
 
 								// add the new identifier
+								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
 								patient.addIdentifier(identifier);
 							}
 						}
@@ -222,10 +212,11 @@ public class RegisterPatientFormBuilder {
 		}
 	}
 
-    /**
-     * Extracts all BiometricSubject data out of the registration form
-     * This will only return data for fields that have actual biometric data extracted
-     */
+	/**
+	 * Extracts all BiometricSubject data out of the registration form
+	 * This will only return data for fields that have actual biometric data extracted
+	 */
+
 	public static Map<Field, BiometricSubject> extractBiometricDataFields(NavigableFormStructure form, Map<String, String[]> parameterMap) {
 
 	    Map<Field, BiometricSubject> ret = new LinkedHashMap<Field, BiometricSubject>();
@@ -275,8 +266,8 @@ public class RegisterPatientFormBuilder {
             }
         }
 
-        return ret;
-    }
+		return ret;
+	}
 
 	/**
 	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics
