@@ -21,11 +21,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
-import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.ObsService;
-import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
@@ -45,7 +42,7 @@ import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
-// CCSY EDITED
+// iSantePlus Addition:
 //import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 //import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
@@ -58,7 +55,6 @@ import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.validator.PatientValidator;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,7 +123,7 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
-                            // CCSY EDITED
+                            // iSantePlus Addition:
 //                            @RequestParam(value="localBiometricSubjectId", required = false) String localBiometricSubjectId,
 //                            @RequestParam(value="nationalBiometricSubjectId", required = false) String nationalBiometricSubjectId,
                             HttpServletRequest request,
@@ -158,12 +154,18 @@ public class RegisterPatientFragmentController {
             patient.setBirthdate(RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
         }
 
+        BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
         if(formStructure!=null){
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
-            RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+
+            try {
+                RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+            }
+            catch (Exception ex) {
+                RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
+            }
         }
 
-        BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
         //TODO This validation code really belongs to the PersonAddressValidator in core
         RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(address, errors);
 
@@ -183,7 +185,7 @@ public class RegisterPatientFragmentController {
         registrationData.setIdentifier(patientIdentifier);
         registrationData.setIdentifierLocation(sessionContext.getSessionLocation());
 
-//  CCSY EDITED
+//  iSantePlus Addition:
 //        // Add any biometric data that was submitted
 //        Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
 //        for (Field fingerprintField : fingerprintData.keySet()) {
@@ -215,7 +217,7 @@ public class RegisterPatientFragmentController {
             // TODO I remember getting into trouble if i called this validator before the above save method.
             // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
             patientValidator.validate(patient, errors);
-            checkForIdentifierExceptions(ex, errors);
+            RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
 
             if (!errors.hasErrors()) {
                 errors.reject(ex.getMessage());
@@ -287,7 +289,7 @@ public class RegisterPatientFragmentController {
             }
         }
 
-        InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", patient.getPersonName()));
+        InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
         redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid().toString());
@@ -449,24 +451,6 @@ public class RegisterPatientFragmentController {
         }
 
         return registrationEncounterRole;
-    }
-
-    private void checkForIdentifierExceptions(Exception ex, Errors errors) {
-        // add any patient identifier validation exceptions
-        if (ex instanceof PatientIdentifierException) {
-            if (ex instanceof InvalidCheckDigitException) {
-                errors.reject("registrationapp.error.identifier.invalidCheckDigit");
-            }
-            else if (ex instanceof DuplicateIdentifierException) {
-                errors.reject("registrationapp.error.identifier.duplicate");
-            }
-            else {
-                errors.reject("registrationapp.error.identifier.general");
-            }
-        }
-        else if (ex instanceof EmptyIdentifierPoolException) {
-            errors.reject("registrationapp.error.identifier.emptyIdentifierPool");
-        }
     }
 
     private boolean isPreferredIdentifierErrorMessage(ObjectError error) {

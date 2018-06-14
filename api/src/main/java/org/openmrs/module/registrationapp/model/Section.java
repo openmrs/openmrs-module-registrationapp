@@ -16,6 +16,9 @@ public class Section {
     @JsonProperty
     private List<Question> questions;
 
+    @JsonProperty
+    private Boolean skipConfirmation;   // true/false, when editing this section on it's own, should we render a confirmation page?
+
     public Section() {
     }
 
@@ -29,6 +32,14 @@ public class Section {
         this.label = label;
         this.questions = questions;
     }
+
+    public Section(String id, String label, List<Question> questions, Boolean skipConfirmation) {
+        this.id = id;
+        this.label = label;
+        this.questions = questions;
+        this.skipConfirmation = skipConfirmation;
+    }
+
 
     public List<Question> getQuestions() {
         return questions;
@@ -59,5 +70,13 @@ public class Section {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Boolean getSkipConfirmation() {
+        return skipConfirmation;
+    }
+
+    public void setSkipConfirmation(Boolean skipConfirmation) {
+        this.skipConfirmation = skipConfirmation;
     }
 }

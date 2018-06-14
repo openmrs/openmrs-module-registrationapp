@@ -52,6 +52,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             jq('#registration-submit').addClass("disabled");
         })
 
+        // clicking the save form link should have the same functionality as clicking on the confirmation section title (ie, jumps to confirmation)
+        jq('#save-form').click(function() {
+            NavigatorController.getSectionById("confirmation").title.click();
+        })
+
     });
 </script>
 
@@ -69,16 +74,20 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ ui.message(section.label)  }
     </h2>
 
-    <% if (returnUrl) { %>
     <div id="exit-form-container">
-        <a href="${ ui.escapeAttribute(returnUrl) }">
-            <i class="icon-signout small"></i>
-            ${ ui.message("htmlformentryui.exitForm") }
+        <a id="save-form">
+            <i class="icon-save small"></i>
+            ${ ui.message("htmlformentryui.saveForm") }
         </a>
+        <% if (returnUrl) { %>
+            <a href="${ ui.escapeAttribute(returnUrl) }">
+                <i class="icon-signout small"></i>
+                ${ ui.message("htmlformentryui.exitForm") }
+            </a>
+        <% } %>
     </div>
-    <% } %>
 
-    <form id="registration-section-form" class="simple-form-ui" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
+    <form id="registration-section-form" class="simple-form-ui ${section.skipConfirmation ? 'skip-confirmation-section' : ''}" method="POST" action="/${contextPath}/registrationapp/editSection.page?patientId=${patient.patientId}&returnUrl=${ ui.urlEncode(returnUrl) }&appId=${app.id}&sectionId=${ ui.encodeHtml(section.id) }">
         <!-- read configurable sections from the json config file-->
         <section id="${section.id}" class="non-collapsible">
             <span class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
@@ -164,7 +173,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             configOptions.addressTemplate = addressTemplate
                             configOptions.initialValue = patient.personAddress
                         }else if(field.type == 'personAttribute'){
-                            configOptions.initialValue = uiUtils.getAttribute(patient, field.uuid);
+                            configOptions.initialValue = ui.escapeAttribute(uiUtils.getAttribute(patient, field.uuid));
+                        }
+                        else if (field.type == "patientIdentifier") {
+                            configOptions.initialValue = uiUtils.getIdentifier(patient, field.uuid)
                         }
                     %>
                     ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
@@ -181,10 +193,14 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div id="confirmationQuestion">
                 ${ui.message("registrationapp.confirm")}
                 <p style="display: inline">
-                    <input id="registration-submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
+                    <button id="registration-submit" type="submit" class="submitButton confirm right">
+                        ${ui.message("registrationapp.patient.confirm.label")}
+                    </button>
                 </p>
                 <p style="display: inline">
-                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
+                    <button id="cancelSubmission" class="cancel" type="button">
+                        ${ui.message("registrationapp.cancel")}
+                    </button>
                 </p>
             </div>
         </div>

@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
@@ -18,10 +19,14 @@ import org.openmrs.module.registrationapp.AddressSupportCompatibility;
 import org.openmrs.module.registrationapp.NameSupportCompatibility;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
+import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
+import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.UiCommonsConstants;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -36,6 +41,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 public class EditSectionPageController {
 
@@ -70,6 +76,7 @@ public class EditSectionPageController {
                        @RequestParam("sectionId") String sectionId,
                        @RequestParam("returnUrl") String returnUrl,
                        @SpringBean("patientService") PatientService patientService,
+                       @SpringBean("registrationCoreService") RegistrationCoreService registrationCoreService,
                        @SpringBean("adminService") AdministrationService administrationService, HttpServletRequest request,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
                        @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
@@ -115,7 +122,24 @@ public class EditSectionPageController {
 
         if (formStructure != null) {
             RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
-            RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+
+            try {
+                RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+            }
+            catch (Exception ex) {
+                RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
+            }
+
+            // handle any biometrics data that has been added
+            Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
+            for (Field fingerprintField : fingerprintData.keySet()) {
+                BiometricSubject subject = fingerprintData.get(fingerprintField);
+                PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+                if (identifierType == null) {
+                    throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
+                }
+                registrationCoreService.saveBiometricsForPatient(patient, new BiometricData(subject, identifierType));
+            }
         }
 
         if (!errors.hasErrors()) {

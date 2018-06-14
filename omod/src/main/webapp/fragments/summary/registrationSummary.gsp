@@ -11,8 +11,15 @@
             ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "demographics"]) }
 
             <% if (registrationFragments) {
-                registrationFragments.each { %>
-            ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId, returnUrl: returnUrl ])}
+                registrationFragments.each {
+                    // create a base map from the fragmentConfig if it exists, otherwise just create an empty map
+                    def configs = [:];
+                    if(it.extensionParams.fragmentConfig != null){
+                        configs = it.extensionParams.fragmentConfig;
+                    }
+                    configs << [patient: patient, patientId: patient.patient.id, app: it.appId, appId: appId, returnUrl: returnUrl ]
+            %>
+                    ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, configs)}
             <% }
             } %>
         </div>
@@ -21,8 +28,15 @@
             ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "contactInfo"]) }
 
             <% if (secondColumnFragments) {
-                secondColumnFragments.each { %>
-            ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, [patientId: patient.patient.id, app: it.appId, returnUrl: returnUrl ])}
+                secondColumnFragments.each {
+                    // create a base map from the fragmentConfig if it exists, otherwise just create an empty map
+                    def configs = [:];
+                    if(it.extensionParams.fragmentConfig != null){
+                        configs = it.extensionParams.fragmentConfig;
+                    }
+                    configs << [patient: patient, patientId: patient.patient.id, app: it.appId, appId: appId, returnUrl: returnUrl ]
+            %>
+                    ${ ui.includeFragment(it.extensionParams.provider, it.extensionParams.fragment, configs)}
             <% }
             } %>
 

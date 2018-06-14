@@ -32,12 +32,11 @@ import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
-/* CCSY EDITED
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
-*/
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.validator.PatientIdentifierValidator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -194,6 +193,17 @@ public class RegisterPatientFormBuilder {
 							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
 							if (identifierType  != null) {
 
+								// see if there is existing identifier with this value, if so, no need to update
+								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+									if (oldIdentifier.getIdentifier().equals(parameterValue)) {
+										return;
+									}
+								}
+
+								// validate the new identifier before saving
+								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
+								PatientIdentifierValidator.validateIdentifier(identifier);
+
 								// void any existing identifiers of this type
 								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
 									oldIdentifier.setVoided(true);
@@ -203,7 +213,6 @@ public class RegisterPatientFormBuilder {
 								}
 
 								// add the new identifier
-								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
 								patient.addIdentifier(identifier);
 							}
 						}
@@ -213,14 +222,10 @@ public class RegisterPatientFormBuilder {
 		}
 	}
 
-/* CCSY EDITED
-
-    */
-/**
+    /**
      * Extracts all BiometricSubject data out of the registration form
      * This will only return data for fields that have actual biometric data extracted
-     *//*
-
+     */
 	public static Map<Field, BiometricSubject> extractBiometricDataFields(NavigableFormStructure form, Map<String, String[]> parameterMap) {
 
 	    Map<Field, BiometricSubject> ret = new LinkedHashMap<Field, BiometricSubject>();
@@ -272,6 +277,23 @@ public class RegisterPatientFormBuilder {
 
         return ret;
     }
-    */
-}
 
+	/**
+	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics
+	 */
+	static public List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
+
+		List<String> biometricIdentifierUuids = new ArrayList<String>();
+
+		List<Field> fields = form.getFields();
+		if (fields != null) {
+			for (Field field : fields) {
+				if (StringUtils.equals(field.getType(), "fingerprint")) {
+					biometricIdentifierUuids.add(field.getUuid());
+				}
+			}
+		}
+
+		return biometricIdentifierUuids;
+	}
+}

@@ -155,35 +155,76 @@ public class MatchingPatientsFragmentController {
     }
 
     private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches) {
-        List<SimpleObject> result = new ArrayList<SimpleObject>();
+        List<SimpleObject> results = new ArrayList<SimpleObject>();
 
         for (PatientAndMatchQuality matchedPatient : matches) {
             Patient patientEntry = matchedPatient.getPatient();
-            SimpleObject patientSimple;
-            if (patientEntry instanceof MpiPatient) {
-                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, MPI_PATIENT_PROPERTIES));
-            } else {
-                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
+
+            if (!alreadyInResults(patientEntry, results)) {
+                SimpleObject patientSimple;
+                if (patientEntry instanceof MpiPatient) {
+                    patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, MPI_PATIENT_PROPERTIES));
+                } else {
+                    patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
+                }
+                addIdentifiersToPatientSimple(app, patientEntry, patientSimple);
+                results.add(patientSimple);
             }
-            addIdentifiersToPatientSimple(patientEntry, patientSimple);
-            result.add(patientSimple);
         }
-        return result;
+        return results;
     }
 
-    private void addIdentifiersToPatientSimple(Patient patientEntry, SimpleObject patientSimple) {
+    private Boolean alreadyInResults(Patient patient, List<SimpleObject> results) {
+        for (SimpleObject result : results) {
+            if (Integer.valueOf(result.get("patientId").toString()).equals(patient.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addIdentifiersToPatientSimple(AppDescriptor app, Patient patientEntry, SimpleObject patientSimple) {
+
         LinkedList<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
-        for (PatientIdentifier identifier : patientEntry.getIdentifiers()) {
-            SimpleObject identifierEntry = new SimpleObject();
-            identifierEntry.put("name", identifier.getIdentifierType().getName());
-            identifierEntry.put("value", identifier.getIdentifier());
-            if (identifier.isPreferred()) {
-                identifiersList.addFirst(identifierEntry);
-            } else {
-                identifiersList.add(identifierEntry);
+        List<String> identifierTypesToInclude = null;
+
+        if (app.getConfig().get("identifierTypesToDisplay") != null) {
+            identifierTypesToInclude = new ArrayList<String>();
+            Iterator<JsonNode> i = app.getConfig().get("identifierTypesToDisplay").getElements();
+            while (i.hasNext()) {
+                identifierTypesToInclude.add(i.next().getTextValue());
+            }
+        }
+
+        for (PatientIdentifier identifier : patientEntry.getActiveIdentifiers()) {
+
+            if (shouldIncludeIdentifier(identifier, identifierTypesToInclude)) {
+                SimpleObject identifierEntry = new SimpleObject();
+                identifierEntry.put("name", identifier.getIdentifierType().getName());
+                identifierEntry.put("value", identifier.getIdentifier());
+                if (identifier.isPreferred()) {
+                    identifiersList.addFirst(identifierEntry);
+                } else {
+                    identifiersList.add(identifierEntry);
+                }
             }
         }
         patientSimple.put("identifiers", identifiersList);
+    }
+
+    private boolean shouldIncludeIdentifier(PatientIdentifier identifier, List<String> identifierTypesToInclude) {
+        // if the parameter has not been specified, show all
+        if (identifierTypesToInclude == null) {
+            return true;
+        }
+
+        for (String identifierType : identifierTypesToInclude) {
+            if (identifier.getIdentifierType().getUuid().equals(identifierType) ||
+                    identifier.getIdentifierType().getName().equals(identifierType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String [] determinePropertiesToInclude(AppDescriptor app, String[] defaultProperties) {
