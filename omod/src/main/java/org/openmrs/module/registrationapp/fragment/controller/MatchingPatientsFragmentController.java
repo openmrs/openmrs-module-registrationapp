@@ -25,10 +25,9 @@ import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
-// CCSY EDITED
-//import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
-//import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
-//import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.mpi.common.MpiPatient;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.ui.framework.SimpleObject;
@@ -98,9 +97,7 @@ public class MatchingPatientsFragmentController {
         List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(app, ui, matches);
     }
-/*
 
-    CCSY EDITED
     public List<SimpleObject> getBiometricMatches(@RequestParam("appId") AppDescriptor app,
                                                   @SpringBean("registrationCoreService") RegistrationCoreService service,
                                                   @SpringBean("patientService") PatientService patientService,
@@ -134,7 +131,6 @@ public class MatchingPatientsFragmentController {
         }
         return ret;
     }
-*/
 
     private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
