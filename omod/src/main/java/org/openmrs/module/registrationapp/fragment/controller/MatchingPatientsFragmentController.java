@@ -155,6 +155,23 @@ public class MatchingPatientsFragmentController {
 
         for (PatientAndMatchQuality matchedPatient : matches) {
             Patient patientEntry = matchedPatient.getPatient();
+            SimpleObject patientSimple;
+            if (patientEntry instanceof MpiPatient) {
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, MPI_PATIENT_PROPERTIES));
+            } else {
+                patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
+            }
+            addIdentifiersToPatientSimple(app, patientEntry, patientSimple);
+            results.add(patientSimple);
+        }
+        return results;
+    }
+
+    /*private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches) {
+        List<SimpleObject> results = new ArrayList<SimpleObject>();
+
+        for (PatientAndMatchQuality matchedPatient : matches) {
+            Patient patientEntry = matchedPatient.getPatient();
 
             if (!alreadyInResults(patientEntry, results)) {
                 SimpleObject patientSimple;
@@ -178,7 +195,7 @@ public class MatchingPatientsFragmentController {
         }
         return false;
     }
-
+*/
     private void addIdentifiersToPatientSimple(AppDescriptor app, Patient patientEntry, SimpleObject patientSimple) {
 
         LinkedList<SimpleObject> identifiersList = new LinkedList<SimpleObject>();
