@@ -23,10 +23,9 @@
         <require_module version="${coreappsVersion}">org.openmrs.module.coreapps</require_module>
         <require_module version="${registrationcoreVersion}">org.openmrs.module.registrationcore</require_module>
         <require_module version="${reportingModuleVersion}">org.openmrs.module.reporting</require_module>
-        <!-- CCSY EDITED
-		<require_module version="${m2SysVersion}">org.openmrs.module.m2sys-biometrics</require_module>
-        !-->
+		<!--
 		<require_module version="${xds-senderVersion}">org.openmrs.module.xdssender</require_module>
+		-->
     </require_modules>
 
     <aware_of_modules>
