@@ -48,16 +48,12 @@
         <reportingModuleVersion>0.10.4</reportingModuleVersion>
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
-        <appuiVersion>1.9.0-SNAPSHOT</appuiVersion>
+        <appuiVersion>1.7</appuiVersion>
         <coreappsVersion>1.11.1</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!--
-        <xds-senderVersion>1.0.0</xds-senderVersion>
-        -->
     </properties>
 
     <dependencyManagement>

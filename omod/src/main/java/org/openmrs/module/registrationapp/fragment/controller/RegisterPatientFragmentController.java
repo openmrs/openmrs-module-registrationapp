@@ -42,9 +42,8 @@ import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
-// iSantePlus Addition:
-//import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
-//import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -123,9 +122,6 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
-                            // iSantePlus Addition:
-//                            @RequestParam(value="localBiometricSubjectId", required = false) String localBiometricSubjectId,
-//                            @RequestParam(value="nationalBiometricSubjectId", required = false) String nationalBiometricSubjectId,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,
@@ -185,28 +181,16 @@ public class RegisterPatientFragmentController {
         registrationData.setIdentifier(patientIdentifier);
         registrationData.setIdentifierLocation(sessionContext.getSessionLocation());
 
-//  iSantePlus Addition:
-//        // Add any biometric data that was submitted
-//        Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
-//        for (Field fingerprintField : fingerprintData.keySet()) {
-//            BiometricSubject subject = fingerprintData.get(fingerprintField);
-//            PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
-//            if (identifierType == null) {
-//                throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
-//            }
-//            registrationData.addBiometricData(new BiometricData(subject, identifierType));
-//        }
-//
-//        if (StringUtils.isNotBlank(localBiometricSubjectId)) {
-//            BiometricData biometricData = generateBiometricData(localBiometricSubjectId,
-//                    RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-//            registrationData.getBiometrics().add(biometricData);
-//        }
-//        if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
-//            BiometricData biometricData = generateBiometricData(nationalBiometricSubjectId,
-//                    RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
-//            registrationData.getBiometrics().add(biometricData);
-//        }
+        // Add any biometric data that was submitted
+        Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
+        for (Field fingerprintField : fingerprintData.keySet()) {
+            BiometricSubject subject = fingerprintData.get(fingerprintField);
+            PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+            if (identifierType == null) {
+                throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
+            }
+            registrationData.addBiometricData(new BiometricData(subject, identifierType));
+        }
 
         try {
             // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
@@ -299,14 +283,6 @@ public class RegisterPatientFragmentController {
 
         return new SuccessResult(redirectUrl);
     }
-
-
-/*  CCSY EDITED
-    private BiometricData generateBiometricData(String subjectId, String globalProperty) {
-        BiometricSubject biometricSubject = new BiometricSubject(subjectId);
-        PatientIdentifierType patientIdentifierType = PropertiesUtil.getIdentifierTypeByGlobalProperty(globalProperty);
-        return new BiometricData(biometricSubject, patientIdentifierType);
-    }*/
 
     private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {
         int obsIndex = param.indexOf(".obs.");

@@ -124,7 +124,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         <ul id="similarPatientsSelect" class="matchingPatientContainer select" style="width: auto;"></ul>
     </div>
 
-<!-- CCSY EDITED
     <div id="biometricPatients" class="highlighted" style="display: none;">
         <div class="left" style="padding: 6px">
             <span id="biometricPatientsCount"></span>
@@ -137,7 +136,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     <div id="biometricPatientsSlideView" style="display: none;">
         <ul id="biometricPatientsSelect" class="matchingPatientContainer select" style="width: auto;"></ul>
     </div>
--->
 
     <div id="matchedPatientTemplates" style="display:none;">
         <div class="container"

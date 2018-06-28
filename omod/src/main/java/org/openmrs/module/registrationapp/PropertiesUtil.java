@@ -24,7 +24,7 @@ public final class PropertiesUtil {
         String propertyValue = Context.getAdministrationService().getGlobalProperty(propertyName);
         return !StringUtils.isBlank(propertyValue);
     }
-/* CCSY EDITED
+/*
     public static boolean nationalFpTypeSet() {
         return globalPropertySet(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
     }
