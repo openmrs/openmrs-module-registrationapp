@@ -119,7 +119,7 @@ public class EditSectionPageControllerTest {
 		patient.addName(oldName);
 
 		PersonName newName = new PersonName("newGivenName", null, familyName);
-		controller.post(uiSessionContext, null, patient, null, newName, null, null, app, null, null,
+		controller.post(uiSessionContext, null, patient, null, newName, null, null, app, "contactInfo", null,
 				patientService, null,null, request, messageSourceService, null, patientValidator, ui);
 
 		Assert.assertNotSame(oldName, patient.getPersonName());
@@ -145,7 +145,7 @@ public class EditSectionPageControllerTest {
 		
 		//should be case insensitive
 		PersonName newName = new PersonName("givenName", null, "familyName");
-        controller.post(uiSessionContext, null, patient, null, newName, null, null, app, null, null,
+        controller.post(uiSessionContext, null, patient, null, newName, null, null, app, "contactInfo", null,
                 patientService, null, null, request, messageSourceService, null, patientValidator, ui);
 		
 		Assert.assertSame(oldName, patient.getPersonName());
@@ -173,7 +173,7 @@ public class EditSectionPageControllerTest {
         final String newCountry = "Uganda";
         newAddress.setCountry(newCountry);
 
-        controller.post(uiSessionContext, null, patient, newAddress, null, null, null, app, null, null,
+        controller.post(uiSessionContext, null, patient, newAddress, null, null, null, app, "contactInfo", null,
                 patientService, null, null, request, messageSourceService, null, patientValidator, ui);
 
         assertSame(newAddress, patient.getPersonAddress());
@@ -202,7 +202,7 @@ public class EditSectionPageControllerTest {
         PersonAddress newAddress = new PersonAddress();
         newAddress.setCountry(country);
 
-        controller.post(uiSessionContext, null, patient, newAddress, null, null, null, app, null, null,
+        controller.post(uiSessionContext, null, patient, newAddress, null, null, null, app, "contactInfo", null,
                 patientService, null,null, request, messageSourceService, null, patientValidator, ui);
 
         assertSame(address, patient.getPersonAddress());
