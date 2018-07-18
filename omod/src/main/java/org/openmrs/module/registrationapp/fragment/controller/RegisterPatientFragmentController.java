@@ -202,7 +202,6 @@ public class RegisterPatientFragmentController {
             // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
             patientValidator.validate(patient, errors);
             RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
-
             if (!errors.hasErrors()) {
                 errors.reject(ex.getMessage());
             }

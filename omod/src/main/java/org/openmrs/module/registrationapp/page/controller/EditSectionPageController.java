@@ -149,10 +149,6 @@ public class EditSectionPageController {
                 InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
                         ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : ""));
 
-                EventMessage eventMessage = new EventMessage();
-                eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
-                Event.fireEvent(RegistrationCoreConstants.PATIENT_EDIT_EVENT_TOPIC_NAME, eventMessage);
-
                 return "redirect:" + returnUrl;
             }
             catch (Exception e) {
