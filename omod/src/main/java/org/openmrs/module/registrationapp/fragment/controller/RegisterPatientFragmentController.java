@@ -5,6 +5,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.joda.time.DateTimeComparator;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -30,20 +32,19 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.idgen.EmptyIdentifierPoolException;
-import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
-import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.mpi.common.MpiException;
+import org.openmrs.module.registrationcore.api.mpi.common.MpiProperties;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -52,6 +53,8 @@ import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.validator.PatientValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -73,8 +76,19 @@ public class RegisterPatientFragmentController {
 
     private PatientService patientService;
 
+    @Autowired
+    @Qualifier("registrationcore.mpiProperties")
+    private MpiProperties mpiProperties;
+
+	private ObjectMapper objectMapper = new ObjectMapper();
+
+	public static class Item {
+		public String name;
+		public String value;
+	}
+
     public RegisterPatientFragmentController() {
-        patientService =  Context.getService(PatientService.class);
+	    patientService =  Context.getService(PatientService.class);
     }
 
     class ObsGroupItem {
@@ -105,11 +119,29 @@ public class RegisterPatientFragmentController {
         }
     }
 
-    public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
-                            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
-        String patientUuid = registrationService.importMpiPatient(personId);
-        return new SuccessResult(patientUuid);
-    }
+	public FragmentActionResult importMpiPatient(@RequestParam("identifiers") String ids,
+            @SpringBean("registrationcore.mpiProperties") MpiProperties mpiProperties,
+			@SpringBean("registrationCoreService") RegistrationCoreService registrationService)
+            throws java.io.IOException {
+
+		List<Item> identifiers = objectMapper.readValue(ids, new TypeReference<List<Item>>() {});
+
+		String identifierTypeUuid = mpiProperties.getMpiPersonIdentifierTypeUuid();
+		PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(identifierTypeUuid);
+		String identifierTypeName = identifierType.getName();
+		String mpiPatientId = null;
+		for (Item i: identifiers){
+			if (i.name.equals(identifierTypeName)){
+				mpiPatientId = i.value;
+				break;
+			}
+		}
+		if (mpiPatientId == null){
+			throw new MpiException("The patient being imported does not have an identfier of type MPI Global Identifier Domain");
+		}
+		String patientUuid = registrationService.importMpiPatient(mpiPatientId);
+		return new SuccessResult(patientUuid);
+	}
 
     public FragmentActionResult submit(UiSessionContext sessionContext,
                             @RequestParam(value="appId") AppDescriptor app,

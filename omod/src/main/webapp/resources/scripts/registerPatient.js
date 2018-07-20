@@ -5,8 +5,8 @@ jq = jQuery;
 // we expose this in the global scope so that other javascript widgets can access it--probably should have a better pattern for this
 var NavigatorController;
 
-function importMpiPatient(id) {
-    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
+function importMpiPatient(ids) {
+    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {identifiers: ids}))
         .success(function (response) {
             var link = patientDashboardLink;
             link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message + '&appId=' + appId;
@@ -96,18 +96,10 @@ jq(function() {
 
             var button;
             if (isMpi) {
-                idToUse = item.uuid
-                for (var i = 0; i < item.identifiers.length; i += 1) {
-                    identifier = item.identifiers[i];
-                    if (identifier.name === 'ECID') {
-                        idToUse = identifier.value;
-                        break;
-                    }
-                }
-
+                var identifiersJSONString = JSON.stringify(item.identifiers);
                 button = $('#matchedPatientTemplates .mpi_button').clone();
-                button.attr("onclick", "importMpiPatient('" + idToUse + "')");
-            } else {0
+                button.attr("onclick", "importMpiPatient('"+ identifiersJSONString + "')");
+            } else {
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
                 link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;
@@ -136,11 +128,10 @@ jq(function() {
     jq('input').change(getSimilarPatients);
     jq('select').change(getSimilarPatients);
 
-/*  CCSY EDITED
     // Biometric matching
     // TODO: This is mostly copied from similar patients above.  Refactor into shared, common functionality as appropriate
 
-    *//* Biometric patient functionality *//*
+    /* Biometric patient functionality */
     reviewBiometricPatients = emr.setupConfirmationDialog({
         selector: '#reviewBiometricPatients',
         actions: {
@@ -229,7 +220,7 @@ jq(function() {
             //jq("#biometricPatientsSlideView").show();
         }, "json");
     };
-*/
+
 
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {
