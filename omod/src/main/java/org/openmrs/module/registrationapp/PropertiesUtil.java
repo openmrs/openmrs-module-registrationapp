@@ -1,10 +1,5 @@
 package org.openmrs.module.registrationapp;
 
-/* CCSY EDITED
-import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID;
-import static org.openmrs.module.registrationcore.RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID;
-*/
-
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
@@ -24,22 +19,6 @@ public final class PropertiesUtil {
         String propertyValue = Context.getAdministrationService().getGlobalProperty(propertyName);
         return !StringUtils.isBlank(propertyValue);
     }
-/*
-    public static boolean nationalFpTypeSet() {
-        return globalPropertySet(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
-    }
-
-    public static PatientIdentifierType getNationalFpType() {
-        return getIdentifierTypeByGlobalProperty(GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
-    }
-
-    public static boolean localFpTypeSet() {
-        return globalPropertySet(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-    }
-
-    public static PatientIdentifierType getLocalFpType() {
-        return getIdentifierTypeByGlobalProperty(GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
-    }*/
 
     public static PatientIdentifierType getIdentifierTypeByGlobalProperty(String globalProperty) {
         String uuid = getGlobalProperty(globalProperty);
@@ -49,11 +28,6 @@ public final class PropertiesUtil {
                     + "'%s' Global Property with '%s' value does not exist", globalProperty, uuid));
         }
         return patientIdentifierType;
-    }
-
-    public static PatientIdentifierType getIsantePlusIdType() {
-        return Context.getPatientService().getPatientIdentifierTypeByUuid(
-                "05a29f94-c0ed-11e2-94be-8c13b969e334");
     }
 
     private PropertiesUtil() {
