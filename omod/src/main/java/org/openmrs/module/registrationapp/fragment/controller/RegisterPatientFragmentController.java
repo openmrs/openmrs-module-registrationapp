@@ -76,10 +76,6 @@ public class RegisterPatientFragmentController {
 
     private PatientService patientService;
 
-    @Autowired
-    @Qualifier("registrationcore.mpiProperties")
-    private MpiProperties mpiProperties;
-
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public static class Item {
@@ -121,6 +117,7 @@ public class RegisterPatientFragmentController {
 
 	public FragmentActionResult importMpiPatient(@RequestParam("identifiers") String ids,
             @SpringBean("registrationcore.mpiProperties") MpiProperties mpiProperties,
+            @SpringBean("patientService") PatientService patientService,
 			@SpringBean("registrationCoreService") RegistrationCoreService registrationService)
             throws java.io.IOException {
 
