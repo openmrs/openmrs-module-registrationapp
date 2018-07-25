@@ -146,9 +146,15 @@ public class EditSectionPageController {
             try {
                 //The person address changes get saved along as with the call to save patient
                 patientService.savePatient(patient);
-                InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
-                        ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : ""));
-
+                if (sectionId.equals("contactInfo")) {
+                    InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
+                            ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : ""));
+                }
+                else {
+                    String sectionLabel= formStructure.getSections().get(sectionId).getLabel();
+                    InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
+                            ui.message("registrationapp.editCustomSectionInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : "", sectionLabel));
+                }
                 EventMessage eventMessage = new EventMessage();
                 eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
                 Event.fireEvent(RegistrationCoreConstants.PATIENT_EDIT_EVENT_TOPIC_NAME, eventMessage);
