@@ -78,6 +78,10 @@ public class RegisterPatientFragmentController {
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 
+	@Autowired
+	@Qualifier("registrationcore.mpiProperties")
+	private MpiProperties mpiProperties;
+
 	public static class Item {
 		public String name;
 		public String value;
@@ -136,7 +140,7 @@ public class RegisterPatientFragmentController {
 		if (mpiPatientId == null){
 			throw new MpiException("The patient being imported does not have an identfier of type MPI Global Identifier Domain");
 		}
-		String patientUuid = registrationService.importMpiPatient(mpiPatientId);
+		String patientUuid = registrationService.importMpiPatient(mpiPatientId).getUuid();
 		return new SuccessResult(patientUuid);
 	}
 
