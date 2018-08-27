@@ -99,16 +99,16 @@ public class RegisterPatientFormBuilder {
 		}
 
 		// If no demographics section is explicitly included, ensure the default one is included first
-		if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
-			Section demographics = new Section();
-			demographics.setId(DEMOGRAPHICS_SECTION_ID);
-			demographics.setLabel("registrationapp.patient.demographics.label");
-			formStructure.addSection(demographics);
-		}
+        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+            Section demographics = new Section();
+            demographics.setId(DEMOGRAPHICS_SECTION_ID);
+            demographics.setLabel("registrationapp.patient.demographics.label");
+            formStructure.addSection(demographics);
+        }
 
-		for (Section section : configuredSections.values()) {
-			formStructure.addSection(section);
-		}
+        for (Section section : configuredSections.values()) {
+            formStructure.addSection(section);
+        }
 
 		return formStructure;
 	}
@@ -212,11 +212,10 @@ public class RegisterPatientFormBuilder {
 		}
 	}
 
-	/**
-	 * Extracts all BiometricSubject data out of the registration form
-	 * This will only return data for fields that have actual biometric data extracted
-	 */
-
+    /**
+     * Extracts all BiometricSubject data out of the registration form
+     * This will only return data for fields that have actual biometric data extracted
+     */
 	public static Map<Field, BiometricSubject> extractBiometricDataFields(NavigableFormStructure form, Map<String, String[]> parameterMap) {
 
 	    Map<Field, BiometricSubject> ret = new LinkedHashMap<Field, BiometricSubject>();
@@ -266,8 +265,8 @@ public class RegisterPatientFormBuilder {
             }
         }
 
-		return ret;
-	}
+        return ret;
+    }
 
 	/**
 	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics

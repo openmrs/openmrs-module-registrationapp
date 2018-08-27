@@ -152,4 +152,6 @@ public class RegistrationAppUiUtils {
 			errors.reject("registrationapp.error.identifier.emptyIdentifierPool");
 		}
 	}
+
+
 }

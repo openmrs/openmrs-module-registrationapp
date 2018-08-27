@@ -10,6 +10,8 @@ import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.event.Event;
+import org.openmrs.event.EventMessage;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
@@ -20,6 +22,7 @@ import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Section;
+import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.RegistrationCoreUtil;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
@@ -143,7 +146,6 @@ public class EditSectionPageController {
             try {
                 //The person address changes get saved along as with the call to save patient
                 patientService.savePatient(patient);
-
                 if (sectionId.equals("contactInfo")) {
                     InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
                             ui.message("registrationapp.editContactInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : ""));
@@ -153,6 +155,9 @@ public class EditSectionPageController {
                     InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
                             ui.message("registrationapp.editCustomSectionInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : "", sectionLabel));
                 }
+                EventMessage eventMessage = new EventMessage();
+                eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
+                Event.fireEvent(RegistrationCoreConstants.PATIENT_EDIT_EVENT_TOPIC_NAME, eventMessage);
 
                 return "redirect:" + returnUrl;
             }

@@ -108,7 +108,6 @@ public class MatchingPatientsFragmentController {
         return getSimpleObjects(app, ui, matches);
     }
 
-
     private List<PatientAndMatchQuality> getBiometricMatches(RegistrationCoreService service, PatientService patientService,
                                                              NavigableFormStructure formStructure, Map<String, String[]> parameterMap) {
         List<PatientAndMatchQuality> ret = new ArrayList<PatientAndMatchQuality>();
