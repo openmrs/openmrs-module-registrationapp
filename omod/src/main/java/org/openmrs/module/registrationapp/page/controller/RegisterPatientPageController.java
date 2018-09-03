@@ -29,6 +29,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
+                    @RequestParam(value = "patientId", required = false) @BindParams Patient existingPatient,
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
@@ -36,14 +37,16 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                     UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService);
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService, existingPatient);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService, Patient existingPatient) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
-        	patient = new Patient();
+          patient = new Patient();
+        } else {
+          patient = existingPatient;
         }
 
         NameSupportCompatibility nameSupport = Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class);
