@@ -124,8 +124,8 @@ public class RegisterPatientFragmentController {
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
-    	if (patienIdNumber != null && !patienIdNumber.equals("")) {
-        	return editPatient(
+        if (patienIdNumber != null && !patienIdNumber.equals("")) {
+            return editPatient(
                     sessionContext,
                     app,
                     registrationService,
@@ -149,7 +149,7 @@ public class RegisterPatientFragmentController {
                     ui
                 );
         } else {
-        	return addPatient(
+            return addPatient(
                     sessionContext,
                     app,
                     registrationService,
@@ -197,72 +197,72 @@ public class RegisterPatientFragmentController {
 
         Patient existingPatient = patientService.getPatient(Integer.parseInt(patienIdNumber));
 
-		if (unknown != null && unknown) {
-			// TODO make "UNKNOWN" be configurable
-			name.setFamilyName("UNKNOWN");
-			name.setGivenName("UNKNOWN");
-			existingPatient
-					.addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
-		}
+        if (unknown != null && unknown) {
+            // TODO make "UNKNOWN" be configurable
+            name.setFamilyName("UNKNOWN");
+            name.setGivenName("UNKNOWN");
+            existingPatient
+                    .addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
+        }
 
         if (existingPatient.getPersonName() != null) {
-        	existingPatient.getPersonName().setVoided(true);
+            existingPatient.getPersonName().setVoided(true);
         }
         existingPatient.addName(name);
 
 
         if (existingPatient.getPersonAddress() != null) {
-        	existingPatient.getPersonAddress().setVoided(true);
+            existingPatient.getPersonAddress().setVoided(true);
         }
         existingPatient.addAddress(address);
         existingPatient.setBirthdate(patient.getBirthdate());
 
         // handle birthdate estimate, if no birthdate but estimate present
-		if (existingPatient.getBirthdate() == null && (birthdateYears != null || birthdateMonths != null)) {
-			existingPatient.setBirthdateEstimated(true);
-			existingPatient.setBirthdate(
-					RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
-		}
+        if (existingPatient.getBirthdate() == null && (birthdateYears != null || birthdateMonths != null)) {
+            existingPatient.setBirthdateEstimated(true);
+            existingPatient.setBirthdate(
+                    RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
+        }
 
         existingPatient.setGender(patient.getGender());
 
         BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
-		if (formStructure != null) {
-			RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+        if (formStructure != null) {
+            RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
 
-			try {
-				RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient,
-						request.getParameterMap());
-			} catch (Exception ex) {
-				RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
-			}
-		}
+            try {
+                RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient,
+                        request.getParameterMap());
+            } catch (Exception ex) {
+                RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
+            }
+        }
 
         // Update patient identifiers
-		for (PatientIdentifier identifier : patient.getIdentifiers()) {
-			if (identifier != null) {
+        for (PatientIdentifier identifier : patient.getIdentifiers()) {
+            if (identifier != null) {
                 if (existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName()) != null) {
                     existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName())
                             .setIdentifier(identifier.getIdentifier());
-				} else {
-					existingPatient.addIdentifier(identifier);
-				}
-			}
-		}
+                } else {
+                    existingPatient.addIdentifier(identifier);
+                }
+            }
+        }
 
         // Update person attributes
-		for (PersonAttribute attribute : patient.getAttributes()) {
-			if (attribute != null) {
-				if (existingPatient.getAttribute(attribute.getUuid()) != null) {
-					existingPatient.getAttribute(attribute.getId()).setValue(attribute.getValue());
-				} else {
-					existingPatient.addAttribute(attribute);
-				}
-			}
-		}
+        for (PersonAttribute attribute : patient.getAttributes()) {
+            if (attribute != null) {
+                if (existingPatient.getAttribute(attribute.getUuid()) != null) {
+                    existingPatient.getAttribute(attribute.getId()).setValue(attribute.getValue());
+                } else {
+                    existingPatient.addAttribute(attribute);
+                }
+            }
+        }
 
         try {
-        	patient = patientService.savePatient(existingPatient);
+            patient = patientService.savePatient(existingPatient);
         } catch (Exception ex) {
             // TODO I remember getting into trouble if i called this validator before the above save method.
             // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
