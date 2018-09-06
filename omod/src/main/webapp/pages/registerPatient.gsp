@@ -250,6 +250,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
                             <% if (patienIdNumber != null) {%>
                             	<input id="patienIdNumber" type="hidden" name="patienIdNumber" value="${patienIdNumber}"/>
+                            	<input id="patienUuid" type="hidden" name="patienUuid" value="${patienUuid}"/>
                             <% } %>
                         </fieldset>
 

@@ -51,6 +51,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         
         model.addAttribute("patient", patient);
         model.addAttribute("patienIdNumber", patient.getId());
+        model.addAttribute("patienUuid", patient.getUuid());
         model.addAttribute("primaryIdentifierType", primaryIdentifierType);
         model.addAttribute("appId", app.getId());
         model.addAttribute("formStructure", formStructure);
