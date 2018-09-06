@@ -241,9 +241,9 @@ public class RegisterPatientFragmentController {
         // Update patient identifiers
 		for (PatientIdentifier identifier : patient.getIdentifiers()) {
 			if (identifier != null) {
-				if (existingPatient.getPatientIdentifier(identifier.getUuid()) != null) {
-					existingPatient.getPatientIdentifier(identifier.getUuid())
-							.setIdentifier(identifier.getIdentifier());
+                if (existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName()) != null) {
+                    existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName())
+                            .setIdentifier(identifier.getIdentifier());
 				} else {
 					existingPatient.addIdentifier(identifier);
 				}
