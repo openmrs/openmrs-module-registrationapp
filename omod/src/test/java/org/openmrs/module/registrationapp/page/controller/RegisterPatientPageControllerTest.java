@@ -35,51 +35,51 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Context.class})
 public class RegisterPatientPageControllerTest {
-	@Mock
-	private UiSessionContext uiSessionContext;
-	
-	@Mock
-	private PersonService personService;
-	
-	@Mock
+    @Mock
+    private UiSessionContext uiSessionContext;
+    
+    @Mock
+    private PersonService personService;
+    
+    @Mock
     private AppDescriptor app;
 
-	@Mock
-	private UiUtils ui;
+    @Mock
+    private UiUtils ui;
 
-	@Mock
-	AppFrameworkService appFrameworkService;
+    @Mock
+    AppFrameworkService appFrameworkService;
 
-	@Mock
-	EmrApiProperties emrApiProperties;
+    @Mock
+    EmrApiProperties emrApiProperties;
 
-	@Mock
-	NameSupportCompatibility nameSupportCompatibility;
+    @Mock
+    NameSupportCompatibility nameSupportCompatibility;
 
-	@Mock
-	AddressSupportCompatibility addressSupport;
+    @Mock
+    AddressSupportCompatibility addressSupport;
 
-	@Mock
-	JsonNode jsonNode;
+    @Mock
+    JsonNode jsonNode;
 
-	@Mock
-	AdministrationService administrationService;
+    @Mock
+    AdministrationService administrationService;
 
-	private RegisterPatientPageController registerPatientPageController;
-	
-	PageModel pageModel;
-	PatientIdentifierType patientIdentifierType;
-	String breadcrumbOverride;
+    private RegisterPatientPageController registerPatientPageController;
+    
+    PageModel pageModel;
+    PatientIdentifierType patientIdentifierType;
+    String breadcrumbOverride;
 
-	@Before
-	public void setUpMockUserContext() throws Exception {
-		PowerMockito.mockStatic(Context.class);
-		Mockito.when(nameSupportCompatibility.getDefaultLayoutTemplate()).thenReturn(new Object());
+    @Before
+    public void setUpMockUserContext() throws Exception {
+        PowerMockito.mockStatic(Context.class);
+        Mockito.when(nameSupportCompatibility.getDefaultLayoutTemplate()).thenReturn(new Object());
         Mockito.when(Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class)).thenReturn(nameSupportCompatibility);
         Mockito.when(administrationService.getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false")).thenReturn("value");
-		Mockito.when(Context.getAdministrationService()).thenReturn(administrationService);
-		Mockito.when(personService.getAllRelationships()).thenReturn(new ArrayList<Relationship>());
-		Mockito.when(Context.getPersonService()).thenReturn(personService);
+        Mockito.when(Context.getAdministrationService()).thenReturn(administrationService);
+        Mockito.when(personService.getAllRelationships()).thenReturn(new ArrayList<Relationship>());
+        Mockito.when(Context.getPersonService()).thenReturn(personService);
 
         Mockito.when(addressSupport.getDefaultLayoutTemplate()).thenReturn(new Object());
         Mockito.when(Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class)).thenReturn(addressSupport);
@@ -113,49 +113,49 @@ public class RegisterPatientPageControllerTest {
         Mockito.when(appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments")).thenReturn(extensions);
 
         registerPatientPageController = new RegisterPatientPageController();
-	}
+    }
 
-	@Test
-	public void get_shouldCreateANewPatientWhenPatientIsNull() throws Exception {
-		// Fixture setup
-		Patient existingPatient = null;
+    @Test
+    public void get_shouldCreateANewPatientWhenPatientIsNull() throws Exception {
+        // Fixture setup
+        Patient existingPatient = null;
 
-		// Execution
-		registerPatientPageController.get(
-				uiSessionContext,
-				pageModel,
-				app,
-				existingPatient,
-				breadcrumbOverride,
-				existingPatient,
-				emrApiProperties,
-				appFrameworkService,
-				ui);
+        // Execution
+        registerPatientPageController.get(
+                uiSessionContext,
+                pageModel,
+                app,
+                existingPatient,
+                breadcrumbOverride,
+                existingPatient,
+                emrApiProperties,
+                appFrameworkService,
+                ui);
 
-		// Assertion
-		Assert.assertNotNull(pageModel.getAttribute("patient"));
-	}
+        // Assertion
+        Assert.assertNotNull(pageModel.getAttribute("patient"));
+    }
 
-	@Test
-	public void get_shouldUseExistingPatientWhenPatientIsNotNull() throws Exception {
-		// Fixture setup
-		Patient existingPatient = new Patient();
-		existingPatient.setId(10);
+    @Test
+    public void get_shouldUseExistingPatientWhenPatientIsNotNull() throws Exception {
+        // Fixture setup
+        Patient existingPatient = new Patient();
+        existingPatient.setId(10);
 
-		// Execution
-		registerPatientPageController.get(
-				uiSessionContext,
-				pageModel,
-				app,
-				existingPatient,
-				breadcrumbOverride,
-				existingPatient,
-				emrApiProperties,
-				appFrameworkService,
-				ui);
+        // Execution
+        registerPatientPageController.get(
+                uiSessionContext,
+                pageModel,
+                app,
+                existingPatient,
+                breadcrumbOverride,
+                existingPatient,
+                emrApiProperties,
+                appFrameworkService,
+                ui);
 
-		// Assertion
-		Patient result = (Patient) pageModel.getAttribute("patient");
-		Assert.assertEquals(existingPatient.getId(), result.getId());
-	}
+        // Assertion
+        Patient result = (Patient) pageModel.getAttribute("patient");
+        Assert.assertEquals(existingPatient.getId(), result.getId());
+    }
 }
