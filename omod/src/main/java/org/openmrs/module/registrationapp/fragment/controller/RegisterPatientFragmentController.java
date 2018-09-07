@@ -174,7 +174,7 @@ public class RegisterPatientFragmentController {
         }
     }
 
-    public FragmentActionResult editPatient(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
+    public FragmentActionResult editPatient(UiSessionContext sessionContext, AppDescriptor app,
                             RegistrationCoreService registrationService,
                             Patient patient,
                             String patienIdNumber,
@@ -283,7 +283,7 @@ public class RegisterPatientFragmentController {
         return new SuccessResult(redirectUrl);
     }
 
-    public FragmentActionResult addPatient(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
+    public FragmentActionResult addPatient(UiSessionContext sessionContext, AppDescriptor app,
                             RegistrationCoreService registrationService,
                             Patient patient,
                             PersonName name,
