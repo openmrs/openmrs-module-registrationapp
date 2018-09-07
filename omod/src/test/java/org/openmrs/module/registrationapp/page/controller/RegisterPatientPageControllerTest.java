@@ -133,7 +133,9 @@ public class RegisterPatientPageControllerTest {
                 ui);
 
         // Assertion
-        Assert.assertNotNull(pageModel.getAttribute("patient"));
+        Patient result = (Patient) pageModel.getAttribute("patient");
+        Assert.assertNotNull(result);
+        Assert.assertNull(result.getId());
     }
 
     @Test
