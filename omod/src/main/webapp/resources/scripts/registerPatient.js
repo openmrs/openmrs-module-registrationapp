@@ -17,6 +17,16 @@ function importMpiPatient(id) {
         });
 }
 
+var extractPatientUuid = function(_data) {
+    var variables = _data.split("&");
+    for (var variable of variables) {
+      if (variable.split("=")[0] == "patientUuid") {
+          return variable.split("=")[1];
+      }
+    }
+    return null;
+}
+
 jq(function() {
     NavigatorController = new KeyboardController();
 
@@ -37,8 +47,10 @@ jq(function() {
         return false;
     });
 
-    function showSimilarPatients(data) {
-        if (data.length == 0 || jq('#checkbox-unknown-patient').is(':checked')) {
+    function showSimilarPatients(data, patientUuid) {
+        if (data.length == 0 || jq('#checkbox-unknown-patient').is(':checked')
+         || (data.length == 1 && data[0].uuid == patientUuid)
+        ) {
             jq("#similarPatients").hide();
             jq("#similarPatientsSlideView").hide();
             return;
@@ -118,7 +130,7 @@ jq(function() {
         var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getSimilarPatients.action?appId='+appId;
         jq.post(url, formData, function(data) {
             jq("#reviewSimilarPatientsButton").show();
-            showSimilarPatients(data);
+            showSimilarPatients(data, extractPatientUuid(formData));
         }, "json");
 
         focusedField.focus();
@@ -232,7 +244,7 @@ jq(function() {
         var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/matchingPatients/getExactPatients.action?appId='+appId;
         jq.post(url, formData, function(data) {
             jq("#reviewSimilarPatientsButton").hide();
-            showSimilarPatients(data);
+            showSimilarPatients(data, extractPatientUuid(formData));
             jq("#similarPatientsSlideView").show();
         }, "json");
     });

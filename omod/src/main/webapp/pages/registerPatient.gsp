@@ -248,6 +248,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             ])}
                             <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
                             <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
+                            <% if (patientIdNumber != null) {%>
+                            	<input id="patientIdNumber" type="hidden" name="patientIdNumber" value="${patientIdNumber}"/>
+                            	<input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
+                            <% } %>
                         </fieldset>
 
                         <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">

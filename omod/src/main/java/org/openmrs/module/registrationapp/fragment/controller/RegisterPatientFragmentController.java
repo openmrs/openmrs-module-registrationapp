@@ -1,5 +1,15 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +22,7 @@ import org.openmrs.EncounterRole;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -55,15 +66,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 public class RegisterPatientFragmentController {
 
     private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
@@ -105,6 +107,7 @@ public class RegisterPatientFragmentController {
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
                             @ModelAttribute("patient") @BindParams Patient patient,
+                            @RequestParam(value = "patientIdNumber", required = false) String patientIdNumber,
                             @ModelAttribute("personName") @BindParams PersonName name,
                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
                             @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
@@ -121,6 +124,130 @@ public class RegisterPatientFragmentController {
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
+        if (patientIdNumber != null && !patientIdNumber.equals("")) {
+            return editPatient(sessionContext, app, registrationService, patient, patientIdNumber,
+                    name, address, birthdateYears, birthdateMonths, registrationDate, unknown,
+                    patientIdentifier, request, messageSourceService, encounterService, obsService,
+                    conceptService, patientService, emrApiProperties, patientValidator, ui
+                );
+        } else {
+            return addPatient(sessionContext, app, registrationService, patient, name, address,
+                    birthdateYears, birthdateMonths, registrationDate, unknown, patientIdentifier,
+                    request, messageSourceService, encounterService, obsService, conceptService,
+                    patientService, emrApiProperties, patientValidator, ui
+                );
+        }
+    }
+
+    public FragmentActionResult editPatient(UiSessionContext sessionContext, AppDescriptor app,
+            RegistrationCoreService registrationService, Patient patient, String patientIdNumber,
+            PersonName name, PersonAddress address, Integer birthdateYears, Integer birthdateMonths,
+            Date registrationDate, Boolean unknown, String patientIdentifier,
+            HttpServletRequest request, MessageSourceService messageSourceService,
+            EncounterService encounterService, ObsService obsService, ConceptService conceptService,
+            PatientService patientService, EmrApiProperties emrApiProperties,
+            PatientValidator patientValidator, UiUtils ui) throws Exception {
+
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+
+        Patient existingPatient = patientService.getPatient(Integer.parseInt(patientIdNumber));
+
+        if (unknown != null && unknown) {
+            // TODO make "UNKNOWN" be configurable
+            name.setFamilyName("UNKNOWN");
+            name.setGivenName("UNKNOWN");
+            existingPatient
+                    .addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
+        }
+
+        if (existingPatient.getPersonName() != null) {
+            existingPatient.getPersonName().setVoided(true);
+        }
+        existingPatient.addName(name);
+
+
+        if (existingPatient.getPersonAddress() != null) {
+            existingPatient.getPersonAddress().setVoided(true);
+        }
+        existingPatient.addAddress(address);
+        existingPatient.setBirthdate(patient.getBirthdate());
+
+        // handle birthdate estimate, if no birthdate but estimate present
+        if (existingPatient.getBirthdate() == null && (birthdateYears != null || birthdateMonths != null)) {
+            existingPatient.setBirthdateEstimated(true);
+            existingPatient.setBirthdate(
+                    RegistrationCoreUtil.calculateBirthdateFromAge(birthdateYears, birthdateMonths, null, null));
+        }
+
+        existingPatient.setGender(patient.getGender());
+
+        BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
+        if (formStructure != null) {
+            RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+
+            try {
+                RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient,
+                        request.getParameterMap());
+            } catch (Exception ex) {
+                RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);
+            }
+        }
+
+        // Update patient identifiers
+        for (PatientIdentifier identifier : patient.getIdentifiers()) {
+            if (identifier != null) {
+                if (existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName()) != null) {
+                    existingPatient.getPatientIdentifier(identifier.getIdentifierType().getName())
+                            .setIdentifier(identifier.getIdentifier());
+                } else {
+                    existingPatient.addIdentifier(identifier);
+                }
+            }
+        }
+
+        // Update person attributes
+        for (PersonAttribute attribute : patient.getAttributes()) {
+            if (attribute != null) {
+                if (existingPatient.getAttribute(attribute.getUuid()) != null) {
+                    existingPatient.getAttribute(attribute.getId()).setValue(attribute.getValue());
+                } else {
+                    existingPatient.addAttribute(attribute);
+                }
+            }
+        }
+
+        try {
+            patient = patientService.savePatient(existingPatient);
+        } catch (Exception ex) {
+            // TODO I remember getting into trouble if i called this validator before the above save method.
+            // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
+            patientValidator.validate(patient, errors);
+            RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
+
+            if (!errors.hasErrors()) {
+                errors.reject(ex.getMessage());
+            }
+            return new FailureResult(createErrorMessage(errors, messageSourceService));
+        }
+
+        InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
+                ui.message("registrationapp.updatedPatientMessage",
+                        ui.encodeHtml(ui.format(existingPatient))));
+
+        String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
+        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", existingPatient.getUuid().toString());
+
+        return new SuccessResult(redirectUrl);
+    }
+
+    public FragmentActionResult addPatient(UiSessionContext sessionContext, AppDescriptor app,
+            RegistrationCoreService registrationService, Patient patient, PersonName name,
+            PersonAddress address, Integer birthdateYears, Integer birthdateMonths,
+            Date registrationDate, Boolean unknown, String patientIdentifier,
+            HttpServletRequest request, MessageSourceService messageSourceService,
+            EncounterService encounterService, ObsService obsService, ConceptService conceptService,
+            PatientService patientService, EmrApiProperties emrApiProperties,
+            PatientValidator patientValidator, UiUtils ui) throws Exception {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
