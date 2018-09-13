@@ -50,6 +50,8 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextSensitiveTest {
 
@@ -177,7 +179,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, null, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -198,7 +200,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + CIVIL_STATUS_CONCEPT_UUID, MARRIED_CONCEPT_UUID);
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, null, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -223,7 +225,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, null, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -250,7 +252,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         name.setGivenName(null);
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, null, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -297,7 +299,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("patientIdentifierField", "123abcd");
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, null, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -342,7 +344,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("patientIdentifierField", "123abcd");
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, null, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -352,6 +354,37 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifier(), is("123abcd"));
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifierType().getUuid(), is(OLD_IDENTIFIER_TYPE_UUID));
 
+    }
+
+    @Test
+    public void testPostToEditPatientInfo() throws Exception {
+        // Fixture setup
+        String patientId = "1";
+
+        Patient existingPatient = new Patient();
+        existingPatient.setId(1);
+        existingPatient.setGender("M");
+        existingPatient.addIdentifier(new PatientIdentifier("123456", patientService.getPatientIdentifierType(2), location));
+
+        name = new PersonName();
+        name.setGivenName("Previous Given");
+        name.setFamilyName("Previous Family");
+
+        address = new PersonAddress();
+
+        // Define a mock
+        patientService = mock(PatientService.class);
+        when(patientService.getPatient(1)).thenReturn(existingPatient);
+
+        // Execution
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+                patient, patientId, name, address, 30, null, null, true, null, request,
+                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        // Assertion
+        assertTrue(result instanceof SuccessResult);
+        verify(patientService, times(1)).savePatient(any(Patient.class));
     }
 
 }

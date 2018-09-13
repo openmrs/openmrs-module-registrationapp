@@ -1,9 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
@@ -21,7 +19,6 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
@@ -29,6 +26,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
 
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
+                    @RequestParam(value = "patientId", required = false) @BindParams Patient existingPatient,
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
@@ -36,20 +34,24 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                     UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService);
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService, existingPatient);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService, Patient existingPatient) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         if (patient == null) {
-        	patient = new Patient();
+          patient = new Patient();
+        } else {
+          patient = existingPatient;
         }
 
         NameSupportCompatibility nameSupport = Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class);
         AddressSupportCompatibility addressSupport = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class);
         
         model.addAttribute("patient", patient);
+        model.addAttribute("patienIdNumber", patient.getId());
+        model.addAttribute("patienUuid", patient.getUuid());
         model.addAttribute("primaryIdentifierType", primaryIdentifierType);
         model.addAttribute("appId", app.getId());
         model.addAttribute("formStructure", formStructure);
