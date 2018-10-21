@@ -43,7 +43,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         NavigatorController = KeyboardController();
         jq('#cancelSubmission').unbind(); // unbind the functionality built into the navigator to return to top of the form
         jq('#cancelSubmission').click(function(event){
-            window.location='${ returnUrl }';
+            window.location='${ ui.encodeJavaScript(returnUrl) }';
         })
 
         // disable submit button on submit
