@@ -3,6 +3,7 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.addresshierarchy.AddressHierarchyEntry;
 import org.openmrs.module.addresshierarchy.AddressHierarchyLevel;
 import org.openmrs.module.addresshierarchy.service.AddressHierarchyService;
 import org.openmrs.module.registrationapp.AddressSupportCompatibility;
@@ -22,13 +23,19 @@ public class PersonAddressWithHierarchyFragmentController {
         AddressHierarchyService addressHierarchyService = Context.getService(AddressHierarchyService.class);
 
         List<AddressHierarchyLevel> validLevels = new ArrayList<AddressHierarchyLevel>();
+        List<String> manualFields = new ArrayList<String>();
         List<AddressHierarchyLevel> levels = addressHierarchyService.getOrderedAddressHierarchyLevels();
         for (AddressHierarchyLevel level : levels) {
             if (level.getAddressField() != null) {
                 validLevels.add(level);
+                List<AddressHierarchyEntry> entries = addressHierarchyService.getAddressHierarchyEntriesByLevel(level);
+                if ( entries == null || (entries !=null && entries.size() < 1)) {
+                    manualFields.add(level.getAddressField().getName());
+                }
             }
         }
         model.put("levels", validLevels);
+        model.put("manualFields", manualFields);
 
         AddressSupportCompatibility addressSupport = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class);
         model.put("addressTemplate", addressSupport.getDefaultLayoutTemplate());

@@ -10,6 +10,8 @@
         }
         return it;
     }
+
+    def manualFields = config.manualFields ? config.manualFields : manualFields
 %>
 <div id="${ config.id }-container">
 
@@ -57,8 +59,8 @@
     <% if (config.shortcutFor) { %>
         personAddressWithHierarchy.shortcutFor = '${ ui.escapeJs(config.shortcutFor) }';
     <% } %>
-    <% if (config.manualFields) { %>
-        <% config.manualFields.each { %>
+    <% if (manualFields) { %>
+        <% manualFields.each { %>
             personAddressWithHierarchy.manualFields.push('${ it }');
         <% } %>
     <% } %>
