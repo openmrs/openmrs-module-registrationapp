@@ -28,8 +28,8 @@ public class PersonAddressWithHierarchyFragmentController {
         for (AddressHierarchyLevel level : levels) {
             if (level.getAddressField() != null) {
                 validLevels.add(level);
-                List<AddressHierarchyEntry> entries = addressHierarchyService.getAddressHierarchyEntriesByLevel(level);
-                if ( entries == null || (entries !=null && entries.size() < 1)) {
+                Integer count = addressHierarchyService.getAddressHierarchyEntryCountByLevel(level);
+                if ( count == null || (count !=null || count.intValue() < 1)) {
                     manualFields.add(level.getAddressField().getName());
                 }
             }
