@@ -29,7 +29,7 @@ public class PersonAddressWithHierarchyFragmentController {
             if (level.getAddressField() != null) {
                 validLevels.add(level);
                 Integer count = addressHierarchyService.getAddressHierarchyEntryCountByLevel(level);
-                if ( count == null || (count !=null || count.intValue() < 1)) {
+                if ( count == null || (count !=null && count.intValue() < 1)) {
                     manualFields.add(level.getAddressField().getName());
                 }
             }
