@@ -3,7 +3,6 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.PersonAddress;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.addresshierarchy.AddressHierarchyEntry;
 import org.openmrs.module.addresshierarchy.AddressHierarchyLevel;
 import org.openmrs.module.addresshierarchy.service.AddressHierarchyService;
 import org.openmrs.module.registrationapp.AddressSupportCompatibility;
