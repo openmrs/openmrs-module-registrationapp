@@ -35,6 +35,11 @@
             // so that these values are immediately visible on page load
             levelInitial = initialValue[level.addressField.name] ?: ""
         }
+        // else set a default value if it exists
+        else {
+            levelInitial = addressTemplate.elementDefaults && addressTemplate.elementDefaults[level.addressField.name] ?
+                addressTemplate.elementDefaults[level.addressField.name] : "";
+        }
     %>
         <p>
             <label>${ ui.message(addressTemplate.nameMappings[level.addressField.name]) }</label>
