@@ -191,9 +191,10 @@ public class RegisterPatientFragmentController {
             // TODO I remember getting into trouble if i called this validator before the above save method.
             // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
             patientValidator.validate(patient, errors);
+            int originalErrorCount = errors.getErrorCount();
             RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
 
-            if (!errors.hasErrors()) {
+            if (!errors.hasErrors() || (originalErrorCount == errors.getErrorCount())) {
                 errors.reject(ex.getMessage());
             }
             return new FailureResult(createErrorMessage(errors, messageSourceService));
