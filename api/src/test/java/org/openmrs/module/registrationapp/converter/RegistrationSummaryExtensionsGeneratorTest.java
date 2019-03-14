@@ -14,6 +14,7 @@
 package org.openmrs.module.registrationapp.converter;
 
 import java.io.InputStream;
+import java.lang.IllegalArgumentException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -44,8 +45,7 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     	JsonNode sections = appDescriptor.getConfig().get("sections");
     	
     	assertNotNull(extensions);
-    	assertEquals(4, extensions.size());
-    	int extensionCount = 0;
+    	assertEquals(3, extensions.size());
     	for (Extension extn : extensions) {
     		//For each Extension, loop over all appDescriptor's sections
 	    	for (JsonNode section : sections) {
@@ -67,13 +67,19 @@ public class RegistrationSummaryExtensionsGeneratorTest {
 					
 					Map<String, String> fragmentConfig = (HashMap<String, String>) extn.getExtensionParams().get("fragmentConfig");
 					assertEquals(sectionId, fragmentConfig.get("sectionId"));
-					extensionCount++;
 					break;
 				}
 			}
     	}
-    	assertEquals(4, extensionCount);
     }
     
-    
+    @Test(expected = IllegalArgumentException.class)
+    public void generate_shouldThrowExceptionGivenNotARegAppConfig() throws Exception{
+    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
+    	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
+    	
+    	AppDescriptor appDescriptor = appDescriptors.get(0);
+    	appDescriptor.setId("acme.sysadmin.manage");
+    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    }
 }

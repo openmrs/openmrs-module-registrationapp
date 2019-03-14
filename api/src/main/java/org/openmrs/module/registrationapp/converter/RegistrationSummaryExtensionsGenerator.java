@@ -17,7 +17,7 @@ import org.codehaus.jackson.JsonNode;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 
-import java.io.IOException;
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,20 +41,22 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * @should throw exception if config is not for registrationapp
 	 * @should return empty Extension list if app config has no sections
 	 */
-	public static List<Extension> generate(AppDescriptor app) throws IOException {
+	public static List<Extension> generate(AppDescriptor app) throws  IllegalArgumentException{
 		
 		if (!isRegAppConfig(app)) {
-			throw new IOException("Not a Registration application configuration.");
+			throw new IllegalArgumentException("Not a Registration application configuration.");
 		}
 		
 		List<Extension> extensions = new ArrayList<Extension>();
 		JsonNode sections = app.getConfig().get("sections");
 		
 		if (sections.size() > 0 && sections != null) {
-			for(JsonNode section : sections) {
+			for (JsonNode section : sections) {
+				String sectionId = section.get("id").getTextValue();
+				if (sectionId.equalsIgnoreCase("contactInfo") || sectionId.equalsIgnoreCase("demographics")) continue;
 				
 				String appId = app.getId();
-				String regSummaryId = generateRegSummaryId (appId, section.get("id").getTextValue());
+				String regSummaryId = generateRegSummaryId(appId, section.get("id").getTextValue());
 				String extensionPointId = "registrationSummary.contentFragments";
 				
 				Map<String, Object> extensionParams = new HashMap<String, Object>();
@@ -82,19 +84,19 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * @param app contains the registration application configuration
 	 * @return true/false
 	 */
-	private static Boolean isRegAppConfig (AppDescriptor app) {
+	public static Boolean isRegAppConfig(AppDescriptor app) {
 		return (app.getId() != null && app.getId().contains("registrationapp.registerPatient"));
 	}
 	
 	/**
 	 * Generates registration summary Id from the appId and sectionId
 	 * 
-	 * @param appId contains the registration application Id
+	 * @param regAppId contains the registration application Id
 	 * @param sectionId contains the registratin application section Id
 	 * @return registration summary configuration Id
 	 */
-	private static String generateRegSummaryId (String appId, String sectionId) {
-		String regSummaryId = appId.substring(0, appId.indexOf("registerPatient")) 
+	public static String generateRegSummaryId (String regAppId, String sectionId) {
+		String regSummaryId = regAppId.substring(0, regAppId.indexOf("registerPatient")) 
 								+ "summary." 
 								+ sectionId;
 		return regSummaryId;
