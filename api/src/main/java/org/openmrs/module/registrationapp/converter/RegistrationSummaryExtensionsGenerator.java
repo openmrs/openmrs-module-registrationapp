@@ -41,7 +41,7 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * @should throw exception if config is not for registrationapp
 	 * @should return empty Extension list if app config has no sections
 	 */
-	public static List<Extension> generate(AppDescriptor app) throws  IllegalArgumentException{
+	public static List<Extension> generate(AppDescriptor app) throws IllegalArgumentException {
 		
 		if (!isRegAppConfig(app)) {
 			throw new IllegalArgumentException("Not a Registration application configuration.");
@@ -50,10 +50,13 @@ public class RegistrationSummaryExtensionsGenerator {
 		List<Extension> extensions = new ArrayList<Extension>();
 		JsonNode sections = app.getConfig().get("sections");
 		
-		if (sections.size() > 0 && sections != null) {
+		if (sections != null && sections.size() > 0 ) {
 			for (JsonNode section : sections) {
 				String sectionId = section.get("id").getTextValue();
-				if (sectionId.equalsIgnoreCase("contactInfo") || sectionId.equalsIgnoreCase("demographics")) continue;
+				if (sectionId.equalsIgnoreCase("contactInfo") || sectionId.equalsIgnoreCase("demographics")){
+					// 'contact info' and 'demographics' are hardcoded in the reg. summary dashboard view
+					continue;
+				}
 				
 				String appId = app.getId();
 				String regSummaryId = generateRegSummaryId(appId, section.get("id").getTextValue());

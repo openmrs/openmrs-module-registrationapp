@@ -25,17 +25,15 @@ import org.codehaus.jackson.type.TypeReference;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.domain.AppDescriptor;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 public class RegistrationSummaryExtensionsGeneratorTest {
 
-	private PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 	
     @Test
-    public void generate_shouldGenerateRegSummaryFromRegApp() throws Exception{
+    public void generate_shouldGenerateRegSummaryFromRegApp() throws Exception {
     	
     	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
     	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
@@ -74,12 +72,23 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void generate_shouldThrowExceptionGivenNotARegAppConfig() throws Exception{
+    public void generate_shouldThrowWhenNotRegAppConfig() throws Exception {
     	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
     	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
     	
     	AppDescriptor appDescriptor = appDescriptors.get(0);
     	appDescriptor.setId("acme.sysadmin.manage");
     	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    }
+    
+    @Test
+    public void generate_shouldRetrunEmptyWhenEmptySectionsInConfig() throws Exception {
+    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
+    	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
+    	
+    	AppDescriptor appDescriptor = appDescriptors.get(0);
+    	appDescriptor.setConfig(appDescriptor.getConfig().putObject("section"));
+    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    	assertEquals(true, extensions.isEmpty());
     }
 }
