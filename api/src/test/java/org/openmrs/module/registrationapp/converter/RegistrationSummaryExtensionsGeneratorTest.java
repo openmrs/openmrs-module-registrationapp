@@ -38,17 +38,19 @@ public class RegistrationSummaryExtensionsGeneratorTest {
 	
     @Test
     public void generate_shouldGenerateRegSummaryFromRegApp() throws Exception {
-    	
+    	// setup
     	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
     	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
     	
     	AppDescriptor appDescriptor = appDescriptors.get(0);
-    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
     	JsonNode sections = appDescriptor.getConfig().get("sections");
     	
+    	// replay
+    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    	
+    	// verify
     	assertNotNull(extensions);
     	assertEquals(3, extensions.size());
-    	
     	for (Extension extn : extensions) {
     		//For each Extension, loop over all appDescriptor's sections
 	    	for (JsonNode section : sections) {
@@ -56,7 +58,7 @@ public class RegistrationSummaryExtensionsGeneratorTest {
 	    		
 	    		if (extn.getId().contains(sectionId)) {
 					assertNotNull(extn.getId());
-					assertEquals("acme.registrationapp.summary." + sectionId, extn.getId());
+					assertEquals("referenceapplication.registrationapp.summary." + sectionId, extn.getId());
 					
 					assertNotNull(extn.getAppId());
 					assertEquals(appDescriptor.getId(), extn.getAppId());
@@ -78,23 +80,28 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void generate_shouldThrowWhenNotRegAppConfig() throws Exception {
+    	// setup
     	AppDescriptor appDescriptor = new AppDescriptor("fooId", "fooDesc", null, null, null, null, 0);
     	appDescriptor.setInstanceOf("not.a.reg.app");
     	
-    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    	// replay
+    	RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
     }
     
     @Test
     public void generate_shouldReturnEmptyWhenEmptySectionsInConfig() throws Exception {
+    	// setup
     	AppDescriptor appDesc = new AppDescriptor("my.registrationapp.registerPatient", "Create a new Patient Record", "Register Patient", null, null, null, 0, null, null);
     	appDesc.setInstanceOf("registrationapp.registerPatient");
     	
     	ObjectNode config = new ObjectMapper().createObjectNode();
     	config.putArray("sections"); 
     	appDesc.setConfig(config);
-
+    	
+    	// replay
     	List<Extension> regSummaryExtensions = RegistrationSummaryExtensionsGenerator.generate(appDesc);
 
+    	// verify
     	assertThat(regSummaryExtensions, is(empty()));
     }
 }

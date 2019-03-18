@@ -1,16 +1,16 @@
 [
   {
-    "id": "acme.registrationapp.registerPatient",
+    "id": "referenceapplication.registrationapp.registerPatient",
     "instanceOf": "registrationapp.registerPatient",
     "label": "Register Patient",
     "description": "Create a new Patient Record",
     "extensions": [
       {
-        "id": "acme.registrationapp.registerPatient.homepageLink",
+        "id": "referenceapplication.registrationapp.registerPatient.homepageLink",
         "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
         "type": "link",
-        "label": "acme.app.registerPatient.label",
-        "url": "registrationapp/registerPatient.page?appId=acme.registrationapp.registerPatient",
+        "label": "referenceapplication.app.registerPatient.label",
+        "url": "registrationapp/registerPatient.page?appId=referenceapplication.registrationapp.registerPatient",
         "icon": "icon-user",
         "order": 1,
         "requiredPrivilege": "App: registrationapp.registerPatient"
@@ -75,11 +75,11 @@
           "label": "Next of Kin",
           "questions": [
             {
-              "legend": "acme.app.registerPatient.father.legend",
+              "legend": "Father",
               "fields": [
                 {
                   "type": "personAttribute",
-                  "label": "acme.app.registerPatient.father.name",
+                  "label": "What is the father's name?",
                   "formFieldName": "fatherName",
                   "uuid": "51c5e4f4-7e13-11e5-8bcf-feff819cdc9f",
                   "widget": {
@@ -89,7 +89,7 @@
                 },
                 {
                   "type": "personAttribute",
-                  "label": "acme.app.registerPatient.father.occupation",
+                  "label": "What is the Father's occupation?",
                   "formFieldName": "fatherOccupation",
                   "uuid": "51c5e88c-7e13-11e5-8bcf-feff819cdc9f",
                   "widget": {
@@ -103,11 +103,11 @@
               ]
             },
             {
-              "legend": "acme.app.registerPatient.mother.legend",
+              "legend": "Mother",
               "fields": [
                 {
                   "type": "personAttribute",
-                  "label": "acme.app.registerPatient.mother.name",
+                  "label": "What is the mother's name?",
                   "formFieldName": "motherName",
                   "uuid": "8d871d18-c2cc-11de-8d13-0010c6dffd0f",
                   "widget": {
@@ -124,11 +124,11 @@
           "label": "Insurance",
           "questions": [
             {
-              "legend": "acme.app.registerPatient.insurance.legend",
+              "legend": "Insurance detail",
               "fields": [
                 {
                   "type": "personAttribute",
-                  "label": "acme.app.registerPatient.insurance.details",
+                  "label": "What are the insurance details?",
                   "formFieldName": "insuranceDetails",
                   "uuid": "5c6ee7c2-7e1b-11e5-8bcf-feff819cdc9f",
                   "widget": {
@@ -142,28 +142,28 @@
           ]
         },
         {
-          "id": "ethnicity",
-          "label": "Ethnicity",
+          "id": "triage_vitals",
+		  "label": "Triage Vitals",
           "questions": [
             {
-              "legend": "acme.app.registerPatient.section.ethnicity",
+              "legend": "Rate",
               "fields": [
                 {
                   "type": "obs",
-                  "formFieldName": "obs.ACME:912",
-                  "label": "acme.app.registerPatient.ethnicity",
+                  "formFieldName": "obs.CIEL:5087",
+                  "label": "Heart rate",
                   "widget": {
-                    "providerName": "acmeforms",
-                    "fragmentId": "field/ethnicity"
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
                   }
                 },
                 {
                   "type": "obs",
-                  "formFieldName": "obs.ACME:920",
-                  "label": "acme.app.registerPatient.language",
+                  "formFieldName": "obs.CIEL:5085",
+                  "label": "Systolic blood pressure",
                   "widget": {
-                    "providerName": "acmeforms",
-                    "fragmentId": "field/language"
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
                   }
                 }
               ]
