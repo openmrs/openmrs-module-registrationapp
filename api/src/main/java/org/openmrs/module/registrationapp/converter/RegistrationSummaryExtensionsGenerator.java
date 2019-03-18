@@ -88,7 +88,7 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * @return true/false
 	 */
 	public static Boolean isRegAppConfig(AppDescriptor app) {
-		return (app.getId() != null && app.getId().contains("registrationapp.registerPatient"));
+		return (app.getId() != null && "registrationapp.registerPatient".equals(app.getInstanceOf()));
 	}
 	
 	/**
