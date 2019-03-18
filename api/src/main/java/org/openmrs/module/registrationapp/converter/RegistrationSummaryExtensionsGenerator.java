@@ -13,33 +13,27 @@
  */
 package org.openmrs.module.registrationapp.converter;
 
-import org.codehaus.jackson.JsonNode;
-import org.openmrs.module.appframework.domain.Extension;
-import org.openmrs.module.appframework.domain.AppDescriptor;
-
-import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
-/**
- * This class is used to generate Registration summary configuration
- * based on the way the Registration Sections are configured in the 
- * configuration passed in through AppDescrtiptor 
- */
+import org.codehaus.jackson.JsonNode;
+import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.domain.Extension;
+
 public class RegistrationSummaryExtensionsGenerator {
 	
 	/**
-	 * Generates regestration summary configuration from registration 
-	 * application config 
+	 * Generates a best match registration summary widgets list of extensions
+	 * given a registration app configuration.
 	 * 
-	 * @param app contains the registration application configuration
-	 * @return list of registration summary configuration
-	 * @throws IOException
-	 * @should generate summary config from AppDescriptor(app config)
-	 * @should throw exception if config is not for registrationapp
-	 * @should return empty Extension list if app config has no sections
+	 * @param app The app descriptor for the registration app.
+	 * @return The list of registration summary widgets extensions.
+	 * 
+	 * @throws IllegalArgumentException
+	 * 
+	 * @should throw when the provided app is not a registration app
 	 */
 	public static List<Extension> generate(AppDescriptor app) throws IllegalArgumentException {
 		
@@ -82,21 +76,14 @@ public class RegistrationSummaryExtensionsGenerator {
 	}
 
 	/**
-	 * Checks whether configuration passed is for the registration app
-	 * 
-	 * @param app contains the registration application configuration
-	 * @return true/false
+	 * @return true if the app is a registration app, false otherwise
 	 */
-	public static Boolean isRegAppConfig(AppDescriptor app) {
-		return (app.getId() != null && "registrationapp.registerPatient".equals(app.getInstanceOf()));
+	public static boolean isRegAppConfig(AppDescriptor app) {
+		return (app.getInstanceOf() != null && "registrationapp.registerPatient".equals(app.getInstanceOf()));
 	}
 	
 	/**
-	 * Generates registration summary Id from the appId and sectionId
-	 * 
-	 * @param regAppId contains the registration application Id
-	 * @param sectionId contains the registratin application section Id
-	 * @return registration summary configuration Id
+	 * Generates a comprehensive registration summary ID from an app ID and section ID.
 	 */
 	public static String generateRegSummaryId (String regAppId, String sectionId) {
 		String regSummaryId = regAppId.substring(0, regAppId.indexOf("registerPatient")) 
