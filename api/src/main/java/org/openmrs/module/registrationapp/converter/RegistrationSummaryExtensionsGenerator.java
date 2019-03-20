@@ -35,7 +35,7 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * 
 	 * @should throw when the provided app is not a registration app
 	 */
-	public static List<Extension> generate(AppDescriptor app) throws IllegalArgumentException {
+	public static List<Extension> generate(AppDescriptor app, boolean distribute) throws IllegalArgumentException {
 		
 		if (!isRegAppConfig(app)) {
 			throw new IllegalArgumentException("Not a Registration application configuration.");
@@ -45,16 +45,18 @@ public class RegistrationSummaryExtensionsGenerator {
 		JsonNode sections = app.getConfig().get("sections");
 		
 		if (sections != null && sections.size() > 0 ) {
+			boolean firstColumn = false;
 			for (JsonNode section : sections) {
 				String sectionId = section.get("id").getTextValue();
-				if (sectionId.equalsIgnoreCase("contactInfo") || sectionId.equalsIgnoreCase("demographics")){
+				if ("contactInfo".equalsIgnoreCase(sectionId) || "demographics".equalsIgnoreCase(sectionId)){
 					// 'contact info' and 'demographics' are hardcoded in the reg. summary dashboard view
 					continue;
 				}
 				
 				String appId = app.getId();
 				String regSummaryId = generateRegSummaryId(appId, section.get("id").getTextValue());
-				String extensionPointId = "registrationSummary.contentFragments";
+				String extensionPointId = (firstColumn = !firstColumn) || !distribute ? "registrationSummary.contentFragments" 
+				                                                                      : "registrationSummary.secondColumnContentFragments";
 				
 				Map<String, Object> extensionParams = new HashMap<String, Object>();
 				Map<String, String> fragmentConfig = new HashMap<String, String>();
@@ -85,10 +87,29 @@ public class RegistrationSummaryExtensionsGenerator {
 	/**
 	 * Generates a comprehensive registration summary ID from an app ID and section ID.
 	 */
-	public static String generateRegSummaryId (String regAppId, String sectionId) {
+	public static String generateRegSummaryId(String regAppId, String sectionId) {
 		String regSummaryId = regAppId.substring(0, regAppId.indexOf("registerPatient")) 
 								+ "summary." 
 								+ sectionId;
 		return regSummaryId;
 	}
+	
+	/**
+	 * Extracts extensions with the specified extensionPointId
+	 * 
+	 * @param extensions list summary extensions
+	 * @param extensionPointId
+	 * @return Extensions
+	 */
+	public static List<Extension> extractExtensions(List<Extension> extensions, String extensionPointId) {
+		List<Extension> columnExtensions = new ArrayList<Extension>();
+		
+		for (Extension extension : extensions) {
+			if (extensionPointId.equals(extension.getExtensionPointId())) {
+				columnExtensions.add(extension);
+			}
+		}
+		return columnExtensions;
+	}
+	
 }

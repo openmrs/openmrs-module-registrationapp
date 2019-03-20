@@ -46,7 +46,7 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     	JsonNode sections = appDescriptor.getConfig().get("sections");
     	
     	// replay
-    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor, false);
     	
     	// verify
     	assertNotNull(extensions);
@@ -85,7 +85,7 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     	appDescriptor.setInstanceOf("not.a.reg.app");
     	
     	// replay
-    	RegistrationSummaryExtensionsGenerator.generate(appDescriptor);
+    	RegistrationSummaryExtensionsGenerator.generate(appDescriptor, true);
     }
     
     @Test
@@ -99,9 +99,31 @@ public class RegistrationSummaryExtensionsGeneratorTest {
     	appDesc.setConfig(config);
     	
     	// replay
-    	List<Extension> regSummaryExtensions = RegistrationSummaryExtensionsGenerator.generate(appDesc);
+    	List<Extension> regSummaryExtensions = RegistrationSummaryExtensionsGenerator.generate(appDesc, true);
 
     	// verify
     	assertThat(regSummaryExtensions, is(empty()));
+    }
+    
+    @Test
+    public void extractExtensions_shouldExtractColumnWidgets() throws Exception {
+    	// setup
+    	InputStream inputStream = getClass().getClassLoader().getResourceAsStream("registration_app.json");    	
+    	List<AppDescriptor> appDescriptors = new ObjectMapper().readValue(inputStream, new TypeReference<List<AppDescriptor>>() {});
+    	
+    	AppDescriptor appDescriptor = appDescriptors.get(0);
+    	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(appDescriptor, true);
+    	
+    	// replay 
+    	List<Extension> leftColumnExtns = RegistrationSummaryExtensionsGenerator.extractExtensions(extensions, "registrationSummary.contentFragments");
+    	List<Extension> rightColumnExtns = RegistrationSummaryExtensionsGenerator.extractExtensions(extensions, "registrationSummary.secondColumnContentFragments");
+    	
+    	// verify
+    	assertEquals(2, leftColumnExtns.size());
+    	assertEquals(1, rightColumnExtns.size());
+    	assertEquals("registrationSummary.contentFragments", leftColumnExtns.get(0).getExtensionPointId());
+    	assertEquals("registrationSummary.contentFragments", leftColumnExtns.get(1).getExtensionPointId());
+    	assertEquals("registrationSummary.secondColumnContentFragments", rightColumnExtns.get(0).getExtensionPointId());
+    	
     }
 }

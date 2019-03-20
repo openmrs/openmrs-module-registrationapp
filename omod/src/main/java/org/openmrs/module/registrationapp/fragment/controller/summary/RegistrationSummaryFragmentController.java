@@ -1,5 +1,6 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
+import org.apache.commons.collections.CollectionUtils;
 
 import org.openmrs.Patient;
 import org.openmrs.module.appframework.context.AppContextModel;
@@ -9,6 +10,7 @@ import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.coreapps.contextmodel.PatientContextModel;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.module.registrationapp.converter.RegistrationSummaryExtensionsGenerator;
 import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
@@ -48,12 +50,19 @@ public class RegistrationSummaryFragmentController {
             app = appFrameworkService.getApp((String) config.get("appId"));
         }
         model.addAttribute("appId", app !=null ? app.getId() : "referenceapplication.registrationapp.registerPatient");
-
-        List<Extension> registrationFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments", appContextModel);
-        Collections.sort(registrationFragments);
-        model.addAttribute("registrationFragments", registrationFragments);
-
+       
+        List<Extension> firstColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments", appContextModel);
         List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments", appContextModel);
+        
+        if (CollectionUtils.isEmpty(firstColumnFragments) || CollectionUtils.isEmpty(secondColumnFragments)) {
+        	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(app, true);
+        	firstColumnFragments =  RegistrationSummaryExtensionsGenerator.extractExtensions(extensions, "registrationSummary.contentFragments");
+        	secondColumnFragments =  RegistrationSummaryExtensionsGenerator.extractExtensions(extensions, "registrationSummary.secondColumnContentFragments");
+        }
+       
+        Collections.sort(firstColumnFragments);
+        model.addAttribute("firstColumnFragments", firstColumnFragments);
+
         Collections.sort(secondColumnFragments);
         model.addAttribute("secondColumnFragments", secondColumnFragments);
 
