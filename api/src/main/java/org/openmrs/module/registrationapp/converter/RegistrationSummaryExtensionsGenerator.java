@@ -29,6 +29,7 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * given a registration app configuration.
 	 * 
 	 * @param app The app descriptor for the registration app.
+	 * @param distribute flag to distribute summary widgets into columns or not
 	 * @return The list of registration summary widgets extensions.
 	 * 
 	 * @throws IllegalArgumentException
