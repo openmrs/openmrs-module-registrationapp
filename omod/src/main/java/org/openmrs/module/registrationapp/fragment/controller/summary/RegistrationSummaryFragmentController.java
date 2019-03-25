@@ -3,7 +3,7 @@ package org.openmrs.module.registrationapp.fragment.controller.summary;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 
-import org.openmrs.api.context.Context;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.Patient;
 import org.openmrs.module.appframework.context.AppContextModel;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -30,6 +30,7 @@ public class RegistrationSummaryFragmentController {
     public void controller(FragmentConfiguration config,
                            FragmentModel model,
                            @SpringBean AppFrameworkService appFrameworkService,
+                           @SpringBean AdministrationService administrationService,
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
                            @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
@@ -60,7 +61,7 @@ public class RegistrationSummaryFragmentController {
         List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments", appContextModel);
         
         if (CollectionUtils.isEmpty(firstColumnFragments) || CollectionUtils.isEmpty(secondColumnFragments)) {
-        	String distribute = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS, "false");
+        	String distribute = administrationService.getGlobalProperty(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS, "false");
         	
         	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(app, "true".equalsIgnoreCase(distribute));
         	
@@ -80,7 +81,7 @@ public class RegistrationSummaryFragmentController {
 
     }
     
-    public List<Extension> filter(List<Extension> extensionList, String extensionPointId){
+    protected List<Extension> filter(List<Extension> extensionList, String extensionPointId) {
     	
     	final String extnPointId = extensionPointId;
     	List<Extension> evaluatedExtensionList = new ArrayList<Extension>();
