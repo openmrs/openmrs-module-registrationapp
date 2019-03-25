@@ -19,6 +19,7 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,7 @@ public class RegistrationSummaryFragmentController {
     public void controller(FragmentConfiguration config,
                            FragmentModel model,
                            @SpringBean AppFrameworkService appFrameworkService,
-                           @SpringBean AdministrationService administrationService,
+                           @SpringBean("adminService") AdministrationService administrationService,
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
                            @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
