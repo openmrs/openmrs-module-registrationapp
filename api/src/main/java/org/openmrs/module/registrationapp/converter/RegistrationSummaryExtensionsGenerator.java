@@ -94,23 +94,4 @@ public class RegistrationSummaryExtensionsGenerator {
 								+ sectionId;
 		return regSummaryId;
 	}
-	
-	/**
-	 * Extracts extensions with the specified extensionPointId
-	 * 
-	 * @param extensions list summary extensions
-	 * @param extensionPointId
-	 * @return Extensions
-	 */
-	public static List<Extension> extractExtensions(List<Extension> extensions, String extensionPointId) {
-		List<Extension> columnExtensions = new ArrayList<Extension>();
-		
-		for (Extension extension : extensions) {
-			if (extensionPointId.equals(extension.getExtensionPointId())) {
-				columnExtensions.add(extension);
-			}
-		}
-		return columnExtensions;
-	}
-	
 }
