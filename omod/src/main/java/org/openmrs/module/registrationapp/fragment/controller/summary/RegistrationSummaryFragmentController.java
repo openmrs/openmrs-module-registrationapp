@@ -81,9 +81,8 @@ public class RegistrationSummaryFragmentController {
 
     }
     
-    protected List<Extension> filter(List<Extension> extensionList, String extensionPointId) {
+    protected List<Extension> filter(List<Extension> extensionList, final String extensionPointId) {
     	
-    	final String extnPointId = extensionPointId;
     	List<Extension> evaluatedExtensionList = new ArrayList<Extension>();
     	evaluatedExtensionList.addAll(extensionList);
     	
@@ -91,7 +90,7 @@ public class RegistrationSummaryFragmentController {
             
        	 @Override
          public boolean evaluate(Extension extension) {
-       	    if(extnPointId.equals(extension.getExtensionPointId())) {
+       	    if(extensionPointId.equals(extension.getExtensionPointId())) {
 	              return true;
 	            }
 	            return false;
