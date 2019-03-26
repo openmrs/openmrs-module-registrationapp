@@ -1,10 +1,13 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-
-import org.openmrs.api.AdministrationService;
 import org.openmrs.Patient;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.module.appframework.context.AppContextModel;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
@@ -12,18 +15,13 @@ import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.coreapps.contextmodel.PatientContextModel;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
-import org.openmrs.module.registrationapp.converter.RegistrationSummaryExtensionsGenerator;
 import org.openmrs.module.registrationapp.RegistrationAppConstants;
+import org.openmrs.module.registrationapp.converter.RegistrationSummaryExtensionsGenerator;
 import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 public class RegistrationSummaryFragmentController {
 

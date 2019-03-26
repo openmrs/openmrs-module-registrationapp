@@ -1,32 +1,5 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.openmrs.GlobalProperty;
-import org.openmrs.Patient;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.PatientService;
-import org.openmrs.module.appframework.domain.AppDescriptor;
-import org.openmrs.module.appframework.domain.Extension;
-import org.openmrs.module.appframework.context.AppContextModel;
-import org.openmrs.module.appframework.service.AppFrameworkService;
-import org.openmrs.module.appui.UiSessionContext;
-import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
-import org.openmrs.module.registrationapp.fragment.controller.summary.RegistrationSummaryFragmentController;
-import org.openmrs.module.registrationapp.RegistrationAppConstants;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
-import org.openmrs.ui.framework.fragment.FragmentModel;
-import org.openmrs.ui.framework.fragment.FragmentConfiguration;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -34,6 +7,27 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.Patient;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.module.appframework.context.AppContextModel;
+import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.domain.Extension;
+import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.module.registrationapp.RegistrationAppConstants;
+import org.openmrs.module.registrationapp.fragment.controller.summary.RegistrationSummaryFragmentController;
+import org.openmrs.ui.framework.fragment.FragmentConfiguration;
+import org.openmrs.ui.framework.fragment.FragmentModel;
 
 public class RegistrationSummaryFragmentControllerTest {
 
@@ -97,7 +91,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	// verify
    	 	assertThat(firstColumnFragments.size(), is(2));
    	 	assertThat(firstColumnFragments.get(0).getId(), is("referenceapplication.registrationapp.summary.nextOfKin"));
-   	 	assertThat(firstColumnFragments.get(1).getId(), is("referenceapplication.registrationapp.summary.triage_vitals"));
+   	 	assertThat(firstColumnFragments.get(1).getId(), is("referenceapplication.registrationapp.summary.triageVitals"));
 	 	
    	 	assertThat(secondColumnFragments.size(), is(1));
 	 	assertThat(secondColumnFragments.get(0).getId(), is("referenceapplication.registrationapp.summary.insurance"));
@@ -120,7 +114,7 @@ public class RegistrationSummaryFragmentControllerTest {
    	 	assertThat(firstColumnFragments.size(), is(3));
    	 	assertThat(firstColumnFragments.get(0).getId(), is("referenceapplication.registrationapp.summary.nextOfKin"));
    	 	assertThat(firstColumnFragments.get(1).getId(), is("referenceapplication.registrationapp.summary.insurance"));
-	 	assertThat(firstColumnFragments.get(2).getId(), is("referenceapplication.registrationapp.summary.triage_vitals"));
+	 	assertThat(firstColumnFragments.get(2).getId(), is("referenceapplication.registrationapp.summary.triageVitals"));
 	 	
 	 	assertThat(secondColumnFragments.size(), is(0));
     }
