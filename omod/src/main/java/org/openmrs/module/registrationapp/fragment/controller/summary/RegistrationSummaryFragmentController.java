@@ -81,22 +81,22 @@ public class RegistrationSummaryFragmentController {
 
     }
     
-    protected List<Extension> filter(List<Extension> extensionList, final String extensionPointId) {
+    /**
+     * Filters an extension list by selecting extensions that match a given extension point ID.
+     */
+    protected List<Extension> filter(final List<Extension> extensionList, final String extensionPointId) {
     	
-    	List<Extension> evaluatedExtensionList = new ArrayList<Extension>();
-    	evaluatedExtensionList.addAll(extensionList);
+    	List<Extension> ret = new ArrayList<Extension>() {{ addAll(extensionList); }};
     	
-    	CollectionUtils.filter(evaluatedExtensionList, new Predicate<Extension>() {
-            
-       	 @Override
-         public boolean evaluate(Extension extension) {
-       	    if(extensionPointId.equals(extension.getExtensionPointId())) {
+    	CollectionUtils.filter(ret, new Predicate<Extension>() {
+    		@Override
+    		public boolean evaluate(Extension extension) {
+       		 	if(extensionPointId.equals(extension.getExtensionPointId())) {
 	              return true;
 	            }
 	            return false;
-	         }
+	        }
 	    });
-    	return evaluatedExtensionList; 
+    	return ret; 
     }
-
 }
