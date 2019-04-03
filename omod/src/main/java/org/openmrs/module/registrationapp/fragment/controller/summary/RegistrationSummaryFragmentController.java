@@ -59,7 +59,7 @@ public class RegistrationSummaryFragmentController {
         List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments", appContextModel);
         
         // if no summary widget(s) provided then auto-generate them from the registration app configuration 
-        if (CollectionUtils.isEmpty(firstColumnFragments) || CollectionUtils.isEmpty(secondColumnFragments)) {
+        if (CollectionUtils.isEmpty(firstColumnFragments) && CollectionUtils.isEmpty(secondColumnFragments)) {
         	String distribute = administrationService.getGlobalProperty(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS, "false");
         	
         	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(app, "true".equalsIgnoreCase(distribute));
