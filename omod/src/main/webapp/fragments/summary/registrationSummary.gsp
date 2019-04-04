@@ -10,8 +10,8 @@
         <div class="info-container column">
             ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "demographics"]) }
 
-            <% if (registrationFragments) {
-                registrationFragments.each {
+            <% if (firstColumnFragments) {
+                firstColumnFragments.each {
                     // create a base map from the fragmentConfig if it exists, otherwise just create an empty map
                     def configs = [:];
                     if(it.extensionParams.fragmentConfig != null){

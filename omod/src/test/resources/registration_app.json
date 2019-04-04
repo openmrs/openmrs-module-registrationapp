@@ -1,0 +1,176 @@
+[
+  {
+    "id": "referenceapplication.registrationapp.registerPatient",
+    "instanceOf": "registrationapp.registerPatient",
+    "label": "Register Patient",
+    "description": "Create a new Patient Record",
+    "extensions": [
+      {
+        "id": "referenceapplication.registrationapp.registerPatient.homepageLink",
+        "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+        "type": "link",
+        "label": "referenceapplication.app.registerPatient.label",
+        "url": "registrationapp/registerPatient.page?appId=referenceapplication.registrationapp.registerPatient",
+        "icon": "icon-user",
+        "order": 1,
+        "requiredPrivilege": "App: registrationapp.registerPatient"
+      }
+    ],
+    "config": {
+      "registrationEncounter": {
+        "encounterType": "3e3424bd-6e9d-4c9c-b3a4-f3fee751fe7c",
+        "encounterRole": "a0b03050-c99b-11e0-9572-0800200c9a66"
+      },
+      "afterCreatedUrl": "coreapps/clinicianfacing/patient.page?patientId={{patientId}}",
+      "patientDashboardLink": "",
+      "allowUnknownPatients": false,
+      "allowManualIdentifier": false,
+      "allowRetrospectiveEntry": true,
+      "sections": [
+        {
+          "id": "contactInfo",
+          "label": "registrationapp.patient.contactInfo.label",
+          "questions": [
+            {
+              "legend": "Person.address",
+              "fields": [
+                {
+                  "type": "personAddress",
+                  "label": "registrationapp.patient.address.question",
+                  "widget": {
+                    "providerName": "registrationapp",
+                    "fragmentId": "field/personAddressWithHierarchy",
+                    "config": {
+                      "manualFields": [
+                        "address1"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "legend": "registrationapp.patient.phone.label",
+              "id": "phoneNumberLabel",
+              "fields": [
+                {
+                  "type": "personAttribute",
+                  "label": "registrationapp.patient.phone.question",
+                  "formFieldName": "phoneNumber",
+                  "uuid": "14d4f066-15f5-102d-96e4-000c29c2a5d7",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
+                  },
+                  "cssClasses": [
+                    "number"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "nextOfKin",
+          "label": "Next of Kin",
+          "questions": [
+            {
+              "legend": "Father",
+              "fields": [
+                {
+                  "type": "personAttribute",
+                  "label": "What is the father's name?",
+                  "formFieldName": "fatherName",
+                  "uuid": "51c5e4f4-7e13-11e5-8bcf-feff819cdc9f",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
+                  }
+                },
+                {
+                  "type": "personAttribute",
+                  "label": "What is the Father's occupation?",
+                  "formFieldName": "fatherOccupation",
+                  "uuid": "51c5e88c-7e13-11e5-8bcf-feff819cdc9f",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text",
+                    "config": {
+                      "size": 150
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "legend": "Mother",
+              "fields": [
+                {
+                  "type": "personAttribute",
+                  "label": "What is the mother's name?",
+                  "formFieldName": "motherName",
+                  "uuid": "8d871d18-c2cc-11de-8d13-0010c6dffd0f",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "insurance",
+          "label": "Insurance",
+          "questions": [
+            {
+              "legend": "Insurance detail",
+              "fields": [
+                {
+                  "type": "personAttribute",
+                  "label": "What are the insurance details?",
+                  "formFieldName": "insuranceDetails",
+                  "uuid": "5c6ee7c2-7e1b-11e5-8bcf-feff819cdc9f",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text",
+                    "size": 150
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "triageVitals",
+		  "label": "Triage Vitals",
+          "questions": [
+            {
+              "legend": "Rate",
+              "fields": [
+                {
+                  "type": "obs",
+                  "formFieldName": "obs.CIEL:5087",
+                  "label": "Heart rate",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
+                  }
+                },
+                {
+                  "type": "obs",
+                  "formFieldName": "obs.CIEL:5085",
+                  "label": "Systolic blood pressure",
+                  "widget": {
+                    "providerName": "uicommons",
+                    "fragmentId": "field/text"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
