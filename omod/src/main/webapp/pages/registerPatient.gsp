@@ -186,7 +186,26 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         %>
             <section id="${section.id}" class="non-collapsible">
                 <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
-
+                 
+                 <% if (combineSubSections == true ) { %>
+                 
+                 <fieldset id="${section.id}-fieldset">
+                      <legend></legend>
+                      ${ ui.includeFragment("registrationapp", "registration/combinedSubSections", [
+                               section: section,
+                               questions: questions,
+                               identifierSectionFound: identifierSectionFound,
+                               allowManualIdentifier: allowManualIdentifier,
+                               nameTemplate: nameTemplate,
+                               patient: patient,
+                               ui: ui,
+                               minAgeYear: minAgeYear,
+                               maxAgeYear: maxAgeYear,
+                               genderOptions: genderOptions
+                      ])}
+                 </fieldset>
+                  
+                 <% } else { %>
                     <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
                     <% if (section.id == 'demographics') { %>
 
@@ -318,6 +337,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             <% } %>
                         </fieldset>
                     <% } %>
+                 <% } %>
             </section>
         <% } %>
 
