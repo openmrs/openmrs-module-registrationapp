@@ -76,6 +76,19 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     font-size: 15px;
     margin: 0 20px 0 0;
 }
+
+fieldset[id\$="-fieldset"] input,
+fieldset[id\$="-fieldset"] select {
+    border-radius: 5px;       
+}
+
+fieldset[id\$="-fieldset"] div,
+fieldset[id\$="-fieldset"] div > div {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding: 5px;
+}
 </style>
 <script type="text/javascript">
 
@@ -184,15 +197,19 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             def section = structure.value
             def questions = section.questions
         %>
+                  
             <section id="${section.id}" class="non-collapsible">
                 <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
-
+                  
+                  <${combineSubSections == true ? "fieldset id=\"" + section.id + "-fieldset\"" : "div"}>
+                  ${combineSubSections == true ? "<legend>" + ui.message(section.label) + "</legend>" : ""}
+                  
                     <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
                     <% if (section.id == 'demographics') { %>
 
-                        <fieldset id="demographics-name">
+                        <${combineSubSections == true ? "div" : "fieldset"} id="demographics-name">
 
-                            <legend>${ui.message("registrationapp.patient.name.label")}</legend>
+                            ${combineSubSections == true ? "" : "<legend>" + ui.message("registrationapp.patient.name.label") + "</legend>"}
                             <div>
                                 <h3>${ui.message("registrationapp.patient.name.question")}</h3>
 
@@ -232,10 +249,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 
                             <input type="hidden" name="preferred" value="true"/>
-                        </fieldset>
+                        <${combineSubSections == true ? "/div" : "/fieldset"}>
 
-                        <fieldset id="demographics-gender">
-                            <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
+                        <${combineSubSections == true ? "div" : "fieldset"} id="demographics-gender">
+                        
+                            ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("emr.gender") + "</legend>"}                        
                             <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
@@ -248,10 +266,12 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             ])}
                             <!-- we "hide" the unknown flag here since gender is the only field not hidden for an unknown patient -->
                             <input id="demographics-unknown" type="hidden" name="unknown" value="false"/>
-                        </fieldset>
+                        <${combineSubSections == true ? "/div" : "/fieldset"}>
 
-                        <fieldset id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
-                            <legend id="birthdateLabel">${ui.message("registrationapp.patient.birthdate.label")}</legend>
+                        <${combineSubSections == true ? "div" : "fieldset"} id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
+                            
+                            ${combineSubSections == true ? "" : "<legend id=\"birthdateLabel\">" + ui.message("registrationapp.patient.birthdate.label") + "</legend>"}
+                            
                             <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                                     label: "",
@@ -263,7 +283,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                     minYear: minAgeYear,
                                     maxYear: maxAgeYear
                             ])}
-                        </fieldset>
+                        <${combineSubSections == true ? "/div" : "/fieldset"}>
                     <% } %>
 
                     <!-- allow customization of additional question in the patient identification section, if it is included -->
@@ -286,12 +306,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             classes = classes + (classes.length() > 0 ? ' ' : '') + question.cssClasses.join(" ")
                         }
                     %>
-                        <fieldset id="${question.id}"
+                        <${combineSubSections == true ? "div" : "fieldset"} id="${question.id}"
                                 <% if (classes.length() > 0) { %> class="${classes}" <% } %>
                                 <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
                                 <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
                         >
-                            <legend>${ ui.message(question.legend)}</legend>
+                            ${combineSubSections == true ? "" : "<legend>" + ui.message(question.legend) + "</legend>"}
+                            
                             <% if(question.legend == "Person.address"){ %>
                                 ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
                             <% } %>
@@ -316,8 +337,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             %>
                                 ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                             <% } %>
-                        </fieldset>
+                        <${combineSubSections == true ? "/div" : "/fieldset"}>
                     <% } %>
+                  <${combineSubSections == true ? "/fieldset" : "/div"}>  
             </section>
         <% } %>
 
