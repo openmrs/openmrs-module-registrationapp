@@ -1,3 +1,4 @@
+
 package org.openmrs.module.registrationapp.page.controller;
 
 import org.apache.commons.lang.StringUtils;
@@ -203,6 +204,7 @@ public class EditSectionPageController {
         model.addAttribute("section", section);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 adminService.getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
+        model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
     }
 
 
