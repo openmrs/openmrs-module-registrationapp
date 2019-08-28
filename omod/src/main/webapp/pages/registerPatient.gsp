@@ -119,7 +119,6 @@ fieldset[id\$="-fieldset"] div > div {
     </div>
 </div>
 
-<div id="content" class="container">
     <h2>
         ${ ui.message("registrationapp.registration.label") }
     </h2>
@@ -373,4 +372,3 @@ fieldset[id\$="-fieldset"] div > div {
             </div>
         </div>
     </form>
-</div>

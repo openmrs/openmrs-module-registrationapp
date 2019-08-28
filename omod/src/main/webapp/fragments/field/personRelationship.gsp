@@ -5,11 +5,12 @@
     ui.includeJavascript("uicommons", "angular-ui/ui-bootstrap-tpls-0.6.0.min.js")
     ui.includeJavascript("uicommons", "services/personService.js")
     ui.includeJavascript("registrationapp", "field/personRelationship.js")
+    ui.includeCss("registrationapp","registerPatient.css")
 %>
 
 <div ng-app="personRelationships" ng-controller="PersonRelationshipController">
 
-    <div ng-repeat="relationship in relationships">
+    <div ng-repeat="relationship in relationships" id="relationship">
         <p class="left">
             <select id="relationship_type" name="relationship_type" class="rel_type" ng-model="relationship.type">
                 <option value="">${ui.message('registrationapp.person.relationship.selectRelationshipType')}</option>

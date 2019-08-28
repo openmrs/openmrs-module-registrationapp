@@ -2,3 +2,48 @@
 #simplemodal-container, .dialog {
   width: 1000px !important;
 }
+
+@media only screen and (max-width: 1024px) {
+  #demographics {
+    width: unset !important;
+  }
+  
+}
+
+@media only screen and (min-width : 320px) and (max-width : 365px)  {
+  #contactInfo{
+    width: 350px;
+  }
+  
+  #address1{
+    width: 235px;
+  }
+  
+  #address2{
+    width: 235px;
+  }
+
+  #relationship{
+    display: grid;
+  }
+}
+
+@media only screen and (max-width : 414px) and (min-width : 366px)  {
+  #contactInfo{
+    width: 350px;
+  }
+  
+  #address1{
+    width: 300px;
+  }
+  
+  #address2{
+    width: 300px;
+  }
+
+  #relationship{
+    display: grid;
+  }
+}
+
+
