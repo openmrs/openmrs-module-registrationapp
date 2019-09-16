@@ -69,7 +69,6 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 </script>
 
 
-<div id="content" class="container">
     <h2>
         ${ ui.message(section.label)  }
     </h2>
@@ -208,4 +207,3 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             </div>
         </div>
     </form>
-</div>
