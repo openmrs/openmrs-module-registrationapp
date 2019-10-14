@@ -61,12 +61,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender;
-            if (item.gender == 'M') {
-                gender = emr.message('emr.gender.M');
-            } else {
-                gender = emr.message('emr.gender.F');
-            }
+            var gender = emr.message('emr.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
@@ -167,12 +162,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender;
-            if (item.gender == 'M') {
-                gender = emr.message('emr.gender.M');
-            } else {
-                gender = emr.message('emr.gender.F');
-            }
+            var gender = emr.message('emr.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
