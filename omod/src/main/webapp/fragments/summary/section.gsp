@@ -63,7 +63,7 @@
                     <% fields.each { field ->
                         def displayValue = "";
                         if (field.type == 'personAttribute') {
-                            displayValue = uiUtils.getAttribute(patient.patient, field.uuid)?.replace("\n", "<br />");
+                            displayValue = uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />");
                         }
                         else if (field.type == 'personAddress') {
                             displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
