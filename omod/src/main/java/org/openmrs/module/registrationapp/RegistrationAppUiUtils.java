@@ -24,6 +24,7 @@ import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.idgen.EmptyIdentifierPoolException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -168,6 +169,22 @@ public class RegistrationAppUiUtils {
 			errors.reject("registrationapp.error.identifier.emptyIdentifierPool");
 		}
 	}
+	
+	/**
+	 * @since 1.15.0
+	 * 
+     * Reads the 'genderOptions' app's config value and returns the specified gender options as string array
+     * otherwise returns the default gender options string array
+     * 
+     * @param app that may provide gender options if it is configured
+     * @return string array of gender options
+     */
+    public static String[] getGenderOptions(AppDescriptor app) {
+    	if (app.getConfig().get("genderOptions") != null) {
+    		return app.getConfig().get("genderOptions").getTextValue().replace(" ", "").split(",");
+    	}
+    	return new String[] {"M", "F"};
+    }
 
 
 }

@@ -205,6 +205,7 @@ public class EditSectionPageController {
         model.addAttribute("enableOverrideOfAddressPortlet",
                 adminService.getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
+        model.addAttribute("genderOptns", RegistrationAppUiUtils.getGenderOptions(app));
     }
 
 

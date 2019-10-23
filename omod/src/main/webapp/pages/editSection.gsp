@@ -10,8 +10,11 @@
 
     ui.includeCss("registrationapp", "editSection.css")
 
-    def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
-                          [label: ui.message("emr.gender.F"), value: 'F'] ]
+    def genderOptions = []
+                              
+    genderOptns.each { optn ->
+    	genderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    }
 
     def monthOptions = [ [label: ui.message("registrationapp.month.1"), value: 1],
                          [label: ui.message("registrationapp.month.2"), value: 2],

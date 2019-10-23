@@ -12,6 +12,7 @@ import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.AddressSupportCompatibility;
 import org.openmrs.module.registrationapp.NameSupportCompatibility;
+import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.ui.framework.UiUtils;
@@ -72,21 +73,6 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments");
         Collections.sort(includeFragments);
         model.addAttribute("includeFragments", includeFragments);
-        model.addAttribute("genderOptns", getGenderOptions(app));
+        model.addAttribute("genderOptns", RegistrationAppUiUtils.getGenderOptions(app));
     }
-    
-    /**
-     * Reads the 'genderOptions' app's config value and returns the specified gender values as string array
-     * otherwise returns the default gender options string array
-     * 
-     * @param app that may provide gender options if it is configured so
-     * @return array of gender options
-     */
-    private String[] getGenderOptions(AppDescriptor app) {
-    	if (app.getConfig().get("genderOptions") != null) {
-    		return app.getConfig().get("genderOptions").getTextValue().replace(" ", "").split(",");
-    	}
-    	return new String[] {"M", "F"};
-    }
-
 }
