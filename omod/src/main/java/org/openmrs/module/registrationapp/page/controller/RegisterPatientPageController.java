@@ -40,7 +40,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
     }
 
     public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService) throws Exception {
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, app.getConfig().get("combineSections") != null ? app.getConfig().get("combineSections").getBooleanValue() : false);
 
         if (patient == null) {
         	patient = new Patient();
