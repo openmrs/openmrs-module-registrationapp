@@ -53,7 +53,7 @@ public class RegisterPatientFormBuilderTest {
 	
 	/**
 	 * @see RegisterPatientFormBuilder#buildFormStructure(AppDescriptor,Boolean)
-	 * @verifies flatten the widget config
+	 * @verifies combbining of config sections
 	 */
 	@Test
 	public void buildFormStructure_shouldCombineConfigSectionsIntoOne() throws Exception {
