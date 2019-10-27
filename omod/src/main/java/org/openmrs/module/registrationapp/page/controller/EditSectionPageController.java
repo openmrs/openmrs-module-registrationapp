@@ -6,10 +6,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.EventMessage;
@@ -36,12 +41,16 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.validator.PatientValidator;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class EditSectionPageController {
@@ -115,6 +124,11 @@ public class EditSectionPageController {
             }
         }
 
+        // handle patient relationships if present
+        if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
+        	updatePatientRelationships(patient, request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+        }
+        
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
 
         BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
@@ -199,6 +213,7 @@ public class EditSectionPageController {
         model.addAttribute("returnUrl", returnUrl);
         model.put("uiUtils", new RegistrationAppUiUtils());
         model.addAttribute("patient", patient);
+        model.addAttribute("patientUuid", patient.getUuid());
         model.addAttribute("addressTemplate", addressSupport.getAddressTemplate());
         model.addAttribute("nameTemplate", nameSupport.getDefaultLayoutTemplate());
         model.addAttribute("section", section);
@@ -207,6 +222,44 @@ public class EditSectionPageController {
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
         model.addAttribute("genderOptions", RegistrationAppUiUtils.getGenderOptions(app));
     }
+    
+    private void updatePatientRelationships(Patient patient, String[] types, String[] persons) {
+        List<Relationship> relationships = new ArrayList<Relationship>();
+        PersonService personService = Context.getPersonService();
 
-
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] != null && types[i].length() > 0) {
+                // Remove flag characters at the end (used for relationship direction)
+                String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
+                
+                // Last character reveals relationship direction (aIsToB or bIsToA)
+                char relationshipDirection = types[i].charAt(types[i].length() - 1);                
+                if (relationshipDirection != 'A') {
+                	if (relationshipDirection != 'B') {
+                		throw new APIException("Relationship direction not specified");
+                	}
+                }
+                RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
+                
+                if (rt != null) {
+                    Person otherPerson = personService.getPersonByUuid(persons[i]);
+                    
+                    Person personA = relationshipDirection == 'A' ? otherPerson : patient;
+                    Person personB = relationshipDirection == 'B' ? otherPerson : patient;
+                    if (personA != null && personB != null) {
+                        relationships = personService.getRelationships(personA, personB, rt);
+                        if (CollectionUtils.isEmpty(relationships)) {
+                        	personService.saveRelationship(new Relationship(personA, personB, rt));
+                        } else {
+                        	Relationship relationship = relationships.get(0);
+                        	relationship.setPersonA(personA);
+                        	relationship.setPersonB(personB);
+                        	relationship.setRelationshipType(rt);
+                        	personService.saveRelationship(relationship);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

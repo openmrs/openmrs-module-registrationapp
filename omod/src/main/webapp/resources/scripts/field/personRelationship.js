@@ -1,8 +1,40 @@
-angular.module('personRelationships', ['personService', 'ui.bootstrap'])
-    .controller('PersonRelationshipController', ['$scope', 'PersonService', function ($scope, PersonService) {
-
+angular.module('personRelationships', ['personService', 'relationshipService', 'ui.bootstrap'])
+    .controller('PersonRelationshipController', ['$scope', 'PersonService', 'RelationshipService', function ($scope, PersonService, RelationshipService) {
+            	
         $scope.relationships = [{uuid: '', name: '', type: ''}];
+        
+    	var patientUuid = '';
+    	if (jq('#patientUuid')) {
+    		patientUuid = jq('#patientUuid').val();
+    	}
+    	if (patientUuid != '') {
+    		RelationshipService.getRelationships({'person': patientUuid,
+    			'v': 'custom:(uuid,personA:(uuid,display,personName,birthdate,isPatient,personId),personB:(uuid,display,personName,birthdate,isPatient,personId),relationshipType)'}).then(function(patientRelationships) {
+                    if (patientRelationships) {
+                        for (relationship of patientRelationships) {
+                            var rel = {};
+                            if(relationship.personA.uuid != patientUuid){
+                                rel.uuid = relationship.personA.uuid;
+                                rel.name = relationship.personA.personName.givenName + ' ' + relationship.personA.personName.familyName;
+                                rel.type = relationship.relationshipType.uuid + '-A';
+                            } else {
+                                rel.uuid = relationship.personB.uuid;
+                                rel.name = relationship.personB.personName.givenName + ' ' + relationship.personB.personName.familyName;
+                                rel.type = relationship.relationshipType.uuid + '-B';
 
+                            }
+                            if ($scope.relationships[0].uuid == '') {
+                                $scope.relationships[0].uuid = rel.uuid;
+                                $scope.relationships[0].name = rel.name;
+                                $scope.relationships[0].type = rel.type;
+                            } else {
+                                $scope.relationships.push(rel);
+                            }
+                        }
+                    }
+                });
+        }
+    	
         $scope.getPersons = function (searchString) {
             return PersonService.getPersons({'q': searchString, 'v': 'full'});
         };

@@ -213,6 +213,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 </fieldset>
                 <% } %>
             <% } %>
+            <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
         <div id="confirmation">
