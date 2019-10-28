@@ -72,6 +72,21 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments");
         Collections.sort(includeFragments);
         model.addAttribute("includeFragments", includeFragments);
+        model.addAttribute("genderOptns", getGenderOptions(app));
+    }
+    
+    /**
+     * Reads the 'genderOptions' app's config value and returns the specified gender values as string array
+     * otherwise returns the default gender options string array
+     * 
+     * @param app that may provide gender options if it is configured so
+     * @return array of gender options
+     */
+    private String[] getGenderOptions(AppDescriptor app) {
+    	if (app.getConfig().get("genderOptions") != null) {
+    		return app.getConfig().get("genderOptions").getTextValue().replace(" ", "").split(",");
+    	}
+    	return new String[] {"M", "F"};
     }
 
 }
