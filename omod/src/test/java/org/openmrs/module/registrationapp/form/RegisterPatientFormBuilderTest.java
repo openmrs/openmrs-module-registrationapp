@@ -18,9 +18,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
@@ -62,12 +64,14 @@ public class RegisterPatientFormBuilderTest {
 		List<AppDescriptor> appDescriptors = mapper.readValue(getClass().getClassLoader().getResourceAsStream("registration_app.json"), new TypeReference<List<AppDescriptor>>() {});
 		AppDescriptor appDescriptor = appDescriptors.get(0);
 		List<String> questionIds = new ArrayList<String>();
-		questionIds.add("personAddress");
-		questionIds.add("phoneNumber");
-		questionIds.add("fathersDetails");
-		questionIds.add("mothersDetails");
-		questionIds.add("insuranceDetails");
-		questionIds.add("triageVitals");
+		
+		Iterator<JsonNode> sectionIt = appDescriptor.getConfig().get("sections").getElements();
+		while(sectionIt.hasNext()) {
+			Iterator<JsonNode> questionIt = sectionIt.next().get("questions").getElements();
+		    while(questionIt.hasNext()) {
+		    	questionIds.add(questionIt.next().get("id").getTextValue());
+		    }
+		}
 		
 		// replay
 		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(appDescriptor, true);
