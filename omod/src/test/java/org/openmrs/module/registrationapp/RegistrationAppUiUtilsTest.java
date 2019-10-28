@@ -14,12 +14,67 @@
 package org.openmrs.module.registrationapp;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.openmrs.module.registrationapp.RegistrationAppUiUtils.isValidLatitude;
 import static org.openmrs.module.registrationapp.RegistrationAppUiUtils.isValidLongitude;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.context.Context;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ Context.class })
 public class RegistrationAppUiUtilsTest {
+	
+	private List<Relationship> relationships;
+	
+	private Person patient;
+	
+	private Person person1;
+	
+	private Person person2;
+	
+	private RelationshipType relType1;
+	
+	private RelationshipType relType2;
+	
+	@Mock
+	private PersonService personService;
+	
+	@Before
+	public void setup() {
+		patient = new Person();
+		person1 = new Person();
+		person1.addName(new PersonName("Person1GivenName", null, "Person1FamilyName"));
+		person2 = new Person();
+		person2.addName(new PersonName("Person2GivenName", null, "Person2FamilyName"));
+		
+		relType1 = new RelationshipType();
+		relType1.setaIsToB("Parent");
+		relType2 = new RelationshipType();
+		relType2.setbIsToA("Uncle");
+		
+		relationships = new ArrayList<Relationship> ();
+		relationships.add(new Relationship(person1, patient, relType1));
+		relationships.add(new Relationship(patient, person2, relType2));
+		
+		mockStatic(Context.class);
+		when(Context.getPersonService()).thenReturn(personService);
+		when(personService.getRelationshipsByPerson(patient)).thenReturn(relationships);
+	}
 	
 	/**
 	 * @verifies pass for a valid latitude value
@@ -143,5 +198,18 @@ public class RegistrationAppUiUtilsTest {
 		assertEquals(false, isValidLongitude("+180."));
 		assertEquals(false, isValidLongitude("34."));
 		assertEquals(false, isValidLongitude("+34."));
+	}
+	
+	/**
+	 * @verifies generating string of patient relationships
+	 * @see RegistrationAppUiUtils#getPatientRelationships(Person)
+	 */
+	@Test
+	public void getPatientRelationships_shouldGeneratePatientRelationshipDisplayString() throws Exception {
+		// replay
+		String displayString = new RegistrationAppUiUtils().getPatientRelationships(patient);
+		
+		// verify
+		assertEquals("Person1GivenName Person1FamilyName - Parent, Person2GivenName Person2FamilyName - Uncle, ", displayString);
 	}
 }

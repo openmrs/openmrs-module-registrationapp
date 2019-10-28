@@ -19,6 +19,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.Relationship;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
@@ -30,6 +31,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -77,6 +79,29 @@ public class RegistrationAppUiUtils {
 		}
 
 		return null;
+	}
+	
+	/**
+	 * @since 1.15.0
+	 * 
+	 * Gets the patient's relationships
+	 * 
+	 * @return the patient's relationships
+	 */
+	public String getPatientRelationships(Person person) {
+		StringBuilder rels = new StringBuilder("");
+		if (person != null) {
+			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(person);
+			for (Relationship relationship : relationships) {
+				if(relationship.getPersonA().getUuid() != person.getUuid()){
+					rels.append(relationship.getPersonA().getPersonName()).append(" - ").append(relationship.getRelationshipType().getaIsToB());
+                } else {
+                	rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(relationship.getRelationshipType().getbIsToA());
+                }
+				rels.append(", ");
+			}
+		}
+		return rels.toString();
 	}
 
 	/**
