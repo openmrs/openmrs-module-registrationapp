@@ -74,7 +74,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     </h2>
 
     <div id="exit-form-container">
-        <a id="save-form">
+        <a href="#" id="save-form">
             <i class="icon-save small"></i>
             ${ ui.message("htmlformentryui.saveForm") }
         </a>
