@@ -61,7 +61,23 @@ public class RegistrationAppUiUtils {
 		
 		return null;
 	}
-	
+	/**
+	 * @since 1.15.0
+	 * Gets the person attribute display value for the specified person attribute type uuid
+	 * @return the person attribute display value
+	 */
+	public String getPersonAttributeDisplayValue(Person person, String attributeTypeUuid) {
+		if (person != null) {
+			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(
+					attributeTypeUuid));
+			if (attr != null) {
+				return attr.toString();
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Gets the patient identifier value for the specified person for the identifierTypeUuid
 	 * that matches the specified uuid

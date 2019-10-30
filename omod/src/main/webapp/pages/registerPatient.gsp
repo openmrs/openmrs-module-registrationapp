@@ -1,3 +1,4 @@
+
 <%
     if (sessionContext.authenticated && !sessionContext.currentProvider) {
         throw new IllegalStateException("Logged-in user is not a Provider")
@@ -13,8 +14,13 @@
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
-    def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
-                          [label: ui.message("emr.gender.F"), value: 'F'] ]
+    def genderOptions = []
+    def genderCodes = []
+                          
+    genderOptns.each { optn ->
+    	genderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    	genderCodes << 'emr.gender.' + optn
+    }
 
     Calendar cal = Calendar.getInstance()
     def maxAgeYear = cal.get(Calendar.YEAR)
@@ -25,6 +31,7 @@
 
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
+    
 %>
 
 <% if(includeFragments){
@@ -34,10 +41,7 @@
 } %>
 
 <!-- used within registerPatient.js -->
-<%= ui.includeFragment("appui", "messages", [ codes: [
-        'emr.gender.M',
-        'emr.gender.F'
-].flatten()
+<%=	ui.includeFragment("appui", "messages", [ codes: genderCodes.flatten()
 ]) %>
 
 ${ ui.includeFragment("uicommons", "validationMessages")}

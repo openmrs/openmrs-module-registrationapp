@@ -61,12 +61,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender;
-            if (item.gender == 'M') {
-                gender = emr.message('emr.gender.M');
-            } else {
-                gender = emr.message('emr.gender.F');
-            }
+            var gender = emr.message('emr.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
@@ -167,12 +162,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender;
-            if (item.gender == 'M') {
-                gender = emr.message('emr.gender.M');
-            } else {
-                gender = emr.message('emr.gender.F');
-            }
+            var gender = emr.message('emr.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
@@ -308,14 +298,24 @@ jq(function() {
     jq('#checkbox-unknown-patient').click(function () {
         if (jq('#checkbox-unknown-patient').is(':checked')) {
             // disable all questions & sections except gender and registration date
-            _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
-                if (field.id != 'checkbox-unknown-patient') {
-                    field.disable();
-                }
-            });
+            if (NavigatorController.getQuestionById('demographics-name') != undefined) {    
+                _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
+                    if (field.id != 'checkbox-unknown-patient') {
+                        field.disable();
+                    }
+                });
+            }
+
+            if (NavigatorController.getQuestionById('demographics-fieldset') != undefined) {
+                _.each(NavigatorController.getQuestionById('demographics-fieldset').fields, function (field) {
+                    if (field.id != 'checkbox-unknown-patient' && field.id != 'gender-field') {
+                        field.disable();
+                    }
+                });
+            }
 
             _.each(NavigatorController.getSectionById('demographics').questions, function(question) {
-                if (question.id != 'demographics-gender' && question.id != 'demographics-name') {
+                if (question.id != 'demographics-gender' && question.id != 'demographics-name' && question.id != 'demographics-fieldset') {
                     question.disable();
                 }
             })
@@ -331,18 +331,26 @@ jq(function() {
             jq('#demographics-unknown').val('true');
 
             // jump ahead to gender
-            NavigatorController.getQuestionById('demographics-gender').click();
+            if (NavigatorController.getQuestionById('demographics-gender') != undefined) {
+                NavigatorController.getQuestionById('demographics-gender').click();
+            } else {
+                NavigatorController.getFieldById('gender-field').click();
+            }
         }
         else {
             // re-enable all functionality
             // hide all questions & sections except gender and registration date
-            _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
-                if (field.id != 'checkbox-unknown-patient') {
-                    field.enable();
-                }
-            });
-
-            NavigatorController.getQuestionById('demographics-birthdate').enable();
+            if (NavigatorController.getQuestionById('demographics-name') != undefined) {
+                _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
+                    if (field.id != 'checkbox-unknown-patient') {
+                        field.enable();
+                    }
+                });    
+            }
+            
+            if (NavigatorController.getQuestionById('demographics-birthdate') != undefined) {
+                NavigatorController.getQuestionById('demographics-birthdate').enable();
+            }
 
             // TODO sections variable is currently hackily defined in registerPatient.gsp
             _.each(sections, function(section) {
@@ -351,7 +359,11 @@ jq(function() {
 
             // unset unknown flag
             jq('#demographics-unknown').val('false');
-            NavigatorController.getQuestionById('demographics-name').fields[0].click();
+            if (NavigatorController.getQuestionById('demographics-name') != undefined) {
+                NavigatorController.getQuestionById('demographics-name').fields[0].click();
+            } else {
+                NavigatorController.getQuestionById('demographics-fieldset').fields[0].click();
+            }
         }
     });
 });
