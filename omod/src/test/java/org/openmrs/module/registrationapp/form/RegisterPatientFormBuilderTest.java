@@ -14,11 +14,22 @@
 package org.openmrs.module.registrationapp.form;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationapp.model.Question;
+import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 
 public class RegisterPatientFormBuilderTest {
@@ -40,5 +51,39 @@ public class RegisterPatientFormBuilderTest {
 		assertEquals(4.0, fc.get("max"));
 		assertEquals(60, fc.get("size"));
 		assertEquals(true, fc.get("resizeable"));
+	}
+	
+	/**
+	 * @see RegisterPatientFormBuilder#buildFormStructure(AppDescriptor,Boolean)
+	 * @verifies combbining of config sections
+	 */
+	@Test
+	public void buildFormStructure_shouldCombineConfigSectionsIntoOne() throws Exception {
+		// setup
+		ObjectMapper mapper = new ObjectMapper();
+		List<AppDescriptor> appDescriptors = mapper.readValue(getClass().getClassLoader().getResourceAsStream("registration_app.json"), new TypeReference<List<AppDescriptor>>() {});
+		AppDescriptor appDescriptor = appDescriptors.get(0);
+		List<String> questionIds = new ArrayList<String>();
+		
+		Iterator<JsonNode> sectionIt = appDescriptor.getConfig().get("sections").getElements();
+		while(sectionIt.hasNext()) {
+			Iterator<JsonNode> questionIt = sectionIt.next().get("questions").getElements();
+		    while(questionIt.hasNext()) {
+		    	questionIds.add(questionIt.next().get("id").getTextValue());
+		    }
+		}
+		
+		// replay
+		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(appDescriptor, true);
+		
+		// verify
+		Map<String, Section> sections = formStructure.getSections(); 
+		assertEquals(1, sections.size());
+		
+		Section combinedSection = sections.get(RegisterPatientFormBuilder.DEMOGRAPHICS_SECTION_ID);
+		assertNotNull(combinedSection);		
+		for (Question question : combinedSection.getQuestions()) {
+			assertTrue(questionIds.contains(question.getId()));
+		}		
 	}
 }

@@ -25,8 +25,8 @@ public class SectionFragmentController {
         config.require("sectionId");
         config.require("appId");
 
-        AppDescriptor app = appFrameworkService.getApp((String) config.get("appId"));
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        AppDescriptor app = appFrameworkService.getApp((String) config.get("appId"));                
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
 
         Object patient = config.get("patient");
         String sectionId = (String) config.get("sectionId");

@@ -57,7 +57,7 @@ public class EditSectionPageController {
 
         sessionContext.requireAuthentication();
 
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
         addModelAttributes(model, patient, formStructure.getSections().get(sectionId), administrationService, returnUrl,
                 app);
     }
@@ -115,7 +115,7 @@ public class EditSectionPageController {
             }
         }
 
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
 
         BindingResult errors = new BeanPropertyBindingResult(patient, "patient");
         patientValidator.validate(patient, errors);

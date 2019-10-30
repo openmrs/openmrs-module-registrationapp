@@ -55,7 +55,7 @@ public class RegisterPatientFormBuilder {
 	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 
 	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
-
+		
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
 	 *
@@ -65,6 +65,23 @@ public class RegisterPatientFormBuilder {
 	 * @should flatten the widget config
 	 */
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
+		return buildFormStructure(app, false);
+	}
+	
+	/**
+	 * @since 1.15.0
+	 * 
+	 * Builds the navigable form structure for the specified app descriptor combining sections
+	 * if specified
+	 *
+	 * @param app the app descriptor
+	 * @param combineSections if true, sections are combined into one demographics section
+	 * @return the form structure
+	 * @throws IOException
+	 * @should flatten the widget config
+	 * @should combine sections of widget config given 'combineSections' property set to true
+	 */
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections) throws IOException {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
 		// Get the ordered list of sections out of the configuration
@@ -105,11 +122,30 @@ public class RegisterPatientFormBuilder {
             demographics.setLabel("registrationapp.patient.demographics.label");
             formStructure.addSection(demographics);
         }
-
-        for (Section section : configuredSections.values()) {
-            formStructure.addSection(section);
+        
+        // Will combine sections into the demographics section if 'combineSections' is true
+        // This is because demographics section is already hard coded in registerPatient.gsp
+        if (combineSections) {
+        	// get the freshly created demographics section on the configured one if available
+        	Section combinedSection = formStructure.getSections().get(DEMOGRAPHICS_SECTION_ID);
+        	if (combinedSection == null) {
+        		combinedSection = configuredSections.get(DEMOGRAPHICS_SECTION_ID);
+        	}
+        	// Transfer questions in other sections into the demographics section (combined-sections)
+        	for (Section section : configuredSections.values()) {
+        		if (!DEMOGRAPHICS_SECTION_ID.equalsIgnoreCase(section.getId())) {
+					for (Question question : section.getQuestions()) {
+						combinedSection.addQuestion(question);
+					} 
+				}
+            }
+        	formStructure.addSection(combinedSection);
+        	
+        } else {
+        	for (Section section : configuredSections.values()) {
+                formStructure.addSection(section);
+            }
         }
-
 		return formStructure;
 	}
 

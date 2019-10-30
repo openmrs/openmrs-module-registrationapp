@@ -26,12 +26,14 @@
       "allowUnknownPatients": false,
       "allowManualIdentifier": false,
       "allowRetrospectiveEntry": true,
+      "combineSections": true,
       "sections": [
         {
           "id": "contactInfo",
           "label": "registrationapp.patient.contactInfo.label",
           "questions": [
             {
+              "id": "personAddress",
               "legend": "Person.address",
               "fields": [
                 {
@@ -50,8 +52,8 @@
               ]
             },
             {
+              "id": "phoneNumber",
               "legend": "registrationapp.patient.phone.label",
-              "id": "phoneNumberLabel",
               "fields": [
                 {
                   "type": "personAttribute",
@@ -75,6 +77,7 @@
           "label": "Next of Kin",
           "questions": [
             {
+              "id": "fathersDetails",
               "legend": "Father",
               "fields": [
                 {
@@ -103,6 +106,7 @@
               ]
             },
             {
+              "id": "mothersDetails",
               "legend": "Mother",
               "fields": [
                 {
@@ -124,6 +128,7 @@
           "label": "Insurance",
           "questions": [
             {
+              "id": "insuranceDetails",
               "legend": "Insurance detail",
               "fields": [
                 {
@@ -146,6 +151,7 @@
 		  "label": "Triage Vitals",
           "questions": [
             {
+              "id": "triageVitals",
               "legend": "Rate",
               "fields": [
                 {
