@@ -236,6 +236,27 @@ fieldset[id\$="-fieldset"] div > div {
 
                                 <% } %>
                             </div>
+                            
+                            <div style="display:inline-block;width:100%">
+                            <% questions.each { question ->
+                            // Render custom/additional name fields if present in app defition/formStructure
+			                    if (question.id && question.id == 'personName') {
+			                    	def fields=question.fields
+			                        def classes = "";
+			                        fields.each { field ->
+			                            def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
+			                            configOptions.label = ui.message(field.label)
+			                            configOptions.formFieldName = field.formFieldName
+			                            configOptions.left = true
+			                            configOptions.classes = field.cssClasses
+		                            %>
+		                              
+		                              ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
+		                    
+		                        	<% } %>
+			                	<% } %>
+		                    <% } %>
+		                    </div>
 
                             <% if (allowUnknownPatients) { %>
 
@@ -300,47 +321,50 @@ fieldset[id\$="-fieldset"] div > div {
                     <% } %>
 
                     <% questions.each { question ->
-                        def fields=question.fields
-                        def classes = "";
-                        if (question.legend == "Person.address") {
-                            classes = "requireOne"
-                        }
-                        if (question.cssClasses) {
-                            classes = classes + (classes.length() > 0 ? ' ' : '') + question.cssClasses.join(" ")
-                        }
-                    %>
-                        <${combineSubSections == true ? "div" : "fieldset"} id="${question.id}"
-                                <% if (classes.length() > 0) { %> class="${classes}" <% } %>
-                                <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
-                                <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
-                        >
-                            ${combineSubSections == true ? "" : "<legend>" + ui.message(question.legend) + "</legend>"}
-                            
-                            <% if(question.legend == "Person.address"){ %>
-                                ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
-                            <% } %>
-                            <% if(question.header) { %>
-                                    <h3>${ui.message(question.header)}</h3>
-                            <% } %>
-
-                            <% fields.each { field ->
-                                def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
-                                configOptions.label = ui.message(field.label)
-                                configOptions.formFieldName = field.formFieldName
-                                configOptions.left = true
-                                configOptions.classes = field.cssClasses
-
-                                if (field.type == 'personAddress') {
-                                    configOptions.addressTemplate = addressTemplate
-                                }
-
-                                if (field.type == 'personRelationships') {
-                                    configOptions.relationshipTypes = relationshipTypes
-                                }
-                            %>
-                                ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
-                            <% } %>
-                        <${combineSubSections == true ? "/div" : "/fieldset"}>
+	                    // Skip re-rendering custom name field if present in app definition/formStructure
+	                    if (question.id == null || question.id != 'personName') {
+	                        def fields=question.fields
+	                        def classes = "";
+	                        if (question.legend == "Person.address") {
+	                            classes = "requireOne"
+	                        }
+	                        if (question.cssClasses) {
+	                            classes = classes + (classes.length() > 0 ? ' ' : '') + question.cssClasses.join(" ")
+	                        }
+	                    %>
+	                        <${combineSubSections == true ? "div" : "fieldset"} id="${question.id}"
+	                                <% if (classes.length() > 0) { %> class="${classes}" <% } %>
+	                                <% if (question.fieldSeparator) { %> field-separator="${question.fieldSeparator}" <% } %>
+	                                <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
+	                        >
+	                            ${combineSubSections == true ? "" : "<legend>" + ui.message(question.legend) + "</legend>"}
+	                            
+	                            <% if(question.legend == "Person.address"){ %>
+	                                ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
+	                            <% } %>
+	                            <% if(question.header) { %>
+	                                    <h3>${ui.message(question.header)}</h3>
+	                            <% } %>
+	
+	                            <% fields.each { field ->
+	                                def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
+	                                configOptions.label = ui.message(field.label)
+	                                configOptions.formFieldName = field.formFieldName
+	                                configOptions.left = true
+	                                configOptions.classes = field.cssClasses
+	
+	                                if (field.type == 'personAddress') {
+	                                    configOptions.addressTemplate = addressTemplate
+	                                }
+	
+	                                if (field.type == 'personRelationships') {
+	                                    configOptions.relationshipTypes = relationshipTypes
+	                                }
+		                            %>
+		                            ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
+		                        <% } %>
+	                        <${combineSubSections == true ? "/div" : "/fieldset"}>
+	                    <% } %>
                     <% } %>
                   <${combineSubSections == true ? "/fieldset" : "/div"}>  
             </section>

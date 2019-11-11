@@ -116,6 +116,28 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     ])}
 
                     <% } %>
+                    
+                    <div style="display:inline-block;width:100%">
+                            <% section.questions.each { question ->
+                            // Render custom/additional name fields if present in app defition/formStructure
+			                    if (question.id && question.id == 'personName') {
+			                    	def fields=question.fields
+			                        def classes = "";
+			                        fields.each { field ->
+			                            def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
+			                            configOptions.label = ui.message(field.label)
+			                            configOptions.formFieldName = field.formFieldName
+			                            configOptions.left = true
+			                            configOptions.classes = field.cssClasses
+			                            configOptions.initialValue = ui.escapeAttribute(uiUtils.getAttribute(patient, field.uuid))
+		                            %>
+		                              
+		                              ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
+		                    
+		                        	<% } %>
+			                	<% } %>
+		                    <% } %>
+		            </div>
                     <input type="hidden" name="preferred" value="true"/>
                 </fieldset>
 
@@ -150,6 +172,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <% } %>
 
             <% section.questions.each { question ->
+                    // Skip re-rendering custom name field if present in app definition/formStructure
+	                if (question.id == null || question.id != 'personName') {
                     def fields=question.fields
                 %>
                 <fieldset id="${question.id}"
@@ -181,9 +205,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                                     configOptions.relationshipTypes = relationshipTypes
                         }
                     %>
-                    ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
+                    	${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
                     <% } %>
                 </fieldset>
+                <% } %>
             <% } %>
         </section>
 
