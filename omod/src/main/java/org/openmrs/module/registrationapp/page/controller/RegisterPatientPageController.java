@@ -73,6 +73,6 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments");
         Collections.sort(includeFragments);
         model.addAttribute("includeFragments", includeFragments);
-        model.addAttribute("genderOptns", RegistrationAppUiUtils.getGenderOptions(app));
+        model.addAttribute("genderOptions", RegistrationAppUiUtils.getGenderOptions(app));
     }
 }
