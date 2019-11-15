@@ -14,11 +14,11 @@
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
-    def genderOptions = []
+    def localizedGenderOptions = []
     def genderCodes = []
                           
-    genderOptns.each { optn ->
-    	genderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    genderOptions.each { optn ->
+    	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
     	genderCodes << 'emr.gender.' + optn
     }
 
@@ -261,7 +261,7 @@ fieldset[id\$="-fieldset"] div > div {
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
                                     formFieldName: "gender",
-                                    options: genderOptions,
+                                    options: localizedGenderOptions,
                                     classes: ["required"],
                                     initialValue: patient.gender,
                                     hideEmptyLabel: true,

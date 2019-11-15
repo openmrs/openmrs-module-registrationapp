@@ -10,8 +10,11 @@
 
     ui.includeCss("registrationapp", "editSection.css")
 
-    def genderOptions = [ [label: ui.message("emr.gender.M"), value: 'M'],
-                          [label: ui.message("emr.gender.F"), value: 'F'] ]
+    def localizedGenderOptions = []
+                              
+    genderOptions.each { optn ->
+    	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    }
 
     def monthOptions = [ [label: ui.message("registrationapp.month.1"), value: 1],
                          [label: ui.message("registrationapp.month.2"), value: 2],
@@ -125,7 +128,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                             label: ui.message("registrationapp.patient.gender.question"),
                             emptyOptionLabel: "uicommons.select",
                             formFieldName: "gender",
-                            options: genderOptions,
+                            options: localizedGenderOptions,
                             classes: ["required"],
                             initialValue: ui.encodeHtml(patient.gender),
                             hideEmptyLabel: true,
