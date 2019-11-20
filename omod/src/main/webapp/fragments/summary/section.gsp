@@ -33,6 +33,22 @@
                 </p>
             </div>
             <% } %>
+            
+            <% section.questions.each { question ->
+                // Render custom/additional name fields if present in personName question from 
+                // defined person attributes types
+                if (question.id && question.id == 'personName') {
+                	question.fields.each { field -> 
+                %>
+                	<div>
+                		<h3>${ ui.message(field.label) }</h3>
+                			<p class="left">
+                				${ uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />") ?: ''}&nbsp;
+                			</p>
+                		</div>
+                	<% } %>
+                <% } %>
+            <% } %>
 
             <div>
                 <h3>${ ui.message("emr.gender") }:</h3>
@@ -55,28 +71,32 @@
 
         <!-- display other fields -->
         <% section.questions.each { question ->
-            // TODO do we want to display any labels for questions?
-            def fields = question.fields %>
-            <div id="${ question.id }">
-                <h3>${ ui.message(question.legend) }</h3>
-                <p class="left">
-                    <% fields.each { field ->
-                        def displayValue = "";
-                        if (field.type == 'personAttribute') {
-                            displayValue = uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />");
-                        }
-                        else if (field.type == 'personAddress') {
-                            displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
-                        }
-                        else if (field.type == "patientIdentifier") {
-                            displayValue = uiUtils.getIdentifier(patient.patient, field.uuid)
-                        }
-                        // TODO support other types besides personAttribute and personAddress
-                    %>
-                        ${ displayValue ?: ''}&nbsp;
-                    <% } %>
-                </p>
-            </div>
+            // Skip re-rendering configured person name fields if present in question because these have
+            // already be rendered
+	        if (question.id == null || question.id != 'personName') {
+	            // TODO do we want to display any labels for questions?
+	            def fields = question.fields %>
+	            <div id="${ question.id }">
+	                <h3>${ ui.message(question.legend) }</h3>
+	                <p class="left">
+	                    <% fields.each { field ->
+	                        def displayValue = "";
+	                        if (field.type == 'personAttribute') {
+	                            displayValue = uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />");
+	                        }
+	                        else if (field.type == 'personAddress') {
+	                            displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
+	                        }
+	                        else if (field.type == "patientIdentifier") {
+	                            displayValue = uiUtils.getIdentifier(patient.patient, field.uuid)
+	                        }
+	                        // TODO support other types besides personAttribute and personAddress
+	                    %>
+	                        ${ displayValue ?: ''}&nbsp;
+	                    <% } %>
+	                </p>
+	            </div>
+            <% } %>
         <% } %>
     </div>
 </div>
