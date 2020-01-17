@@ -1,7 +1,7 @@
 
 <div class="info-section">
     <div class="info-header">
-        <i class="icon-user"></i>
+        <i class="fas fa-fw fa-fingerprint"></i>
         <h3>${ ui.message('registrationapp.biometrics.summary').toUpperCase() }</h3>
         <i id="biometrics-edit-link" class="icon-pencil edit-action right" title="${ ui.message("coreapps.edit") }"
            onclick="location.href='${ui.pageLink("registrationapp", "biometrics/editBiometrics", [patientId: patient.patient.id, registrationAppId: registrationAppId ])}'"></i>
