@@ -2,15 +2,23 @@ package org.openmrs.module.registrationapp.fragment.controller.field;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.LocationService;
 import org.openmrs.event.Event;
 import org.openmrs.event.EventMessage;
+import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationapp.fragment.controller.RegisterPatientFragmentController;
+import org.openmrs.PatientIdentifier;
 
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -24,19 +32,35 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentStatus;
+import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.web.bind.annotation.RequestMethod;
 
+import org.openmrs.module.registrationcore.api.impl.IdentifierBuilder;
+
+import org.openmrs.module.m2sysbiometrics.service.UpdateService;
+
+//@Controller
+//@RequestMapping("/FingerprintM2sys")
 public class FingerprintM2sysFragmentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FingerprintM2sysFragmentController.class);
+    private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
 
     private BiometricEngine biometricEngine;
 
     private AdministrationService adminService;
+    
+    private LocationService locationService;
 
     private RegistrationCoreService registrationCoreService;
 
@@ -49,6 +73,7 @@ public class FingerprintM2sysFragmentController {
         patientService =  Context.getService(PatientService.class);
     }
 
+   
     public void controller() {
     }
 
@@ -74,7 +99,8 @@ public class FingerprintM2sysFragmentController {
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
-            LOGGER.error("Fingerprints enrollment failed", ex);
+            LOGGER.error("Fingerprints enrollment failed:test1", ex.getMessage());
+           //.error("Fingerprints enrollment failed:test1", ex);
         }
 
         return response;
@@ -127,7 +153,7 @@ public class FingerprintM2sysFragmentController {
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
-            LOGGER.error("Fingerprints enrollment failed", ex);
+            //LOGGER.error("Fingerprints enrollment failed:test2", ex);
         }
 
         return response;
@@ -147,6 +173,7 @@ public class FingerprintM2sysFragmentController {
         return result;
     }
 
+   /* 
     public SimpleObject update(@RequestParam("id") String id,
             @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
         SimpleObject response = new SimpleObject();
@@ -170,6 +197,48 @@ public class FingerprintM2sysFragmentController {
         return response;
     }
 
+    */
+    
+ //   @RequestMapping(value = {"", "/update"}, method = RequestMethod.GET)
+    public SimpleObject update(@RequestParam("patientId") Integer patientId,@RequestParam("biometricXml") String biometricXml,@RequestParam("identifierValue") String identifierValue,
+            @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+        SimpleObject response = new SimpleObject();
+        BiometricSubject subject=new BiometricSubject();
+        //log.error("this is a test for update fingerPrint >> "+identifierValue);
+        try {
+        	if(identifierValue.length()>1) {
+        		subject.setSubjectId(identifierValue);
+     		    subject.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));		
+ 			    Context.getService(UpdateService.class).updateLocally(subject);
+ 			    response.put("success", true);
+                response.put("message", subject.getSubjectId());
+        	}
+        	else 
+        	{
+        		UUID uuid = UUID.randomUUID();
+        		subject.setSubjectId(uuid.toString());
+        		subject.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));	 
+        		PatientIdentifierType identifierType=patientService.getPatientIdentifierTypeByUuid("e26ca279-8f57-44a5-9ed8-8cc16e90e559");        	
+        		Patient patient=patientService.getPatient(patientId); 
+        		PatientIdentifier identifier = new PatientIdentifier(uuid.toString(),identifierType,Context.getService(LocationService.class).getDefaultLocation());        		       		
+				patient.addIdentifier(identifier);
+				patientService.savePatientIdentifier(identifier);
+				Context.getService(RegistrationService.class).registerLocally(subject);
+				response.put("success", true);
+	            response.put("message", subject.getSubjectId());           		
+        	}
+        } catch (Exception ex) {
+            response.put("success", false);
+            response.put("message", ex.getMessage());
+            LOGGER.error(ex.getMessage());
+        }
+        return response;
+    }
+  
+    
+    
+    
+    
     public SimpleObject updateSubjectId(@RequestParam("oldId") String oldId,
             @RequestParam("newId") String newId) {
         if (!isBiometricEngineEnabled()) {
@@ -238,4 +307,26 @@ public class FingerprintM2sysFragmentController {
         }
         return patient;
     }
+    
+    public PatientIdentifier createIdentifier(String identifierTypeUuid, String identifierValue, Location location) {
+        location = getLocation(location);
+        PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(identifierTypeUuid);
+        PatientIdentifierValidator.validateIdentifier(identifierValue, identifierType);
+
+        return new PatientIdentifier(identifierValue, identifierType, location);
+    }
+    
+    private Location getLocation(Location identifierLocation) {
+        if (identifierLocation == null) {
+            identifierLocation = locationService.getDefaultLocation();
+            validateIdentifierLocation(identifierLocation);
+        }
+        return identifierLocation;
+    }
+    
+    private void validateIdentifierLocation(Location identifierLocation) {
+        if (identifierLocation == null)
+            throw new APIException("Failed to resolve location to associate to patient identifiers");
+    }
+    
 }

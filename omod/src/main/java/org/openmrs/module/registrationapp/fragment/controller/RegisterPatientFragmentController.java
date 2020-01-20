@@ -34,6 +34,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.idgen.EmptyIdentifierPoolException;
+
 import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
@@ -47,6 +48,7 @@ import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
+import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -61,6 +63,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+//import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
+import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -70,15 +74,18 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class RegisterPatientFragmentController {
 
     private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
 
     private PatientService patientService;
+    //private RegistrationService registrationServicem2sys;
 
     public RegisterPatientFragmentController() {
         patientService =  Context.getService(PatientService.class);
+        //registrationServicem2sys=Context.getService(RegistrationService.class);
     }
 
     class ObsGroupItem {
@@ -127,6 +134,7 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
                             @RequestParam(value="localBiometricSubjectId", required = false) String localBiometricSubjectId,
                             @RequestParam(value="nationalBiometricSubjectId", required = false) String nationalBiometricSubjectId,
+							@RequestParam(value="biometricXml", required = false) String biometricXml,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,
@@ -182,6 +190,19 @@ public class RegisterPatientFragmentController {
 
         // Add any biometric data that was submitted
         Map<Field, BiometricSubject> fingerprintData = RegisterPatientFormBuilder.extractBiometricDataFields(formStructure, request.getParameterMap());
+        BiometricSubject subject1=new BiometricSubject();
+if(StringUtils.isNotBlank(biometricXml)) {		
+ subject1 = new BiometricSubject();
+UUID uuid = UUID.randomUUID();
+subject1.setSubjectId(uuid.toString());
+subject1.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));	
+PatientIdentifierType identifierType1=patientService.getPatientIdentifierTypeByUuid("e26ca279-8f57-44a5-9ed8-8cc16e90e559");
+if (identifierType1 == null) {
+    throw new IllegalStateException("Invalid fingerprint configuration test. No patient identifier type with uuid [e26ca279-8f57-44a5-9ed8-8cc16e90e559] found.");
+}
+registrationData.addBiometricData(new BiometricData(subject1,identifierType1));		
+}		
+
         for (Field fingerprintField : fingerprintData.keySet()) {
             BiometricSubject subject = fingerprintData.get(fingerprintField);
             PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
@@ -189,9 +210,23 @@ public class RegisterPatientFragmentController {
                 throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
             }
             registrationData.addBiometricData(new BiometricData(subject, identifierType));
+            
         }
+/*
+  log.error();
+for (Field fingerprintField : fingerprintData.keySet()) {
+    //BiometricSubject subject = fingerprintData.get(fingerprintField);
+    BiometricSubject subject1 = new BiometricSubject();
+    subject1.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));
+    PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(fingerprintField.getUuid());
+    if (identifierType == null) {
+        throw new IllegalStateException("Invalid fingerprint configuration. No patient identifier type with uuid [" + fingerprintField.getUuid() + "] found.");
+    }
+    registrationData.addBiometricData(new BiometricData(subject1, identifierType));
+}
+*/
 
-        if (StringUtils.isNotBlank(localBiometricSubjectId)) {
+     if (StringUtils.isNotBlank(localBiometricSubjectId)) {
             BiometricData biometricData = generateBiometricData(localBiometricSubjectId,
                     RegistrationCoreConstants.GP_BIOMETRICS_PERSON_IDENTIFIER_TYPE_UUID);
             registrationData.getBiometrics().add(biometricData);
@@ -204,26 +239,32 @@ public class RegisterPatientFragmentController {
 
         try {
             // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
-            patient = registrationService.registerPatient(registrationData);
+            patient = registrationService.registerPatient(registrationData);           
+            
+            if(StringUtils.isNotBlank(biometricXml)) {
+            	log.error("XML:"+subject1.getFingerprints().get(0).getTemplate());	
+            	Context.getService(RegistrationService.class).registerLocally(subject1);
+            }
+            
         }
         catch (Exception ex) {
-
             // TODO I remember getting into trouble if i called this validator before the above save method.
             // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
             patientValidator.validate(patient, errors);
             checkForIdentifierExceptions(ex, errors);
 
             if (!errors.hasErrors()) {
-                errors.reject(ex.getMessage());
+                errors.reject(ex.getMessage()+" the test");
             }
             return new FailureResult(createErrorMessage(errors, messageSourceService));
         }
-
+       
         // now create the registration encounter, if configured to do so
         Encounter registrationEncounter = buildRegistrationEncounter(patient, registrationDate, sessionContext, app, encounterService);
         if (registrationEncounter != null) {
             encounterService.saveEncounter(registrationEncounter);
         }
+       
 
         Map<String, List<ObsGroupItem>> obsGroupMap = new LinkedHashMap<String, List<ObsGroupItem>>();
         // build any obs that are submitted

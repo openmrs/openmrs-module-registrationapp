@@ -2,15 +2,22 @@ package org.openmrs.module.registrationapp.fragment.controller.search;
 
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.m2sysbiometrics.model.TempFingerprint;
+import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
+import org.openmrs.module.m2sysbiometrics.service.SearchService;
 import org.openmrs.module.m2sysbiometrics.service.TempFingerprintService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationapp.fragment.controller.RegisterPatientFragmentController;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
+import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
@@ -37,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class M2SysSearchFragmentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(M2SysSearchFragmentController.class);
+    private final Log log = LogFactory.getLog(M2SysSearchFragmentController.class);
 
     public void controller(FragmentModel model) {
         model.addAttribute("test", "testval");
@@ -49,6 +57,33 @@ public class M2SysSearchFragmentController {
         return simplify(ui, patients);
     }
 
+ 
+   public SimpleObject search(@SpringBean("registrationCoreService") RegistrationCoreService registrationCoreService,
+		   @RequestParam("biometricXml") String biometricXml,
+		   @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+	   log.info("try to search "+biometricXml);	
+	   SimpleObject response = new SimpleObject();
+	   
+	   try {
+	   List<BiometricMatch> results=Context.getService(SearchService.class).searchLocally(biometricXml);
+
+	    for (BiometricMatch result : results) {
+	    	Patient searchPatient = registrationService.findByPatientIdentifier(result.getSubjectId(),PropertiesUtil.getLocalFpType().getUuid());
+	        response.put("patientUuid", searchPatient.getUuid());   
+	       // response.put("patient", searchPatient);  
+	    }   
+	   
+	   //log.error("try to search "+results.toString());	
+	   response.put("success", true);
+	  
+	   }
+	   catch (Exception ex) {
+           log.error("try to search "+ex.getMessage());
+       }
+	   
+	   return response;
+}
+    
     public FragmentActionResult importMpiPatientWithCcd(@RequestParam("nationalFingerprintId") String nationalId,
             @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
             @SpringBean("tempFingerprintService") TempFingerprintService tempFingerprintService,
