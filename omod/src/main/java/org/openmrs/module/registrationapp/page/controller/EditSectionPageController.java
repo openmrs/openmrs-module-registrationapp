@@ -86,6 +86,7 @@ public class EditSectionPageController {
                        @RequestParam("sectionId") String sectionId,
                        @RequestParam("returnUrl") String returnUrl,
                        @SpringBean("patientService") PatientService patientService,
+                       @SpringBean("personService") PersonService personService,
                        @SpringBean("registrationCoreService") RegistrationCoreService registrationCoreService,
                        @SpringBean("adminService") AdministrationService administrationService, HttpServletRequest request,
                        @SpringBean("messageSourceService") MessageSourceService messageSourceService, Session session,
@@ -126,7 +127,7 @@ public class EditSectionPageController {
 
         // handle patient relationships if present
         if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
-        	updatePatientRelationships(patient, request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+        	updatePatientRelationships(patient, request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"), personService);
         }
         
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
@@ -223,9 +224,8 @@ public class EditSectionPageController {
         model.addAttribute("genderOptions", RegistrationAppUiUtils.getGenderOptions(app));
     }
     
-    private void updatePatientRelationships(Patient patient, String[] types, String[] persons) {
+    private void updatePatientRelationships(Patient patient, String[] types, String[] persons, PersonService personService) {
         List<Relationship> relationships = new ArrayList<Relationship>();
-        PersonService personService = Context.getPersonService();
 
         for (int i = 0; i < types.length; i++) {
             if (types[i] != null && types[i].length() > 0) {

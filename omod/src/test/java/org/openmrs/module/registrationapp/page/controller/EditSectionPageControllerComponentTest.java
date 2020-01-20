@@ -151,7 +151,7 @@ public class EditSectionPageControllerComponentTest extends BaseModuleWebContext
         request.addParameter("patientIdentifierField", "123abcd");
 
         String result = controller.post(sessionContext, model, patient, null, null, 30, 0, app, "mainSection", "successUrl",
-                patientService, registrationCoreService, administrationService, request, messageSourceService, session, patientValidator, uiUtils);
+                patientService, personService, registrationCoreService, administrationService, request, messageSourceService, session, patientValidator, uiUtils);
 
         PatientIdentifierType pit = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
 
