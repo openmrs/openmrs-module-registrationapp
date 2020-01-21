@@ -5,8 +5,7 @@
 
 
 <div class="clear"></div>
-<div class="container">
-    <div class="dashboard clear">
+<div class="dashboard clear">
         <div class="info-container column">
             ${ ui.includeFragment("registrationapp", "summary/section", [patient: patient, appId: appId, sectionId: "demographics"]) }
 
@@ -59,4 +58,3 @@
             </div>
         </div>
     </div>
-</div>
