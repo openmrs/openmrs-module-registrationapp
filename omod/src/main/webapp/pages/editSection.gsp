@@ -7,6 +7,7 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
+    ui.includeJavascript("registrationapp", "editSection.js");
 
     ui.includeCss("registrationapp", "editSection.css")
 
@@ -40,10 +41,8 @@
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
 <script type="text/javascript">
-    var NavigatorController;
     jQuery(function() {
 
-        NavigatorController = KeyboardController();
         jq('#cancelSubmission').unbind(); // unbind the functionality built into the navigator to return to top of the form
         jq('#cancelSubmission').click(function(event){
             window.location='${ ui.encodeJavaScript(returnUrl) }';
@@ -213,6 +212,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 </fieldset>
                 <% } %>
             <% } %>
+            <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
         <div id="confirmation">

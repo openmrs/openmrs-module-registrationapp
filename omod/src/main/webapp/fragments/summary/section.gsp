@@ -90,6 +90,9 @@
 	                        else if (field.type == "patientIdentifier") {
 	                            displayValue = uiUtils.getIdentifier(patient.patient, field.uuid)
 	                        }
+                            else if (field.type == "personRelationships") {
+                                displayValue = uiUtils.getPatientRelationships(patient.patient)
+                            }
 	                        // TODO support other types besides personAttribute and personAddress
 	                    %>
 	                        ${ displayValue ?: ''}&nbsp;
