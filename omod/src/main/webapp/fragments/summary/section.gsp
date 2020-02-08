@@ -29,7 +29,7 @@
             <div>
                 <h3>${ ui.message(nameTemplate.nameMappings[name]) } </h3>
                 <p class="left">
-                    ${ ui.message(initialNameFieldValue) }
+                    ${ ui.message(ui.encodeHtml(initialNameFieldValue)) }
                 </p>
             </div>
             <% } %>
@@ -43,7 +43,7 @@
                 	<div>
                 		<h3>${ ui.message(field.label) }</h3>
                 			<p class="left">
-                				${ uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />") ?: ''}&nbsp;
+                				${ ui.encodeHtml(uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />")) ?: ''}&nbsp;
                 			</p>
                 		</div>
                 	<% } %>
@@ -53,7 +53,7 @@
             <div>
                 <h3>${ ui.message("emr.gender") }:</h3>
                 <p class="left">
-                    ${ui.message("coreapps.gender." + patient.gender)}&nbsp;
+                    ${ui.message("coreapps.gender." + ui.encodeHtml(patient.gender))}&nbsp;
                 </p>
             </div>
 

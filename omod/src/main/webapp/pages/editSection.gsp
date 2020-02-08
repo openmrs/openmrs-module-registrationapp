@@ -65,7 +65,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.format(patient)) }", link: "${ ui.encodeHtml(returnUrl) }" },
+        { label: "${ ui.encodeJavaScript(ui.format(patient)) }", link: "${ ui.encodeHtml(returnUrl) }" },
         { label: "${ ui.message(section.label) }" }
     ];
 </script>

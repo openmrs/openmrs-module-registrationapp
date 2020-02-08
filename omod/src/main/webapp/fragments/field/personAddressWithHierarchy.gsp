@@ -62,7 +62,7 @@
     personAddressWithHierarchy.id = '${ config.id }';
     personAddressWithHierarchy.container = jq('#${ config.id }-container');
     <% if (config.shortcutFor) { %>
-        personAddressWithHierarchy.shortcutFor = '${ ui.escapeJs(config.shortcutFor) }';
+        personAddressWithHierarchy.shortcutFor = '${ ui.encodeJavaScript(config.shortcutFor) }';
     <% } %>
     <% if (manualFields) { %>
         <% manualFields.each { %>
