@@ -95,7 +95,7 @@
                             }
 	                        // TODO support other types besides personAttribute and personAddress
 	                    %>
-	                        ${ displayValue ?: ''}&nbsp;
+	                        ${ displayValue ? ui.encodeHtmlContent(displayValue): ''}&nbsp;
 	                    <% } %>
 	                </p>
 	            </div>
