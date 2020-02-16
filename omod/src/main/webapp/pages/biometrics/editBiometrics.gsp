@@ -11,7 +11,7 @@
 
     var breadcrumbs = _.compact(_.flatten([
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.escapeJs(ui.format(patient)) }" ,
+        { label: "${ ui.encodeJavaScript(ui.format(patient)) }" ,
             link: '${ui.pageLink("registrationapp", "registrationSummary", [patientId: patient.id, appId: registrationAppId])}'},
         { label: '${ ui.message("registrationapp.biometrics.edit") }' }
     ]))
