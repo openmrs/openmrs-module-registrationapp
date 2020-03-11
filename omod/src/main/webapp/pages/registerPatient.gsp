@@ -11,6 +11,9 @@
     ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/navigatorTemplates.js", Integer.MAX_VALUE - 21)
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
+    if (combineSubSections == true) {
+        ui.includeJavascript("registrationapp", "customMultiInputDateValidator.js");
+    }
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
