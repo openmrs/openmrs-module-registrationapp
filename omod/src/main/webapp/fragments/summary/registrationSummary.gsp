@@ -40,21 +40,4 @@
             } %>
 
         </div>
-
-        <div class="action-container column">
-            <div class="action-section">
-                <ul>
-                    <h3>${ ui.message("coreapps.clinicianfacing.overallActions") }</h3>
-                    <%
-                        overallActions.each { ext -> %>
-                            <a href="${ ui.encodeJavaScript(ext.url("/" + ui.contextPath(), appContextModel, returnUrl)) }" id="${ ext.id }">
-                                <li>
-                                    <i class="${ ext.icon }"></i>
-                                    ${ ui.message(ext.label) }
-                                </li>
-                            </a>
-                    <% } %>
-                </ul>
-            </div>
-        </div>
     </div>
