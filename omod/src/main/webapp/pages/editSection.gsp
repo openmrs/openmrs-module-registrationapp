@@ -215,22 +215,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
-        <div id="confirmation">
-            <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
-            <div class="before-dataCanvas"></div>
-            <div id="dataCanvas"></div>
-            <div class="after-data-canvas"></div>
-            <div id="confirmationQuestion">
-                ${ui.message("registrationapp.confirm")}
+       <div id="confirmationQuestion">
+                ${ ui.message("registrationapp.confirm") }
                 <p style="display: inline">
-                    <button id="registration-submit" type="submit" class="submitButton confirm right">
-                        ${ui.message("registrationapp.patient.confirm.label")}
-                    </button>
+                    <input id="submit" type="submit" class="submitButton confirm right" value="${ui.message("registrationapp.patient.confirm.label")}" />
                 </p>
                 <p style="display: inline">
-                    <button id="cancelSubmission" class="cancel" type="button">
-                        ${ui.message("registrationapp.cancel")}
-                    </button>
+                    <input id="cancelSubmission" class="cancel" type="button" value="${ui.message("registrationapp.cancel")}" />
                 </p>
             </div>
         </div>
