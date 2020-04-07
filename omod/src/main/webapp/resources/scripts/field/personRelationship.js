@@ -7,7 +7,7 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
     	if (jq('#patientUuid')) {
     		patientUuid = jq('#patientUuid').val();
     	}
-    	if (patientUuid != '') {
+    	if (patientUuid) {
     		RelationshipService.getRelationships({'person': patientUuid,
     			'v': 'custom:(uuid,personA:(uuid,display,personName,birthdate,isPatient,personId),personB:(uuid,display,personName,birthdate,isPatient,personId),relationshipType)'}).then(function(patientRelationships) {
                     if (patientRelationships) {
