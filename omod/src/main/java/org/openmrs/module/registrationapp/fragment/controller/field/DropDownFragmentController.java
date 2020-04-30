@@ -21,6 +21,7 @@ public class DropDownFragmentController {
             option = new HashMap < String, Object > ();
             option.put("value", "");
             option.put("label", "");
+            options.add(option);
 
             for (Concept concept: conceptSet.getSetMembers()) {
                 option = new HashMap < String, Object > ();
