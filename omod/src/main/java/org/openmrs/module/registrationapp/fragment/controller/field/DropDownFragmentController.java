@@ -13,17 +13,15 @@ public class DropDownFragmentController {
 
     public void controller(FragmentConfiguration config) throws Exception {
         if (config.getAttribute("conceptSet") != null) {
-            List < Map < String, Object >> options = new ArrayList < Map < String, Object >> ();
+            List < Map < String, Object >> options = (List<Map<String, Object>>) config.getAttribute("options");
+            if (options == null) {
+            	options = new ArrayList < Map < String, Object >> ();
+            }
             String conceptSetUuid = (String) config.getAttribute("conceptSet");
             Concept conceptSet = Context.getConceptService().getConceptByUuid(conceptSetUuid);
-            Map < String, Object > option;
-            // Adding empty initial/place-holder value
-            option = new HashMap < String, Object > ();
-            option.put("value", "");
-            option.put("label", "");
-            options.add(option);
 
             for (Concept concept: conceptSet.getSetMembers()) {
+            	Map < String, Object > option = new HashMap < String, Object > ();
                 option = new HashMap < String, Object > ();
                 option.put("value", concept.getId().toString());
                 option.put("label", concept.getName(Context.getUserContext().getLocale()).getName());
