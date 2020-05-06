@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,8 +91,35 @@ public class DropDownFragmentControllerTest {
     	// verify
     	List < Map < String, Object >> options = (List < Map < String, Object >>) config.getAttribute("options");
 	 	assertTrue(config.containsKey("options"));
+	 	assertThat(options.size(), is(2));
+	 	assertThat((String) options.get(0).get("label"), is("name1"));
+	 	assertThat((String) options.get(0).get("value"), is("1"));
+	 	assertThat((String) options.get(1).get("label"), is("name2"));
+	 	assertThat((String) options.get(1).get("value"), is("2"));
+    }
+    
+    @Test
+    public void controller_shouldAddOptionsFromConceptSetToMergeThemWithConfiguredOptions() throws Exception {    	
+    	// setup
+    	config = new FragmentConfiguration();
+    	config.addAttribute("conceptSet", CONCEPT_SET_UUID);
+    	
+    	List < Map < String, Object >> configOptions = new ArrayList < Map < String, Object >> ();
+    	Map < String, Object > option = new HashMap < String, Object > ();
+        option = new HashMap < String, Object > ();
+        option.put("value", "");
+        option.put("label", "Select Country");
+        configOptions.add(option);
+        config.addAttribute("options", configOptions);
+        
+    	// replay
+    	dwController.controller(config);
+    	
+    	// verify
+    	List < Map < String, Object >> options = (List < Map < String, Object >>) config.getAttribute("options");
+	 	assertTrue(config.containsKey("options"));
 	 	assertThat(options.size(), is(3));
-	 	assertThat((String) options.get(0).get("label"), is(""));
+	 	assertThat((String) options.get(0).get("label"), is("Select Country"));
 	 	assertThat((String) options.get(0).get("value"), is(""));
 	 	assertThat((String) options.get(1).get("label"), is("name1"));
 	 	assertThat((String) options.get(1).get("value"), is("1"));
