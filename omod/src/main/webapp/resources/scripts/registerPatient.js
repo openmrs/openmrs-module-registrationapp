@@ -4,6 +4,7 @@ jq = jQuery;
 
 // we expose this in the global scope so that other javascript widgets can access it--probably should have a better pattern for this
 var NavigatorController;
+var createdPatientUuid;
 
 function importMpiPatient(id) {
     $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
@@ -234,7 +235,6 @@ jq(function() {
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
         var formData = jq('#registration').serialize();
-
         var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/registerPatient/submit.action?appId=' + appId;
         jq.ajax({
             url: url,
@@ -242,7 +242,12 @@ jq(function() {
             data: formData,
             dataType: "json",
             success: function(response) {
-                emr.navigateTo({"applicationUrl": response.message});
+                var myDropzone = Dropzone.forElement(".dropzone");
+                if (myDropzone){
+                myDropzone.options.params = {'uuid': response.uuid, 'redirectUrl': response.redirectUrl};               
+                myDropzone.processQueue();
+                }
+                emr.navigateTo({"applicationUrl": response.redirectUrl});
             },
             error: function(response) {
                 jq('#validation-errors-content').html(response.responseJSON.globalErrors);
