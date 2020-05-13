@@ -300,6 +300,7 @@ fieldset[id\$="-fieldset"] div > div {
                             ${combineSubSections == true ? "" : "<legend id=\"birthdateLabel\">" + ui.message("registrationapp.patient.birthdate.label") + "</legend>"}
                             
                             <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
+                            <div style="color: #999;">(${ ui.message("emr.formValidation.messages.requiredField.label") })</div>
                             ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
                                     label: "",
                                     formFieldName: "birthdate",
