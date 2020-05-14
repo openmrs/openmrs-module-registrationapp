@@ -32,6 +32,7 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.UiUtils;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -206,10 +207,25 @@ public class RegistrationAppUiUtilsTest {
 	 */
 	@Test
 	public void getPatientRelationships_shouldGeneratePatientRelationshipDisplayString() throws Exception {
+		// setup
+		BasicUiUtils ui = new BasicUiUtils();
+
 		// replay
-		String displayString = new RegistrationAppUiUtils().getPatientRelationships(patient);
+		String displayString = new RegistrationAppUiUtils().getPatientRelationships(patient, (UiUtils) ui);
 		
 		// verify
 		assertEquals("Person1GivenName Person1FamilyName - Parent, Person2GivenName Person2FamilyName - Uncle, ", displayString);
+	}
+
+	private class BasicUiUtils extends UiUtils {
+		
+		public BasicUiUtils() {
+			super();
+		}
+
+		@Override
+		public String message(String property, Object... args) {
+			return property;
+		}
 	}
 }

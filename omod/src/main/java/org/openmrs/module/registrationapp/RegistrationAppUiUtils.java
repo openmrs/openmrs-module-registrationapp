@@ -27,6 +27,7 @@ import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.idgen.EmptyIdentifierPoolException;
+import org.openmrs.ui.framework.UiUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 
@@ -88,15 +89,15 @@ public class RegistrationAppUiUtils {
 	 * 
 	 * @return the patient's relationships
 	 */
-	public String getPatientRelationships(Person person) {
+	public String getPatientRelationships(Person person, UiUtils ui) {
 		StringBuilder rels = new StringBuilder("");
 		if (person != null) {
 			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(person);
 			for (Relationship relationship : relationships) {
 				if(relationship.getPersonA().getUuid() != person.getUuid()){
-					rels.append(relationship.getPersonA().getPersonName()).append(" - ").append(relationship.getRelationshipType().getaIsToB());
+					rels.append(relationship.getPersonA().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getaIsToB()));
                 } else {
-                	rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(relationship.getRelationshipType().getbIsToA());
+                	rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getbIsToA()));
                 }
 				rels.append(", ");
 			}
