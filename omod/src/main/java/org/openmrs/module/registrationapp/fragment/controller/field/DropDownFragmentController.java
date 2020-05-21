@@ -31,14 +31,12 @@ public class DropDownFragmentController {
                 option.put(OPTION_LABEL, concept.getName(Context.getUserContext().getLocale()).getName());
                 options.add(option);
             }
-            Collections.sort(options, mapComparator);
+            Collections.sort(options, new Comparator<Map<String, Object>>() {
+                public int compare(Map<String, Object> m1, Map<String, Object> m2) {
+                    return ((String) m1.get(OPTION_LABEL)).compareTo((String) m2.get(OPTION_LABEL));
+                }
+            });
             config.addAttribute("options", options);
         }
     }
-    
-    public Comparator<Map<String, Object>> mapComparator = new Comparator<Map<String, Object>>() {
-        public int compare(Map<String, Object> m1, Map<String, Object> m2) {
-            return ((String) m1.get(OPTION_LABEL)).compareTo((String) m2.get(OPTION_LABEL));
-        }
-    };
 }
