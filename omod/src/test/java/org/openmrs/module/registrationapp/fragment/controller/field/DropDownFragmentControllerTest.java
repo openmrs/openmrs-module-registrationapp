@@ -128,4 +128,32 @@ public class DropDownFragmentControllerTest {
 	 	
 	 	
     }
+    
+    @Test
+    public void controller_shouldAddSortedOptionsFromConceptSet() throws Exception {    	
+    	// setup
+    	Concept concept0 = new Concept(0);
+    	ConceptName conceptName0 = new ConceptName(0);
+		conceptName0.setName("name0");
+		conceptName0.setLocale(Locale.ENGLISH);
+		concept0.addName(conceptName0);
+		conceptSet.addSetMember(concept0);
+		
+    	config = new FragmentConfiguration();
+    	config.addAttribute("conceptSet", CONCEPT_SET_UUID);
+    	
+    	// replay
+    	dwController.controller(config);
+    	
+    	// verify
+    	List < Map < String, Object >> options = (List < Map < String, Object >>) config.getAttribute("options");
+	 	assertTrue(config.containsKey("options"));
+	 	assertThat(options.size(), is(3));
+	 	assertThat((String) options.get(0).get("label"), is("name0"));
+	 	assertThat((String) options.get(0).get("value"), is("0"));
+	 	assertThat((String) options.get(1).get("label"), is("name1"));
+	 	assertThat((String) options.get(1).get("value"), is("1"));
+	 	assertThat((String) options.get(2).get("label"), is("name2"));
+	 	assertThat((String) options.get(2).get("value"), is("2"));
+    }
 }
