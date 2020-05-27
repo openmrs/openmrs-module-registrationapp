@@ -2,11 +2,12 @@ package org.openmrs.module.registrationapp.model;
 
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.openmrs.module.appframework.domain.Requireable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Question {
+public class Question implements Requireable {
 
     @JsonProperty
     private String legend;
@@ -28,6 +29,9 @@ public class Question {
 
     @JsonProperty
     private List<String> cssClasses;
+
+    @JsonProperty
+    private String require;
 
     public Question() {
     }
@@ -109,4 +113,32 @@ public class Question {
         this.cssClasses = cssClasses;
     }
 
+	@Override
+	public String getRequire() {
+		return require;
+	}
+
+	public void setRequire(String require) {
+		this.require = require;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		Question question = (Question) o;
+
+		return id != null ? id.equals(question.id) : question.id == null;
+	}
+
+	@Override
+	public int hashCode() {
+		return id != null ? id.hashCode() : 0;
+	}
 }

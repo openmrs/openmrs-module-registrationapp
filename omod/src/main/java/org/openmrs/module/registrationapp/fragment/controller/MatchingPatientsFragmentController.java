@@ -21,6 +21,8 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -62,15 +64,17 @@ public class MatchingPatientsFragmentController {
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "gender", "birthdate", "personAddress", "mpiPatient"};
 
-    public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
+    public List<SimpleObject> getSimilarPatients(UiSessionContext sessionContext,
+                                                 @RequestParam("appId") AppDescriptor app,
                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
                                                  @ModelAttribute("patient") @BindParams Patient patient,
                                                  @ModelAttribute("personName") @BindParams PersonName name,
                                                  @ModelAttribute("personAddress") @BindParams PersonAddress address,
                                                  @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                                                  @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                                                 @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                                                  HttpServletRequest request, UiUtils ui) throws Exception {
-        addToPatient(patient, app, name, address, request);
+        addToPatient(patient, app, name, address, sessionContext, appFrameworkService, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
@@ -78,15 +82,17 @@ public class MatchingPatientsFragmentController {
         return getSimpleObjects(app, ui, matches);
     }
 
-    public List<SimpleObject> getExactPatients(@RequestParam("appId") AppDescriptor app,
+    public List<SimpleObject> getExactPatients(UiSessionContext sessionContext,
+                                               @RequestParam("appId") AppDescriptor app,
                                                @SpringBean("registrationCoreService") RegistrationCoreService service,
                                                @ModelAttribute("patient") @BindParams Patient patient,
                                                @ModelAttribute("personName") @BindParams PersonName name,
                                                @ModelAttribute("personAddress") @BindParams PersonAddress address,
                                                @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                                                @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                                               @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
-        addToPatient(patient, app, name, address, request);
+        addToPatient(patient, app, name, address, sessionContext, appFrameworkService, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
@@ -94,12 +100,15 @@ public class MatchingPatientsFragmentController {
         return getSimpleObjects(app, ui, matches);
     }
 
-    public List<SimpleObject> getBiometricMatches(@RequestParam("appId") AppDescriptor app,
+    public List<SimpleObject> getBiometricMatches(UiSessionContext sessionContext,
+                                                  @RequestParam("appId") AppDescriptor app,
                                                   @SpringBean("registrationCoreService") RegistrationCoreService service,
                                                   @SpringBean("patientService") PatientService patientService,
+                                                  @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                                                   HttpServletRequest request, UiUtils ui) throws Exception {
 
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
+                sessionContext.generateAppContextModel());
         List<PatientAndMatchQuality> matches = getBiometricMatches(service, patientService, formStructure, request.getParameterMap());
         return getSimpleObjects(app, ui, matches);
     }
@@ -127,8 +136,10 @@ public class MatchingPatientsFragmentController {
         return ret;
     }
 
-    private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address, HttpServletRequest request) throws IOException {
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+    private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address,
+            UiSessionContext sessionContext, AppFrameworkService appFrameworkService, HttpServletRequest request) throws IOException {
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
+                sessionContext.generateAppContextModel());
 
         patient.addName(name);
         patient.addAddress(address);

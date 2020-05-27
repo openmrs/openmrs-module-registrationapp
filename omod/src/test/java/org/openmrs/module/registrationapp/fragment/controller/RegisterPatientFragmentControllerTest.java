@@ -28,6 +28,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
@@ -104,6 +105,9 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
     AdministrationService administrationService;
 
     @Autowired
+    AppFrameworkService appFrameworkService;
+
+    @Autowired
     EmrApiProperties emrApiProperties;
 
     @Autowired
@@ -178,7 +182,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -199,7 +203,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -224,7 +228,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, null, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -251,7 +255,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -298,7 +302,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
@@ -343,7 +347,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
                 patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
         assertTrue(result instanceof SuccessResult);
