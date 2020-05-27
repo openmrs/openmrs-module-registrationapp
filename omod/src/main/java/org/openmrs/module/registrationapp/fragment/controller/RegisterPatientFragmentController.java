@@ -42,11 +42,13 @@ import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.validator.PatientValidator;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -54,8 +56,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,6 +63,9 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 
 public class RegisterPatientFragmentController {
 
@@ -72,7 +75,8 @@ public class RegisterPatientFragmentController {
         String obsConcept = null;
         String[] obsValues = null;
 
-        ObsGroupItem(){}
+        ObsGroupItem() {
+        }
 
         ObsGroupItem(String obsConcept, String[] obsValues) {
             this.obsConcept = obsConcept;
@@ -97,7 +101,7 @@ public class RegisterPatientFragmentController {
     }
 
     public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
-                            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+            @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
         String patientUuid = registrationService.importMpiPatient(personId);
         return new SuccessResult(patientUuid);
     }
@@ -120,7 +124,6 @@ public class RegisterPatientFragmentController {
                             @SpringBean("patientService") PatientService patientService,
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
-
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
@@ -199,7 +202,6 @@ public class RegisterPatientFragmentController {
             }
             return new FailureResult(createErrorMessage(errors, messageSourceService));
         }
-
         // now create the registration encounter, if configured to do so
         Encounter registrationEncounter = buildRegistrationEncounter(patient, registrationDate, sessionContext, app, encounterService);
         if (registrationEncounter != null) {
@@ -271,13 +273,14 @@ public class RegisterPatientFragmentController {
         if (registrationEncounter != null) {
             redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
         }
-
-        return new SuccessResult(redirectUrl);
+        SimpleObject result = SimpleObject.create("redirectUrl", redirectUrl, "uuid", patient.getUuid());
+        ObjectResult response = new ObjectResult(result);
+        return response;
     }
 
     private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {
         int obsIndex = param.indexOf(".obs.");
-        if (obsIndex > 0 ) {
+        if (obsIndex > 0) {
             String conceptObsGroup = param.substring("obsgroup.".length(), obsIndex);
             if (StringUtils.isNotBlank(conceptObsGroup)) {
                 String conceptUuid = param.substring(obsIndex + ".obs.".length());
@@ -294,8 +297,9 @@ public class RegisterPatientFragmentController {
         }
     }
 
-    private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate, Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
-        if (obsGroupMap != null && obsGroupMap.size() > 0 ) {
+    private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate,
+            Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
+        if (obsGroupMap != null && obsGroupMap.size() > 0) {
             for (String groupConceptUuid : obsGroupMap.keySet()) {
                 Concept groupConcept = RegistrationAppUtils.getConcept(groupConceptUuid, conceptService);
                 if (groupConcept == null) {
@@ -306,7 +310,8 @@ public class RegisterPatientFragmentController {
                 List<Obs> groupObsToCreate = new ArrayList<Obs>();
                 List<ObsGroupItem> obsGroupItems = obsGroupMap.get(groupConceptUuid);
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
-                    buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
+                    buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(),
+                            obsGroupItem.getObsValues());
                 }
                 if (groupObsToCreate.size() > 0) {
                     for (Obs obs : groupObsToCreate) {
@@ -318,7 +323,8 @@ public class RegisterPatientFragmentController {
         }
     }
 
-    private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptId, String[] parameterValues) throws ParseException {
+    private void buildObs(ConceptService conceptService, List<Obs> obsToCreate, String conceptId,
+            String[] parameterValues) throws ParseException {
         Concept concept = RegistrationAppUtils.getConcept(conceptId, conceptService);
         if (concept == null) {
             throw new IllegalArgumentException("Cannot find concept: " + conceptId);
@@ -333,8 +339,7 @@ public class RegisterPatientFragmentController {
                         log.error("Submitted a coded obs whose value we can't interpret: " + parameterValue);
                     }
                     obs.setValueCoded(valueCoded);
-                }
-                else {
+                }else {
                     obs.setValueAsString(parameterValue);
                 }
                 obsToCreate.add(obs);
@@ -342,8 +347,8 @@ public class RegisterPatientFragmentController {
         }
     }
 
-
-    private String createErrorMessage(BindingResult errors, MessageSourceService messageSourceService) throws Exception {
+    private String createErrorMessage(BindingResult errors, MessageSourceService messageSourceService)
+            throws Exception {
         StringBuffer errorMessage = new StringBuffer(messageSourceService.getMessage("error.failed.validation") + ":");
         errorMessage.append("<ul>");
         for (ObjectError error : errors.getAllErrors()) {
@@ -358,18 +363,21 @@ public class RegisterPatientFragmentController {
         return errorMessage.toString();
     }
 
-    private Encounter buildRegistrationEncounter(Patient patient, Date registrationDate, UiSessionContext sessionContext, AppDescriptor app, EncounterService encounterService) {
+    private Encounter buildRegistrationEncounter(Patient patient, Date registrationDate,
+            UiSessionContext sessionContext, AppDescriptor app, EncounterService encounterService) {
 
         EncounterType registrationEncounterType = getRegistrationEncounterType(app, encounterService);
         EncounterRole registrationEncounterRole = getRegistrationEncounterRole(app, encounterService);
 
-        // if no registration encounter type specified, we aren't configured to create an encounter
+        // if no registration encounter type specified, we aren't configured to create
+        // an encounter
         if (registrationEncounterType == null) {
             return null;
         }
 
-        // if date not specified, or date = current date, consider this a "real-time" entry, and set date to current time
-        if (DateTimeComparator.getDateOnlyInstance().compare(registrationDate, new Date()) == 0){
+        // if date not specified, or date = current date, consider this a "real-time"
+        // entry, and set date to current time
+        if (DateTimeComparator.getDateOnlyInstance().compare(registrationDate, new Date()) == 0) {
             registrationDate = new Date();
         }
 
@@ -387,13 +395,12 @@ public class RegisterPatientFragmentController {
         return encounter;
     }
 
-
     private EncounterType getRegistrationEncounterType(AppDescriptor app, EncounterService encounterService) {
 
         EncounterType registrationEncounterType = null;
 
         if (!app.getConfig().path("registrationEncounter").path("encounterType").isMissingNode()) {
-            String encounterTypeUuid =  app.getConfig().get("registrationEncounter").get("encounterType").getTextValue();
+            String encounterTypeUuid = app.getConfig().get("registrationEncounter").get("encounterType").getTextValue();
             registrationEncounterType = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
 
             if (registrationEncounterType == null) {

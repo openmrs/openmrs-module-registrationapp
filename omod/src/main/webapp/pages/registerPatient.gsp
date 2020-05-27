@@ -169,7 +169,7 @@ fieldset[id\$="-fieldset"] div > div {
         </button>
     </div>
 
-    <form class="simple-form-ui" id="registration" method="POST">
+    <form class="simple-form-ui" id="registration" method="POST" >
 
         <% if (includeRegistrationDateSection) { %>
         <section id="registration-info" class="non-collapsible">

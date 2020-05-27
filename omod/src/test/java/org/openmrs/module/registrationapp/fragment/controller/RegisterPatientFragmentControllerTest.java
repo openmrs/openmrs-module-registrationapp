@@ -35,6 +35,7 @@ import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientValidator;
@@ -181,8 +182,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((ObjectResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -202,8 +203,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(0));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -227,8 +228,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(encounterService.getEncountersByPatient(patient).size(), is(1));
         assertThat(obsService.getObservationsByPerson(patient).size(), is(1));
 
@@ -254,8 +255,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(patient.getAttribute(emrApiProperties.getUnknownPatientPersonAttributeType()).getValue(), is("true"));
         assertThat(patient.getGivenName(), is("UNKNOWN"));
         assertThat(patient.getFamilyName(), is("UNKNOWN"));
@@ -301,8 +302,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(patient.getActiveIdentifiers().size(), is(1));
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifier(), is("123abcd"));
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifierType().getUuid(), is(OLD_IDENTIFIER_TYPE_UUID));
@@ -346,8 +347,8 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
                 messageSourceService, encounterService, obsService, conceptService, patientService, emrApiProperties,
                 patientValidator, uiUtils);
 
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
+        assertTrue(result instanceof ObjectResult);
+        //assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
         assertThat(patient.getActiveIdentifiers().size(), is(1));
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifier(), is("123abcd"));
         assertThat(patient.getActiveIdentifiers().iterator().next().getIdentifierType().getUuid(), is(OLD_IDENTIFIER_TYPE_UUID));
