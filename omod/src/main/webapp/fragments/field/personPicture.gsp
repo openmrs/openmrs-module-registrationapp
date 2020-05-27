@@ -1,7 +1,6 @@
 <%
   ui.includeJavascript("registrationapp", "field/picture/dropzone.js") 
   ui.includeJavascript("registrationapp", "field/picture/webcam.js")  
-  ui.includeJavascript("registrationapp", "field/picture/jquery-3.4.1.min.js") 
   ui.includeCss("registrationapp","basic.css")
   ui.includeCss("registrationapp","dropzone.css")
 %>
@@ -26,7 +25,7 @@
 
 <input type="hidden" id="${ config.id }-field" name="${ config.formFieldName }" />
 
- <div id="section">  
+ <div id="camsection">  
     <div class='camera' id="camera"></div>
     <div class="camcontrols">
       <a  value="Close" style="display: none;" id="close" onclick="closeNow()" ><i class="icon-remove"></i></a>
@@ -59,7 +58,7 @@ var myDropzone = new Dropzone("#dropezoneId", {
               if (this.files[1] != null) {
                 this.removeFile(this.files[0]);
               }
-              jq('input[name="personPicture"]').val(file.name);
+               document.getElementById("${ config.id }-field").value = file.name;
             },
             'sending', function (file, xhr, formData) {
             },
@@ -79,7 +78,7 @@ var myDropzone = new Dropzone("#dropezoneId", {
   function showCam() {
     var myDropzone = Dropzone.forElement(".dropzone");
     myDropzone.removeAllFiles(true);
-    document.getElementById('section').style.display = 'block';
+    document.getElementById('camsection').style.display = 'block';
     // CAMERA SETTINGS.
     Webcam.set({
       width: 450,
@@ -95,7 +94,7 @@ var myDropzone = new Dropzone("#dropezoneId", {
 
   function closeNow() {
     Webcam.reset();
-    document.getElementById('section').style.display = 'none';
+    document.getElementById('camsection').style.display = 'none';
     document.getElementById('showCam').style.display = 'block';
     document.getElementById('accept').style.display = 'none';
   }
@@ -115,7 +114,7 @@ var myDropzone = new Dropzone("#dropezoneId", {
     var myDropzone = Dropzone.forElement(".dropzone");
     var file = dataUritoBlob(camDataUri);
     myDropzone.addFile(file);
-    jq('input[name="personPicture"]').val(file.name);
+    document.getElementById("${ config.id }-field").value = "Camera Image";
     closeNow();
     document.getElementById('accept').style.display = 'none';
   }
