@@ -5,11 +5,11 @@ jq = jQuery;
 // we expose this in the global scope so that other javascript widgets can access it--probably should have a better pattern for this
 var NavigatorController;
 
-function importMpiPatient(id) {
-    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
+function importMpiPatient(ids) {
+    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {identifiers: ids}))
         .success(function (response) {
             var link = patientDashboardLink;
-            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message;
+            link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + response.message + '&appId=' + appId;
             location.href = link;
         })
         .error(function (xhr, status, err) {
@@ -91,8 +91,9 @@ jq(function() {
 
             var button;
             if (isMpi) {
+                var identifiersJSONString = JSON.stringify(item.identifiers);
                 button = $('#matchedPatientTemplates .mpi_button').clone();
-                button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
+                button.attr("onclick", "importMpiPatient('"+ identifiersJSONString + "')");
             } else {
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
@@ -209,6 +210,7 @@ jq(function() {
             //jq("#biometricPatientsSlideView").show();
         }, "json");
     };
+
 
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {

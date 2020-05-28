@@ -3,6 +3,10 @@
 .project
 .idea
 target
+api/bin/
+omod/bin/
+web-1.9/bin/
+web-2.0/bin/
 
 *.iml
 *.sass-cache
