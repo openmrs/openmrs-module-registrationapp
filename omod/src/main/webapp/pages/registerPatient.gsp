@@ -19,7 +19,7 @@
 
     def localizedGenderOptions = []
     def genderCodes = []
-                          
+
     genderOptions.each { optn ->
     	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
     	genderCodes << 'emr.gender.' + optn
@@ -34,7 +34,7 @@
 
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
-    
+
 %>
 
 <% if(includeFragments){
@@ -86,7 +86,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 
 fieldset[id\$="-fieldset"] input,
 fieldset[id\$="-fieldset"] select {
-    border-radius: 5px;       
+    border-radius: 5px;
 }
 
 fieldset[id\$="-fieldset"] div,
@@ -203,13 +203,13 @@ fieldset[id\$="-fieldset"] div > div {
             def section = structure.value
             def questions = section.questions
         %>
-                  
+
             <section id="${section.id}" class="non-collapsible">
                 <span id="${section.id}_label" class="title">${section.id == 'demographics' ? ui.message("registrationapp.patient.demographics.label") : ui.message(section.label)}</span>
-                  
+
                   <${combineSubSections == true ? "fieldset id=\"" + section.id + "-fieldset\"" : "div"}>
                   ${combineSubSections == true ? "<legend>" + ui.message(section.label) + "</legend>" : ""}
-                  
+
                     <!-- hardcoded name, gender, and birthdate are added for the demographics section -->
                     <% if (section.id == 'demographics') { %>
 
@@ -239,7 +239,7 @@ fieldset[id\$="-fieldset"] div > div {
 
                                 <% } %>
                             </div>
-                            
+
                             <div style="display:inline-block;width:100%">
                             <% questions.each { question ->
                             // Render custom/additional name fields if present in app defition/formStructure
@@ -253,9 +253,9 @@ fieldset[id\$="-fieldset"] div > div {
 			                            configOptions.left = true
 			                            configOptions.classes = field.cssClasses
 		                            %>
-		                              
+
 		                              ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
-		                    
+
 		                        	<% } %>
 			                	<% } %>
 		                    <% } %>
@@ -279,8 +279,8 @@ fieldset[id\$="-fieldset"] div > div {
                         <${combineSubSections == true ? "/div" : "/fieldset"}>
 
                         <${combineSubSections == true ? "div" : "fieldset"} id="demographics-gender">
-                        
-                            ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("emr.gender") + "</legend>"}                        
+
+                            ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("emr.gender") + "</legend>"}
                             <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
@@ -296,9 +296,9 @@ fieldset[id\$="-fieldset"] div > div {
                         <${combineSubSections == true ? "/div" : "/fieldset"}>
 
                         <${combineSubSections == true ? "div" : "fieldset"} id="demographics-birthdate" class="multiple-input-date date-required no-future-date">
-                            
+
                             ${combineSubSections == true ? "" : "<legend id=\"birthdateLabel\">" + ui.message("registrationapp.patient.birthdate.label") + "</legend>"}
-                            
+
                             <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
                             <div style="color: #999;">(${ ui.message("emr.formValidation.messages.requiredField.label") })</div>
                             ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
@@ -342,25 +342,25 @@ fieldset[id\$="-fieldset"] div > div {
 	                                <% if (question.displayTemplate) { %> display-template="${ui.escapeAttribute(question.displayTemplate)}" <% } %>
 	                        >
 	                            ${combineSubSections == true ? "" : "<legend>" + ui.message(question.legend) + "</legend>"}
-	                            
+
 	                            <% if(question.legend == "Person.address"){ %>
 	                                ${ui.includeFragment("uicommons", "fieldErrors", [fieldName: "personAddress"])}
 	                            <% } %>
 	                            <% if(question.header) { %>
 	                                    <h3>${ui.message(question.header)}</h3>
 	                            <% } %>
-	
+
 	                            <% fields.each { field ->
 	                                def configOptions = (field.fragmentRequest.configuration != null) ? field.fragmentRequest.configuration : [:] ;
 	                                configOptions.label = ui.message(field.label)
 	                                configOptions.formFieldName = field.formFieldName
 	                                configOptions.left = true
 	                                configOptions.classes = field.cssClasses
-	
+
 	                                if (field.type == 'personAddress') {
 	                                    configOptions.addressTemplate = addressTemplate
 	                                }
-	
+
 	                                if (field.type == 'personRelationships') {
 	                                    configOptions.relationshipTypes = relationshipTypes
 	                                }
@@ -370,7 +370,7 @@ fieldset[id\$="-fieldset"] div > div {
 	                        <${combineSubSections == true ? "/div" : "/fieldset"}>
 	                    <% } %>
                     <% } %>
-                  <${combineSubSections == true ? "/fieldset" : "/div"}>  
+                  <${combineSubSections == true ? "/fieldset" : "/div"}>
             </section>
         <% } %>
 
@@ -384,7 +384,7 @@ fieldset[id\$="-fieldset"] div > div {
             </section>
         <% } %>
 
-        <div id="confirmation">
+        <div id="confirmation" class="container">
             <span id="confirmation_label" class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>

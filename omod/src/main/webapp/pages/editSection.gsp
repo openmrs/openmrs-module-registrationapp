@@ -12,7 +12,7 @@
     ui.includeCss("registrationapp", "editSection.css")
 
     def localizedGenderOptions = []
-                              
+
     genderOptions.each { optn ->
     	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
     }
@@ -118,7 +118,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     ])}
 
                     <% } %>
-                    
+
                     <div style="display:inline-block;width:100%">
                             <% section.questions.each { question ->
                             // Render custom/additional name fields if present in app defition/formStructure
@@ -133,9 +133,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 			                            configOptions.classes = field.cssClasses
 			                            configOptions.initialValue = ui.escapeAttribute(uiUtils.getAttribute(patient, field.uuid))
 		                            %>
-		                              
+
 		                              ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
-		                    
+
 		                        	<% } %>
 			                	<% } %>
 		                    <% } %>
@@ -215,7 +215,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
-        <div id="confirmation">
+        <div id="confirmation" class="container">
             <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
