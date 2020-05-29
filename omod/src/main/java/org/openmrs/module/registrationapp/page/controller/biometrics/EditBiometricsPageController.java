@@ -5,6 +5,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -28,6 +29,7 @@ public class EditBiometricsPageController {
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("patientId") Patient patient,
                     @RequestParam("registrationAppId") AppDescriptor registrationApp,
+                    @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                     @SpringBean RegistrationCoreProperties registrationCoreProperties,
                     @SpringBean("patientService") PatientService patientService) throws Exception {
 
@@ -39,7 +41,8 @@ public class EditBiometricsPageController {
 
         sessionContext.requireAuthentication();
 
-        NavigableFormStructure form = RegisterPatientFormBuilder.buildFormStructure(registrationApp);
+        NavigableFormStructure form = RegisterPatientFormBuilder.buildFormStructure(registrationApp, appFrameworkService,
+		        sessionContext.generateAppContextModel());
 
         BiometricEngine engine = registrationCoreProperties.getBiometricEngine();
         BiometricEngineStatus status =  engine.getStatus();

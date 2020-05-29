@@ -13,20 +13,39 @@
  */
 package org.openmrs.module.registrationapp.form;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.hamcrest.Matcher;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.openmrs.module.appframework.context.AppContextModel;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.domain.Requireable;
+import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appframework.service.AppFrameworkServiceImpl;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
@@ -85,5 +104,36 @@ public class RegisterPatientFormBuilderTest {
 		for (Question question : combinedSection.getQuestions()) {
 			assertTrue(questionIds.contains(question.getId()));
 		}		
+	}
+
+	@Test
+	public void buildFormStructure_shouldExcludeSectionsBasedOnRequireProperty() throws Exception {
+		// setup
+		ObjectMapper mapper = new ObjectMapper();
+		List<AppDescriptor> appDescriptors = mapper.readValue(getClass().getClassLoader().getResourceAsStream("registration_app_with_require.json"), new TypeReference<List<AppDescriptor>>() {});
+		AppDescriptor appDescriptor = appDescriptors.get(0);
+
+		AppFrameworkService appFrameworkService = mock(AppFrameworkService.class);
+		// our silly rule: if an item has a required field, exclude it
+		when(appFrameworkService.checkRequireExpression(any(Requireable.class), any(AppContextModel.class))).then(new Answer<Boolean>() {
+
+			@Override
+			public Boolean answer(InvocationOnMock invocationOnMock) {
+				Requireable requireable = (Requireable) invocationOnMock.getArguments()[0];
+				return StringUtils.isBlank(requireable.getRequire());
+			}
+		});
+
+		// replay
+		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(appDescriptor, false, appFrameworkService, new AppContextModel());
+
+		// verify
+		Map<String, Section> sections = formStructure.getSections();
+		assertThat(sections.containsKey("nextOfKin"), is(false));
+
+		Section demographics = sections.get("contactInfo");
+		for (Question question : demographics.getQuestions()) {
+			assertThat(question.getId(), not(equalTo("phoneNumber")));
+		}
 	}
 }

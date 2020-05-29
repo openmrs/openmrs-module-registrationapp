@@ -28,6 +28,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
@@ -118,11 +119,13 @@ public class RegisterPatientFragmentController {
                             @SpringBean("obsService") ObsService obsService,
                             @SpringBean("conceptService") ConceptService conceptService,
                             @SpringBean("patientService") PatientService patientService,
+                            @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
 
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
+		        sessionContext.generateAppContextModel());
 
         if (unknown != null && unknown) {
             // TODO make "UNKNOWN" be configurable

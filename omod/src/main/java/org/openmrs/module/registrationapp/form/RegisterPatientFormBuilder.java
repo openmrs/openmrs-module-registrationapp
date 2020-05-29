@@ -27,7 +27,9 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appframework.context.AppContextModel;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
@@ -61,40 +63,78 @@ public class RegisterPatientFormBuilder {
 	 *
 	 * @param app the app descriptor
 	 * @return the form structure
-	 * @throws IOException
 	 * @should flatten the widget config
 	 */
-	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
-		return buildFormStructure(app, false);
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app) {
+		return buildFormStructure(app, false, null, null);
 	}
-	
+
 	/**
-	 * @since 1.15.0
-	 * 
-	 * Builds the navigable form structure for the specified app descriptor combining sections
-	 * if specified
+	 * Builds the navigable form structure for the specified app descriptor
 	 *
-	 * @param app the app descriptor
+	 * @param app             the app descriptor
 	 * @param combineSections if true, sections are combined into one demographics section
 	 * @return the form structure
-	 * @throws IOException
 	 * @should flatten the widget config
 	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * @since 1.15.0
+	 * Builds the navigable form structure for the specified app descriptor combining sections
+	 * if specified
 	 */
-	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections) throws IOException {
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections) {
+		return buildFormStructure(app, combineSections, null, null);
+	}
+
+	/**
+	 * Builds the navigable form structure for the specified app descriptor
+	 *
+	 * @param app the app descriptor
+	 * @return the form structure
+	 * @should flatten the widget config
+	 */
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, AppFrameworkService appFrameworkService,
+			AppContextModel appContextModel) {
+		return buildFormStructure(app, false, appFrameworkService, appContextModel);
+	}
+
+	/**
+	 * @param app             the app descriptor
+	 * @param combineSections if true, sections are combined into one demographics section
+	 * @return the form structure
+	 * @should flatten the widget config
+	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * @since 1.15.0
+	 * Builds the navigable form structure for the specified app descriptor combining sections
+	 * if specified
+	 */
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections,
+			AppFrameworkService appFrameworkService, AppContextModel appContextModel) {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
 		// Get the ordered list of sections out of the configuration
 		Map<String, Section> configuredSections = new LinkedHashMap<String, Section>();
 		ArrayNode sections = (ArrayNode) app.getConfig().get("sections");
+
+		// should we attempt to evaluate whether section or question should be included?
+		boolean evaluateContext = appFrameworkService != null && appContextModel != null;
 		for (JsonNode i : sections) {
 			ObjectNode config = (ObjectNode) i;
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			Section section = objectMapper.convertValue(config, Section.class);
 
+			if (evaluateContext && !appFrameworkService.checkRequireExpression(section, appContextModel)) {
+				continue;
+			}
+
 			if (section.getQuestions() != null) {
-				for (Question question : section.getQuestions()) {
+				for (Iterator<Question> it = section.getQuestions().iterator(); it.hasNext(); ) {
+					Question question = it.next();
+					if (evaluateContext && !appFrameworkService.checkRequireExpression(question, appContextModel)) {
+						it.remove();
+						continue;
+					}
+
 					if (question.getFields() != null) {
 						for (Field field : question.getFields()) {
 							ObjectNode widget = field.getWidget();
@@ -116,36 +156,36 @@ public class RegisterPatientFormBuilder {
 		}
 
 		// If no demographics section is explicitly included, ensure the default one is included first
-        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
-            Section demographics = new Section();
-            demographics.setId(DEMOGRAPHICS_SECTION_ID);
-            demographics.setLabel("registrationapp.patient.demographics.label");
-            formStructure.addSection(demographics);
-        }
-        
-        // Will combine sections into the demographics section if 'combineSections' is true
-        // This is because demographics section is already hard coded in registerPatient.gsp
-        if (combineSections) {
-        	// get the freshly created demographics section on the configured one if available
-        	Section combinedSection = formStructure.getSections().get(DEMOGRAPHICS_SECTION_ID);
-        	if (combinedSection == null) {
-        		combinedSection = configuredSections.get(DEMOGRAPHICS_SECTION_ID);
-        	}
-        	// Transfer questions in other sections into the demographics section (combined-sections)
-        	for (Section section : configuredSections.values()) {
-        		if (!DEMOGRAPHICS_SECTION_ID.equalsIgnoreCase(section.getId())) {
+		if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+			Section demographics = new Section();
+			demographics.setId(DEMOGRAPHICS_SECTION_ID);
+			demographics.setLabel("registrationapp.patient.demographics.label");
+			formStructure.addSection(demographics);
+		}
+
+		// Will combine sections into the demographics section if 'combineSections' is true
+		// This is because demographics section is already hard coded in registerPatient.gsp
+		if (combineSections) {
+			// get the freshly created demographics section on the configured one if available
+			Section combinedSection = formStructure.getSections().get(DEMOGRAPHICS_SECTION_ID);
+			if (combinedSection == null) {
+				combinedSection = configuredSections.get(DEMOGRAPHICS_SECTION_ID);
+			}
+			// Transfer questions in other sections into the demographics section (combined-sections)
+			for (Section section : configuredSections.values()) {
+				if (!DEMOGRAPHICS_SECTION_ID.equalsIgnoreCase(section.getId())) {
 					for (Question question : section.getQuestions()) {
 						combinedSection.addQuestion(question);
-					} 
+					}
 				}
-            }
-        	formStructure.addSection(combinedSection);
-        	
-        } else {
-        	for (Section section : configuredSections.values()) {
-                formStructure.addSection(section);
-            }
-        }
+			}
+			formStructure.addSection(combinedSection);
+
+		} else {
+			for (Section section : configuredSections.values()) {
+				formStructure.addSection(section);
+			}
+		}
 		return formStructure;
 	}
 
