@@ -169,7 +169,7 @@ public class EditSectionPageController {
                 else {
                     String sectionLabel= formStructure.getSections().get(sectionId).getLabel();
                     InfoErrorMessageUtil.flashInfoMessage(request.getSession(),
-                            ui.message("registrationapp.editCustomSectionInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : "", sectionLabel));
+                            ui.message("registrationapp.editCustomSectionInfoMessage.success", patient.getPersonName() != null ? ui.encodeHtml(patient.getPersonName().toString()) : "", ui.message(sectionLabel)));
                 }
                 EventMessage eventMessage = new EventMessage();
                 eventMessage.put(RegistrationCoreConstants.KEY_PATIENT_UUID, patient.getUuid());
