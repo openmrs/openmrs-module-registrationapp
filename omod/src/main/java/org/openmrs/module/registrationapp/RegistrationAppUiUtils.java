@@ -23,6 +23,7 @@ import org.openmrs.Relationship;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
+import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
@@ -180,14 +181,13 @@ public class RegistrationAppUiUtils {
 		if (ex instanceof PatientIdentifierException) {
 			if (ex instanceof InvalidCheckDigitException) {
 				errors.reject("registrationapp.error.identifier.invalidCheckDigit");
-			}
-			else if (ex instanceof DuplicateIdentifierException) {
+			} else if (ex instanceof DuplicateIdentifierException) {
 				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((DuplicateIdentifierException) ex).getPatientIdentifier()).toArray(), null);
-			}
-			else if (ex instanceof IdentifierNotUniqueException) {
+			} else if (ex instanceof IdentifierNotUniqueException) {
 				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((IdentifierNotUniqueException) ex).getPatientIdentifier()).toArray(), null);
-			}
-			else {
+			} else if (ex instanceof InvalidIdentifierFormatException) {
+				errors.reject(ex.getMessage());
+			} else {
 				errors.reject("registrationapp.error.identifier.general");
 			}
 		}
