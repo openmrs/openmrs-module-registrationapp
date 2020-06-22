@@ -281,9 +281,10 @@ fieldset[id\$="-fieldset"] div > div {
                         <${combineSubSections == true ? "div" : "fieldset"} id="demographics-gender">
 
                             ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("emr.gender") + "</legend>"}
-                            <h3>${ui.message("registrationapp.patient.gender.question")}</h3>
+
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
+                                    label: ui.message("registrationapp.patient.gender.question"),
                                     formFieldName: "gender",
                                     options: localizedGenderOptions,
                                     classes: ["required"],
@@ -299,11 +300,10 @@ fieldset[id\$="-fieldset"] div > div {
 
                             ${combineSubSections == true ? "" : "<legend id=\"birthdateLabel\">" + ui.message("registrationapp.patient.birthdate.label") + "</legend>"}
 
-                            <h3>${ui.message("registrationapp.patient.birthdate.question")}</h3>
-                            <div style="color: #999;">(${ ui.message("emr.formValidation.messages.requiredField.label") })</div>
                             ${ ui.includeFragment("uicommons", "field/multipleInputDate", [
-                                    label: "",
+                                    label: ui.message("registrationapp.patient.birthdate.question"),
                                     formFieldName: "birthdate",
+                                    classes: ["requiredTitle"],
                                     left: true,
                                     showEstimated: true,
                                     estimated: patient.birthdateEstimated,
