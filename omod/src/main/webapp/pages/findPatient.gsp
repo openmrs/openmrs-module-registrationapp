@@ -75,8 +75,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     <th>${ ui.message("coreapps.person.name") }</th>
                     <th>${ ui.message("coreapps.gender") }</th>
                     <th>${ ui.message("coreapps.birthdate") }</th>
-                    <th>${ ui.message("registrationapp.encounterDate") }</th>
-                    <th>${ ui.message("registrationapp.dateCreated") }</th>
+                    <th class="d-none d-sm-table-cell">${ ui.message("registrationapp.encounterDate") }</th>
+                    <th class="d-none d-md-table-cell">${ ui.message("registrationapp.dateCreated") }</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -97,8 +97,8 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     </td>
                     <td>${ ui.format( encounter.patient.gender) }</td>
                     <td>${ ui.format( encounter.patient.birthdate) }</td>
-                    <td>${ ui.format(encounter.encounterDatetime) }</td>
-                    <td>${ ui.format(encounter.dateCreated) }</td>
+                    <td class="d-none d-sm-table-cell">${ ui.format(encounter.encounterDatetime) }</td>
+                    <td class="d-none d-md-table-cell">${ ui.format(encounter.dateCreated) }</td>
                 </tr>
                 <% } %>
                 </tbody>
