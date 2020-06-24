@@ -36,7 +36,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <h1>
     ${ ui.message("registrationapp.app.registerPatient.label") }
 </h1>
-<div class="ml-4">
+<div class="mx-2">
     <div class="row mt-2">
         <div class="col-8 col-md-4 order-md-last mb-4">
             <a href="${ ui.pageLink("registrationapp", "registerPatient", [ appId: appId, breadcrumbOverride: breadcrumbOverride ]) }">
