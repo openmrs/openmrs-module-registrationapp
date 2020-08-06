@@ -73,5 +73,14 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
                     return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
                 }).join(', ');
             }
+
+           // second hack: when editing relationships, enable the Confirm button
+           if (NavigatorController.getSection().length === 2) {
+               if ($scope.relationships[0].name) {
+                   NavigatorController.getField("registration-submit").enable();
+               } else {
+                   NavigatorController.getField("registration-submit").disable();
+               }
+            }
         }
     }]);
