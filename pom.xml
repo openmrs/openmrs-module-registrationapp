@@ -51,7 +51,7 @@
         <appuiVersion>1.7</appuiVersion>
         <coreappsVersion>1.11.1</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
-        <eventVersion>2.5</eventVersion>
+        <eventVersion>2.8.0</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -270,7 +270,7 @@
 
         <dependency>
             <groupId>org.openmrs</groupId>
-            <artifactId>event-api-1.x</artifactId>
+            <artifactId>event-api</artifactId>
             <version>${eventVersion}</version>
             <scope>test</scope>
         </dependency>
