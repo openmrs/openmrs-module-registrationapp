@@ -54,10 +54,10 @@ import java.util.Map;
  */
 public class RegisterPatientFormBuilder {
 
-	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
+	protected static final Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 
 	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
-		
+
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
 	 *
@@ -357,7 +357,7 @@ public class RegisterPatientFormBuilder {
 	/**
 	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics
 	 */
-	static public List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
+	public static List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
 
 		List<String> biometricIdentifierUuids = new ArrayList<String>();
 
