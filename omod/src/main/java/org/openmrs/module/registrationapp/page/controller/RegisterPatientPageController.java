@@ -1,9 +1,7 @@
 package org.openmrs.module.registrationapp.page.controller;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
@@ -22,7 +20,6 @@ import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 

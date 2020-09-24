@@ -40,7 +40,6 @@ import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.validator.PatientIdentifierValidator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
