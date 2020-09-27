@@ -49,6 +49,7 @@ jq(function() {
         jq('#similarPatientsCount').text(data.length);
         var similarPatientsSelect = jq('#similarPatientsSelect');
         similarPatientsSelect.empty();
+        var identifier;
         for (index in data) {
             var item = data[index];
             var isMpi = false;
@@ -99,7 +100,8 @@ jq(function() {
                 idToUse = item.uuid
                 for (var i = 0; i < item.identifiers.length; i += 1) {
                     identifier = item.identifiers[i];
-                    if (identifier.name === 'ECID') {
+                    // if (identifier.name === 'ECID') {
+                    if (identifier.name === 'iSantePlus ID') {
                         idToUse = identifier.value;
                         break;
                     }
@@ -107,7 +109,7 @@ jq(function() {
 
                 button = $('#matchedPatientTemplates .mpi_button').clone();
                 button.attr("onclick", "importMpiPatient('" + idToUse + "')");
-            } else {0
+            } else {
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
                 link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;
