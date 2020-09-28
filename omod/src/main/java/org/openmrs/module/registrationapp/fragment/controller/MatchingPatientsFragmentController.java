@@ -77,8 +77,11 @@ public class MatchingPatientsFragmentController {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
-
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
+        List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        if(fastSimilarPatients!=null && fastSimilarPatients.size() > 0){
+            matches.addAll(fastSimilarPatients) ;
+        }
         return getSimpleObjects(app, ui, matches);
     }
 
