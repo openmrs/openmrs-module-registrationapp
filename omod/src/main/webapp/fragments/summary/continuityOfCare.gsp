@@ -13,7 +13,6 @@
             <div>
                 <h3>${ ui.message("registrationapp.continuityOfCare.document.date") }</h3>
                 <p class="left">${ ui.message(CCDDate) }</p>
-                <i id="ccdRefresh" class="icon-refresh edit-action right" title="Update CCD" onclick="refreshCcd(${ config.patientId })"></i>
             </div>
             <div>
                 <h3></h3>
@@ -24,6 +23,10 @@
             <button type="button" class="confirm" onclick="viewCCD(${ config.patientId })">
                 ${ ui.message("registrationapp.continuityOfCare.document.view") }
             </button>
+            <a class="button confirm right" href="#" onclick="refreshCcd(${ config.patientId })">
+                ${ ui.message("registrationapp.continuityOfCare.document.refresh") }
+                <i id="ccdRefresh" class="icon-refresh" title="Update CCD"> </i>
+            </a>
         </div>
     </div>
 </div>
