@@ -52,6 +52,12 @@ jq(function() {
         var identifier;
         for (index in data) {
             var item = data[index];
+
+            console.log(item);
+            console.log(item.getMpiPatient());
+            console.log(item.getSourceLocation());
+
+
             var isMpi = false;
             if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
                 isMpi = true;
