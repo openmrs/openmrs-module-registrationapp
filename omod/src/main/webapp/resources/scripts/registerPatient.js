@@ -54,8 +54,6 @@ jq(function() {
             var item = data[index];
 
             console.log(item);
-            console.log(item.getMpiPatient());
-            console.log(item.getSourceLocation());
 
 
             var isMpi = false;
@@ -99,6 +97,10 @@ jq(function() {
                     clonedIdValue.removeClass("idValueTemplate");
                     identifiers.append(clonedIdValue);
                 });
+            }
+
+            if (item.sourceLocation) {
+                cloned.find('.location').append(item.sourceLocation)
             }
 
             var button;

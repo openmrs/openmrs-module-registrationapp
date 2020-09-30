@@ -63,7 +63,7 @@ public class MatchingPatientsFragmentController {
             "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "gender", "birthdate", "personAddress", "mpiPatient"};
+            "gender", "birthdate", "personAddress", "mpiPatient", "sourceLocation"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
@@ -201,6 +201,9 @@ public class MatchingPatientsFragmentController {
             if (Arrays.asList(defaultProperties).contains("mpiPatient")) {
                 propertiesToIncludeList.add("mpiPatient");
             }
+            if (Arrays.asList(defaultProperties).contains("sourceLocation")) {
+                propertiesToIncludeList.add("sourceLocation");
+            }
             Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
@@ -226,6 +229,7 @@ public class MatchingPatientsFragmentController {
         addIfMissing("gender", propertiesToInclude);
         addIfMissing("personAddress", propertiesToInclude);
         addIfMissing("birthdate", propertiesToInclude);
+        addIfMissing("sourceLocation", propertiesToInclude);
     }
 
     private void addIfMissing(String property, List<String> propertiesToInclude) {
