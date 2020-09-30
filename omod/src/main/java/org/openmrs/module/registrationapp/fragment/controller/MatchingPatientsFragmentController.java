@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -55,6 +57,7 @@ public class MatchingPatientsFragmentController {
 
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
+    private final Log log = LogFactory.getLog(this.getClass());
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "gender", "birthdate", "personAddress"};
@@ -79,6 +82,11 @@ public class MatchingPatientsFragmentController {
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
         List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
         List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        for(PatientAndMatchQuality pm:fastSimilarPatients){
+            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
+            log.error(pm.getSourceLocation());
+            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
+        }
         if(fastSimilarPatients!=null && fastSimilarPatients.size() > 0){
             matches.addAll(fastSimilarPatients) ;
         }
