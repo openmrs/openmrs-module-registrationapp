@@ -60,6 +60,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     font-size: 15px;
     display: inline-block;
 }
+.matchingPatientContainer .container .location {
+    font-size: 15px;
+    display: inline-block;
+}
 
 .matchingPatientContainer .container .identifiers {
     font-size: 15px;
