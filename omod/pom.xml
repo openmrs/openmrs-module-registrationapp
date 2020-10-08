@@ -220,24 +220,7 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>de.saumya.mojo</groupId>
-                <artifactId>gem-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jrubyVersion>1.7.10</jrubyVersion>
-                    <execArgs>${gem.home}/bin/compass compile ${basedir}/src/main/compass</execArgs>
-                </configuration>
-            </plugin>
-
+            
 
 		</plugins>
 	</build>
@@ -247,23 +230,7 @@
             <id>watch-sass</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>de.saumya.mojo</groupId>
-                        <artifactId>gem-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>generate-resources</phase>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <jrubyVersion>1.7.10</jrubyVersion>
-                            <execArgs>${gem.home}/bin/compass watch ${basedir}/src/main/compass</execArgs>
-                        </configuration>
-                    </plugin>
+                    
                 </plugins>
             </build>
         </profile>
