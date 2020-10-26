@@ -1,6 +1,7 @@
 <%
     ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
     ui.includeJavascript("registrationapp", "fingerprintUtils.js")
+     ui.includeJavascript("registrationapp", "field/m2sysnew.js")
 %>
 
 <script>
@@ -28,22 +29,8 @@
         var searchButton = jq('#fingerprint_search_button');
         searchButton.click(function () {
             toggleFingerprintButtonDisplay(searchButton);
-            jq.getJSON('${ ui.actionLink("getPatients") }', {})
-                .always(function () {
-                    toggleFingerprintButtonDisplay(searchButton);
-                })
-                .success(function (data) {
-                    patientSearchWidget.reset();
-                    if (data) {
-                        patientSearchWidget.setHandleRowSelection(handlePatientRowSelection);
-                        patientSearchWidget.updateSearchResults(data);
-                    } else {
-                        alert("No matches");
-                    }
-                })
-                .error(function (xhr, status, err) {
-                    alert('AJAX error ' + err);
-                })
+            capture();   
+            toggleFingerprintButtonDisplay(searchButton);             
         });
     });
 
@@ -81,6 +68,11 @@
         <i class="icon-hand-up"></i><span id="fingerprintButtonLabel"></span>
     </button>
     <input type="text" name="fingerprintSubjectId" class="invisible" size="1" style="min-width:1em;"/>
+    <input type="hidden" id="biometricXml" name="biometricXml"/>
+    <input type="hidden" id="searchFinger" name="searchFinger" value="1"/>
+	<input type="hidden" name="successMessage" id="successMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.success") }"/>
+	<input type="hidden" name="errorMessage" id="errorMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.failure") }"/>
+	<input type="hidden" name="engineMessage" id="engineMessage" value="${ ui.message("registrationapp.biometrics.m2sys.errorEngine") }"/>
 </div>
 
 <div style="display:none" id="patient-importing-dialog" class="dialog">

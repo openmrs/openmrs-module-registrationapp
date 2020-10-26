@@ -1,6 +1,7 @@
 <%
 	ui.includeJavascript("registrationapp", "field/fingerprintM2sys.js")
 	ui.includeJavascript("registrationapp", "fingerprintUtils.js")
+	 ui.includeJavascript("registrationapp", "field/m2sysnew.js")
 %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <div id="fingerprint-fragment" style="margin-top:10px;margin-left:5px;margin-right:5px;margin-bottom:10px;">
@@ -15,6 +16,12 @@
 		</button><br />
 		<input type="text" name="fingerprintSubjectId" class="invisible"/>
 	</p>
+	<input type="hidden" id="biometricXml" name="biometricXml"/>
+	<input type="hidden" name="identifierValue" id="identifierValue" value="${ biometricID }"/>
+	<input type="hidden" name="patient_id" id="patient_id" value="${ patient.id }"/>
+	<input type="hidden" name="successMessage" id="successMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.success") }"/>
+	<input type="hidden" name="errorMessage" id="errorMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.failure") }"/>
+	<input type="hidden" name="engineMessage" id="engineMessage" value="${ ui.message("registrationapp.biometrics.m2sys.errorEngine") }"/>
 
 </div>
 <script type="text/javascript">
@@ -24,6 +31,7 @@
         'registrationapp.biometrics.m2sys.register.alreadyExists.failure'
     ]);
 	var fingerprintSubjectIdField = jq("[name='fingerprintSubjectId']");
+	
 	var buttonLabelEnroll = "${ ui.message("registrationapp.biometrics.m2sys.register.button.label") }";
 	var buttonLabelUpdate = "${ ui.message("registrationapp.biometrics.m2sys.update.button.label") }";
 	var enrollOrUpdate = "${ enrollOrUpdate }";
@@ -38,20 +46,13 @@
 			}
 		});
 
-		jq(fingerprintButton).click(function() {
-			if (enrollOrUpdate == "update") {
-			    m2sysUpdate(biometricID, this);
-			} else {
-			    m2sysEnrollAndSave('${ patient.id }', this, function(biometricIdentifier) {
-			        jq('#fingerprintButtonLabel').text(buttonLabelUpdate);
-			        enrollOrUpdate = "update";
-			        biometricID = biometricIdentifier;
-			    });
-			}
-		});
+		jq(fingerprintButton).click(function() { 
+		                                           capture(); 
+		                                       });
 
 		jq(fingerprintSubjectIdField).change(function() {
 			biometricID = jq(fingerprintSubjectIdField).val();
+			alert("this is a test 1");
 			if (biometricID) {
 				emr.getFragmentActionWithCallback('coreapps', 'editPatientIdentifier', 'editPatientIdentifier',
 					{ patientId: ${ patient.id },
@@ -65,9 +66,8 @@
 					},
 					function(err){
 						emr.handleError(err);
-					}
-				);
+					});
 			}
 		});
-	});
+});		
 </script>
