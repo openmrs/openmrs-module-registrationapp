@@ -226,7 +226,7 @@ public class RegisterPatientFragmentController {
         if (obsGroupMap.size() > 0 ){
             buildGroupObs(conceptService, obsToCreate, obsGroupMap);
         }
-        if (obsToCreate.size() > 0) {
+		if (!obsToCreate.isEmpty()) {
             if (registrationEncounter != null) {
                 for (Obs obs : obsToCreate) {
                     registrationEncounter.addObs(obs);
@@ -298,7 +298,7 @@ public class RegisterPatientFragmentController {
     }
 
     private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate, Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
-        if (obsGroupMap != null && obsGroupMap.size() > 0 ) {
+		if (obsGroupMap != null && !obsGroupMap.isEmpty()) {
             for (String groupConceptUuid : obsGroupMap.keySet()) {
                 Concept groupConcept = RegistrationAppUtils.getConcept(groupConceptUuid, conceptService);
                 if (groupConcept == null) {
@@ -311,7 +311,7 @@ public class RegisterPatientFragmentController {
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
                     buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
                 }
-                if (groupObsToCreate.size() > 0) {
+				if (!groupObsToCreate.isEmpty()) {
                     for (Obs obs : groupObsToCreate) {
                         groupObs.addGroupMember(obs);
                     }
