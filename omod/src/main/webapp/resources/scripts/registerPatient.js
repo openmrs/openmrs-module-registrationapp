@@ -297,8 +297,25 @@ jq(function() {
     /* Unknown patient functionality */
     jq('#checkbox-unknown-patient').click(function () {
         if (jq('#checkbox-unknown-patient').is(':checked')) {
-            // disable all questions & sections except gender and registration date
-            if (NavigatorController.getQuestionById('demographics-name') != undefined) {    
+
+            $("#personRelationshipField h3").addClass("disabled");
+
+            $("#personRelationshipField p select").addClass("disabled");
+            $("#personRelationshipField p select").prop( "disabled", true);
+            $("#personRelationshipField p select").val(null);
+
+            $("#personRelationshipField p input").addClass( "disabled");
+            $("#personRelationshipField p input").prop( "disabled", true);
+            $("#personRelationshipField p input").val(null);
+
+            $("#personRelationshipField p a").each(function(i, button) {
+                if ((i % 2) != 0){
+                    button.click();
+                }
+            });
+
+            // disable all questions & sections except gender andNavigatorControllerNavigatorControllerNavigatorControllerNa registration date
+            if (NavigatorController.getQuestionById('demographics-name') != undefined) {
                 _.each(NavigatorController.getQuestionById('demographics-name').fields, function (field) {
                     if (field.id != 'checkbox-unknown-patient') {
                         field.disable();
@@ -338,6 +355,15 @@ jq(function() {
             }
         }
         else {
+            // Disable "HSU related" dynamic field
+            $("#personRelationshipField h3").removeClass("disabled");
+
+            $("#personRelationshipField p select").removeClass("disabled");
+            $("#personRelationshipField p select").prop( "disabled", false);
+
+            $("#personRelationshipField p input").removeClass( "disabled");
+            $("#personRelationshipField p input").prop( "disabled", false);
+
             // re-enable all functionality
             // hide all questions & sections except gender and registration date
             if (NavigatorController.getQuestionById('demographics-name') != undefined) {
@@ -345,9 +371,9 @@ jq(function() {
                     if (field.id != 'checkbox-unknown-patient') {
                         field.enable();
                     }
-                });    
+                });
             }
-            
+
             if (NavigatorController.getQuestionById('demographics-birthdate') != undefined) {
                 NavigatorController.getQuestionById('demographics-birthdate').enable();
             }
