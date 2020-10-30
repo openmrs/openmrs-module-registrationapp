@@ -300,6 +300,14 @@ jq(function() {
 
             $("#personRelationshipField h3").addClass("disabled");
 
+            $("#personRelationshipField p a").each(function(i, button) {
+                // Press the minus button
+                if ((i % 2) != 0){
+                    button.click();
+                }
+            });
+
+            // disable the remaining relationship
             $("#personRelationshipField p select").addClass("disabled");
             $("#personRelationshipField p select").prop( "disabled", true);
             $("#personRelationshipField p select").val(null);
@@ -307,12 +315,6 @@ jq(function() {
             $("#personRelationshipField p input").addClass( "disabled");
             $("#personRelationshipField p input").prop( "disabled", true);
             $("#personRelationshipField p input").val(null);
-
-            $("#personRelationshipField p a").each(function(i, button) {
-                if ((i % 2) != 0){
-                    button.click();
-                }
-            });
 
             // disable all questions & sections except gender andNavigatorControllerNavigatorControllerNavigatorControllerNa registration date
             if (NavigatorController.getQuestionById('demographics-name') != undefined) {
