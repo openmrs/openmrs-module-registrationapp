@@ -357,7 +357,7 @@ jq(function() {
             }
         }
         else {
-            // Disable "HSU related" dynamic field
+            // Disable "Patient related" dynamic field
             $("#personRelationshipField h3").removeClass("disabled");
 
             $("#personRelationshipField p select").removeClass("disabled");
