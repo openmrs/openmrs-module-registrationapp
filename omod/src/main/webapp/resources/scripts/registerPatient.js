@@ -307,7 +307,7 @@ jq(function() {
                 }
             });
 
-            // disable the remaining relationship
+            // Disable the remaining relationship
             $("#personRelationshipField p select").addClass("disabled");
             $("#personRelationshipField p select").prop( "disabled", true);
             $("#personRelationshipField p select").val(null);
@@ -357,7 +357,8 @@ jq(function() {
             }
         }
         else {
-            // Disable "Patient related" dynamic field
+
+            // Enable the relationship field
             $("#personRelationshipField h3").removeClass("disabled");
 
             $("#personRelationshipField p select").removeClass("disabled");
