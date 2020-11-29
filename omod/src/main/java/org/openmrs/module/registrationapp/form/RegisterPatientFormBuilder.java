@@ -20,6 +20,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
+import org.hibernate.type.IdentifierType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -48,6 +49,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.metamodel.IdentifiableType;
+
 /**
  * Builds a registration form structure from the app configuration.
  */
@@ -56,6 +59,8 @@ public class RegisterPatientFormBuilder {
 	protected static final Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 
 	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
+
+   private static PatientIdentifier patientIdentifier;
 
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
@@ -291,6 +296,14 @@ public class RegisterPatientFormBuilder {
 								patient.addIdentifier(identifier);
 							}
 						}
+					else if(StringUtils.isEmpty(parameterValue)){	
+						 Context.getPatientService().voidPatientIdentifier(patientIdentifier, parameterValue).equals(null);
+						 log.debug("identifier parameter value  is empty");
+						}
+						else {
+					 	patient.removeIdentifier(patientIdentifier);
+						}
+						log.warn("parameter value is empty");
 					}
 				}
 			}
