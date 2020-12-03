@@ -263,32 +263,43 @@ public class RegisterPatientFormBuilder {
 						if (parameterValues.length > 1) {
 							log.warn("Multiple values for a single patient identifier type not supported, ignoring extra values");
 						}
+						
+						PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
+						if (identifierType  == null) {
+							return;
+						}
+						
 						String parameterValue = parameterValues[0];
 						if (StringUtils.isNotBlank(parameterValue)) {
-							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
-							if (identifierType  != null) {
-
-								// see if there is existing identifier with this value, if so, no need to update
-								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
-									if (oldIdentifier.getIdentifier().equals(parameterValue)) {
-										return;
-									}
+							// see if there is existing identifier with this value, if so, no need to update
+							for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+								if (oldIdentifier.getIdentifier().equals(parameterValue)) {
+									return;
 								}
+							}
 
-								// validate the new identifier before saving
-								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
-								PatientIdentifierValidator.validateIdentifier(identifier);
+							// validate the new identifier before saving
+							PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
+							PatientIdentifierValidator.validateIdentifier(identifier);
 
-								// void any existing identifiers of this type
-								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
-									oldIdentifier.setVoided(true);
-									oldIdentifier.setVoidedBy(Context.getAuthenticatedUser());
-									oldIdentifier.setDateVoided(new Date());
-									oldIdentifier.setVoidReason("updated via registration app");
-								}
+							// void any existing identifiers of this type
+							for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+								oldIdentifier.setVoided(true);
+								oldIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+								oldIdentifier.setDateVoided(new Date());
+								oldIdentifier.setVoidReason("updated via registration app");
+							}
 
-								// add the new identifier
-								patient.addIdentifier(identifier);
+							// add the new identifier
+							patient.addIdentifier(identifier);
+						}
+						else {
+							// void any existing identifiers of this type
+							for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+								oldIdentifier.setVoided(true);
+								oldIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+								oldIdentifier.setDateVoided(new Date());
+								oldIdentifier.setVoidReason("updated via registration app");
 							}
 						}
 					}
