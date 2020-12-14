@@ -36,25 +36,25 @@
 	
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
-        <uiframeworkVersion>3.13.0-SNAPSHOT</uiframeworkVersion>
+        <uiframeworkVersion>3.13.0</uiframeworkVersion>
         <appframeworkVersion>2.9</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
         <idgenVersion>4.4.0</idgenVersion>
-        <uicommonsVersion>2.4.0-SNAPSHOT</uicommonsVersion>
+        <uicommonsVersion>2.4.0</uicommonsVersion>
         <emrapiVersion>1.18</emrapiVersion>
         <calculationVersion>1.2</calculationVersion>
         <providerManagementVersion>2.5.0</providerManagementVersion>
-        <registrationcoreVersion>1.7.2-SNAPSHOT</registrationcoreVersion>
+        <registrationcoreVersion>1.7.2</registrationcoreVersion>
         <reportingModuleVersion>0.10.4</reportingModuleVersion>
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
-        <appuiVersion>1.9.0-SNAPSHOT</appuiVersion>
-        <coreappsVersion>1.11.1</coreappsVersion>
+        <appuiVersion>1.9.0</appuiVersion>
+        <coreappsVersion>1.19.1</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <m2SysVersion>1.0.0</m2SysVersion>
+        <m2SysVersion>1.0.1</m2SysVersion>
         <xds-senderVersion>1.0.0</xds-senderVersion>
     </properties>
 
@@ -355,7 +355,7 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 		</repository>
 	</repositories>
 
@@ -363,7 +363,7 @@
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -374,13 +374,65 @@
         <repository>
             <id>openmrs-repo-modules</id>
             <name>OpenMRS Modules</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
         </repository>
         <snapshotRepository>
             <id>openmrs-repo-snapshots</id>
             <name>OpenMRS Snapshots</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+            <url>https://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
+    <profiles>
+        <profile>
+            <!-- Github Packages Integration -->
+            <id>github-packages</id>
+            <distributionManagement>
+                <!-- Deploy to Github Packages -->
+                <repository>
+                    <id>github-packages</id>
+                    <name>Github iSantePlus Packages</name>
+                    <url>https://maven.pkg.github.com/isanteplus/isanteplus-packages</url>
+                    <uniqueVersion>false</uniqueVersion>
+                </repository>
+                <snapshotRepository>
+                    <id>github-packages</id>
+                    <name>Github iSantePlus Packages</name>
+                    <url>https://maven.pkg.github.com/isanteplus/isanteplus-packages</url>
+                    <uniqueVersion>true</uniqueVersion>
+                </snapshotRepository>
+            </distributionManagement>
+            <repositories>
+                <!-- Use the Github Packages Repo first when looking up dependencies -->
+                <repository>
+                    <id>github-packages</id>
+                    <name>Github iSantePlus Packages</name>
+                    <url>https://maven.pkg.github.com/isanteplus/isanteplus-packages</url>
+                </repository>
+            </repositories>
+            <build>
+                <plugins>
+                    <!-- Disable possible test jar generation -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>validate</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
