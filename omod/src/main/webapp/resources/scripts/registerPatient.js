@@ -49,13 +49,8 @@ jq(function() {
         jq('#similarPatientsCount').text(data.length);
         var similarPatientsSelect = jq('#similarPatientsSelect');
         similarPatientsSelect.empty();
-        var identifier;
         for (index in data) {
             var item = data[index];
-
-            console.log(item);
-
-
             var isMpi = false;
             if (data[index].mpiPatient != null && data[index].mpiPatient == true) {
                 isMpi = true;
@@ -99,17 +94,12 @@ jq(function() {
                 });
             }
 
-            if (item.sourceLocation) {
-                cloned.find('.location').append('Source :' + item.sourceLocation)
-            }
-
             var button;
             if (isMpi) {
                 idToUse = item.uuid
                 for (var i = 0; i < item.identifiers.length; i += 1) {
                     identifier = item.identifiers[i];
-                    // if (identifier.name === 'ECID') {
-                    if (identifier.name === 'iSantePlus ID') {
+                    if (identifier.name === 'ECID') {
                         idToUse = identifier.value;
                         break;
                     }
@@ -117,7 +107,7 @@ jq(function() {
 
                 button = $('#matchedPatientTemplates .mpi_button').clone();
                 button.attr("onclick", "importMpiPatient('" + idToUse + "')");
-            } else {
+            } else {0
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
                 link += (link.indexOf('?') == -1 ? '?' : '&') + 'patientId=' + item.uuid;

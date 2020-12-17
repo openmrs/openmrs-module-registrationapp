@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -57,13 +55,12 @@ public class MatchingPatientsFragmentController {
 
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
-    private final Log log = LogFactory.getLog(this.getClass());
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "gender", "birthdate", "personAddress", "mpiPatient", "sourceLocation"};
+            "gender", "birthdate", "personAddress", "mpiPatient"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
@@ -80,16 +77,8 @@ public class MatchingPatientsFragmentController {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
-        List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
-        List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        for(PatientAndMatchQuality pm:fastSimilarPatients){
-            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
-            log.error(pm.getSourceLocation());
-            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
-        }
-        if(fastSimilarPatients!=null && fastSimilarPatients.size() > 0){
-            matches.addAll(fastSimilarPatients) ;
-        }
+
+        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
         return getSimpleObjects(app, ui, matches);
     }
 
@@ -201,9 +190,6 @@ public class MatchingPatientsFragmentController {
             if (Arrays.asList(defaultProperties).contains("mpiPatient")) {
                 propertiesToIncludeList.add("mpiPatient");
             }
-            if (Arrays.asList(defaultProperties).contains("sourceLocation")) {
-                propertiesToIncludeList.add("sourceLocation");
-            }
             Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
@@ -229,7 +215,6 @@ public class MatchingPatientsFragmentController {
         addIfMissing("gender", propertiesToInclude);
         addIfMissing("personAddress", propertiesToInclude);
         addIfMissing("birthdate", propertiesToInclude);
-        addIfMissing("sourceLocation", propertiesToInclude);
     }
 
     private void addIfMissing(String property, List<String> propertiesToInclude) {
