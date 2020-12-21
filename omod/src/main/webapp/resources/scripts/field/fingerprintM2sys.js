@@ -44,7 +44,7 @@ function m2sysEnroll(button) {
         })
         .success(function (data) {
             if (data['success'] === true) {
-                if (data['status'] === 'ALREADY_REGISTERED') {
+                if (data['status'] === 'ALREADY_REGISTERED' && data['patientUuid']) {
                     m2SysShowAlreadyExistingFingerprintsDialog(data);
                 } else {
                     m2SysSuccess();

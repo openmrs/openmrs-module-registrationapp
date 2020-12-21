@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -79,14 +80,20 @@ public class MatchingPatientsFragmentController {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
-        RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+        Map<String, String[]> parameterMap = request.getParameterMap();
+
+        String localBiometricSubjectId = parameterMap.get("localBiometricSubjectId")[0];
+        String nationalBiometricSubjectId = parameterMap.get("nationalBiometricSubjectId")[0];
+
+        if (StringUtils.isNotBlank(localBiometricSubjectId)) {
+            otherDataPoints.put("localBiometricSubjectId",localBiometricSubjectId);
+        }
+        if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
+            otherDataPoints.put("nationalBiometricSubjectId",nationalBiometricSubjectId);
+        }
+        RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, parameterMap);
         List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
         List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        for(PatientAndMatchQuality pm:fastSimilarPatients){
-            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
-            log.error(pm.getSourceLocation());
-            log.error("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVvv");
-        }
         if(fastSimilarPatients!=null && fastSimilarPatients.size() > 0){
             matches.addAll(fastSimilarPatients) ;
         }

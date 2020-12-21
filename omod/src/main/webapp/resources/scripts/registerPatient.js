@@ -235,7 +235,7 @@ jq(function() {
             jq("#reviewBiometricPatientsButton").show();
             showBiometricPatients(data);
             // TODO: Uncomment the below if we wish to display the matching patient list open by default
-            //jq("#biometricPatientsSlideView").show();
+            jq("#biometricPatientsSlideView").show();
         }, "json");
     };
 
