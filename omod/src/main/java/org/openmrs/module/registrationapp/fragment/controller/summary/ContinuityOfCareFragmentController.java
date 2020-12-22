@@ -1,5 +1,6 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
+import org.dcm4chee.xds2.common.exception.XDSException;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xdssender.api.domain.Ccd;
@@ -32,13 +33,15 @@ public class ContinuityOfCareFragmentController {
 
     public String viewCCD(@RequestParam("patientId") Integer patientId) {
         Patient patient = Context.getPatientService().getPatient(patientId);
-        return getCcdService().getLocallyStoredCcd(patient).getDocument();
+        return getCcdService().getHtmlParsedLocallyStoredCcd(patient);
     }
 
-    public void importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException {
-        getCcdService().downloadCcdAsPDF(response.getOutputStream(), Context.getPatientService().getPatient(patientId));
+    public String importCCD(@RequestParam("patientId") Integer patientId, HttpServletResponse response) throws IOException, XDSException {
+        Patient patient = Context.getPatientService().getPatient(patientId);
+        Ccd ccd = getCcdService().downloadAndSaveCcd(patient);
+        return getCcdService().getHtmlParsedLocallyStoredCcd(ccd);
     }
-    
+
     private CcdService getCcdService() {
         return Context.getRegisteredComponent("xdsSender.CcdService", CcdService.class);
     }

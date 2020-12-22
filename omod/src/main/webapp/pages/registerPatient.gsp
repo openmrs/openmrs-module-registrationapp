@@ -60,6 +60,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
     font-size: 15px;
     display: inline-block;
 }
+.matchingPatientContainer .container .location {
+    font-size: 15px;
+    display: inline-block;
+}
 
 .matchingPatientContainer .container .identifiers {
     font-size: 15px;
@@ -145,6 +149,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="identifiers">
                 <span class="idName idNameTemplate"></span><span class="idValue idValueTemplate"></span>
             </div>
+            <div class="location"></div>
         </div>
         <button class="local_button" style="float:right; margin:10px; padding: 2px 8px" onclick="location.href='/openmrs-standalone/coreapps/clinicianfacing/patient.page?patientId=7'">
             ${ui.message("registrationapp.open")}

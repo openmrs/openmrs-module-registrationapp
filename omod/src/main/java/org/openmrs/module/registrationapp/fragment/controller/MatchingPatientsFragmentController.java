@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -55,12 +58,13 @@ public class MatchingPatientsFragmentController {
 
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
+    private final Log log = LogFactory.getLog(this.getClass());
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "gender", "birthdate", "personAddress", "mpiPatient"};
+            "gender", "birthdate", "personAddress", "mpiPatient", "sourceLocation"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
@@ -76,9 +80,23 @@ public class MatchingPatientsFragmentController {
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
 
-        RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, request.getParameterMap());
+        Map<String, String[]> parameterMap = request.getParameterMap();
 
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        String localBiometricSubjectId = parameterMap.get("localBiometricSubjectId")[0];
+        String nationalBiometricSubjectId = parameterMap.get("nationalBiometricSubjectId")[0];
+
+        if (StringUtils.isNotBlank(localBiometricSubjectId)) {
+            otherDataPoints.put("localBiometricSubjectId",localBiometricSubjectId);
+        }
+        if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
+            otherDataPoints.put("nationalBiometricSubjectId",nationalBiometricSubjectId);
+        }
+        RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, parameterMap);
+        List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
+        List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        if(fastSimilarPatients!=null && fastSimilarPatients.size() > 0){
+            matches.addAll(fastSimilarPatients) ;
+        }
         return getSimpleObjects(app, ui, matches);
     }
 
@@ -190,6 +208,9 @@ public class MatchingPatientsFragmentController {
             if (Arrays.asList(defaultProperties).contains("mpiPatient")) {
                 propertiesToIncludeList.add("mpiPatient");
             }
+            if (Arrays.asList(defaultProperties).contains("sourceLocation")) {
+                propertiesToIncludeList.add("sourceLocation");
+            }
             Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
@@ -215,6 +236,7 @@ public class MatchingPatientsFragmentController {
         addIfMissing("gender", propertiesToInclude);
         addIfMissing("personAddress", propertiesToInclude);
         addIfMissing("birthdate", propertiesToInclude);
+        addIfMissing("sourceLocation", propertiesToInclude);
     }
 
     private void addIfMissing(String property, List<String> propertiesToInclude) {
