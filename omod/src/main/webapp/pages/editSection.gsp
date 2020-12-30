@@ -215,14 +215,17 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
-        <div id="confirmation" class="container">
+        <div id="confirmation" class="container focused">
             <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <!-- <div id="dataCanvas"></div> -->
             <!--<div id="confirmationQuestion"> -->
+            <div id="dataCanvas"></div>
+            <div class="after-data-canvas"></div>
+            <div id="confirmationQuestion" class="focused">
                 ${ui.message("registrationapp.confirm")}
-                <p style="display: inline">
-                    <button id="registration-submit" type="submit" class="submitButton confirm right">
+                <p class="disabled" style="display: inline">
+                    <button id="registration-submit" type="submit" class="submitButton confirm right focused" value="">
                         ${ui.message("registrationapp.patient.confirm.label")}
                     </button>
                 </p>
