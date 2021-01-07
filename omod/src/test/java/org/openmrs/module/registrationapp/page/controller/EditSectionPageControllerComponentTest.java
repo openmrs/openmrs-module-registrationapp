@@ -223,8 +223,8 @@ public class EditSectionPageControllerComponentTest extends BaseModuleWebContext
         PatientIdentifierType pit = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
 
         assertThat(result, is("redirect:successUrl"));
-        assertThat(patient.getActiveIdentifiers().size(), is(2));  // should have been 3 identifiers
-        assertThat(patient.getPatientIdentifier(pit).getIdentifier(), is("101")); // the value was not updated to the value set it above (123abcde)
+        assertThat(patient.getActiveIdentifiers().size(), is(2));  // this patient has 2 non-voided identifiers
+        assertThat(patient.getPatientIdentifier(pit).getIdentifier(), is("123abcde")); // the value was not updated to the value set it above (123abcde)
 
     }
 
