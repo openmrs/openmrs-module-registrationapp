@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.when;
 public class EditSectionPageControllerComponentTest extends BaseModuleWebContextSensitiveTest {
 
     public static final String OLD_IDENTIFIER_TYPE_UUID = "2f470aa8-1d73-43b7-81b5-01f0c0dfa53c";
+    public static final String OPENMRS_IDENTIFIER_TYPE_UUID = "1a339fe9-38bc-4ab3-b180-320988c0b968";
 
     private EditSectionPageController controller;
 
@@ -158,6 +160,71 @@ public class EditSectionPageControllerComponentTest extends BaseModuleWebContext
         assertThat(result, is("redirect:successUrl"));
         assertThat(patient.getActiveIdentifiers().size(), is(2));  // should only be two identifiers, because patient has two in the test dataset, but the one we add should replace one of these
         assertThat(patient.getPatientIdentifier(pit).getIdentifier(), is("123abcd"));
+
+    }
+
+    @Test
+    public void testUpdatePatientWithMultipleIdentifiers() throws Exception {
+
+        PatientIdentifierType type = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
+        type.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+        patientService.savePatientIdentifierType(type);
+
+        PatientIdentifierType openmrsIdType = patientService.getPatientIdentifierTypeByUuid(OPENMRS_IDENTIFIER_TYPE_UUID);
+        openmrsIdType.setLocationBehavior(PatientIdentifierType.LocationBehavior.NOT_USED);
+        patientService.savePatientIdentifierType(openmrsIdType);
+
+        ObjectNode section = objectMapper.createObjectNode();
+        ArrayNode questions = objectMapper.createArrayNode();
+
+        ObjectNode omrsIdentifierQuestion  = objectMapper.createObjectNode();
+        ArrayNode omrsFields = objectMapper.createArrayNode();
+        ObjectNode omrsIdentifierField = objectMapper.createObjectNode();
+        ObjectNode omrsWidget = objectMapper.createObjectNode();
+        omrsWidget.put("providerName", "test");
+        omrsWidget.put("fragmentId", "test");
+
+        omrsIdentifierField.put("type", "patientIdentifier");
+        omrsIdentifierField.put("uuid", OPENMRS_IDENTIFIER_TYPE_UUID);
+        omrsIdentifierField.put("formFieldName", "patientIdentifierField" + OPENMRS_IDENTIFIER_TYPE_UUID);
+        omrsIdentifierField.put("widget", omrsWidget);
+        omrsFields.add(omrsIdentifierField);
+        omrsIdentifierQuestion.put("fields", omrsFields);
+        questions.add(omrsIdentifierQuestion);
+
+        ObjectNode question  = objectMapper.createObjectNode();
+        ArrayNode fields = objectMapper.createArrayNode();
+        ObjectNode identifierField = objectMapper.createObjectNode();
+        ObjectNode widget = objectMapper.createObjectNode();
+
+        widget.put("providerName", "test");
+        widget.put("fragmentId", "test");
+
+        identifierField.put("type", "patientIdentifier");
+        identifierField.put("uuid", OLD_IDENTIFIER_TYPE_UUID);
+        identifierField.put("formFieldName", "patientIdentifierField" + OLD_IDENTIFIER_TYPE_UUID);
+        identifierField.put("widget", widget);
+        fields.add(identifierField);
+
+        question.put("fields", fields);
+        questions.add(question);
+
+        section.put("questions", questions);
+        section.put("id", "mainSection");
+
+        ((ArrayNode) app.getConfig().get("sections")).add(section);
+
+        request.addParameter("patientIdentifierField" + OPENMRS_IDENTIFIER_TYPE_UUID , "101-6");
+        request.addParameter("patientIdentifierField" + OLD_IDENTIFIER_TYPE_UUID , "123abcde");
+
+        String result = controller.post(sessionContext, model, patient, null, null, 30, 0, app, "mainSection", "successUrl",
+                patientService, personService, registrationCoreService, administrationService, request, messageSourceService, session, patientValidator, uiUtils);
+
+        PatientIdentifierType pit = patientService.getPatientIdentifierTypeByUuid(OLD_IDENTIFIER_TYPE_UUID);
+
+        assertThat(result, is("redirect:successUrl"));
+        assertThat(patient.getActiveIdentifiers().size(), is(2));  // should have been 3 identifiers
+        assertThat(patient.getPatientIdentifier(pit).getIdentifier(), is("101")); // the value was not updated to the value set it above (123abcde)
 
     }
 
