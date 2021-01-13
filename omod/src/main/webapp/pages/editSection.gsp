@@ -220,10 +220,11 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
-            <div id="confirmationQuestion">
+            <div id="confirmationQuestion" class="focused"> confirm submission?
                 ${ui.message("registrationapp.confirm")}
                 <p style="display: inline">
-                    <button id="registration-submit" type="submit" class="submitButton confirm right">
+                    <button id="registration-submit" class="confirm" type=submit value="">
+                      Confirm
                         ${ui.message("registrationapp.patient.confirm.label")}
                     </button>
                 </p>
