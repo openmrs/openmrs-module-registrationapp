@@ -49,7 +49,7 @@
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
         <appuiVersion>1.9.0</appuiVersion>
-        <coreappsVersion>1.19.1</coreappsVersion>
+        <coreappsVersion>1.19.2</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
