@@ -22,10 +22,7 @@ function m2SysShowAlreadyExistingFingerprintsDialog(data) {
         selector: '#imported-patient-dialog',
         actions: {
             confirm: function () {
-                var patientUrl = '/' + OPENMRS_CONTEXT_PATH
-                        + '/coreapps/clinicianfacing/patient.page?patientId='
-                        + data['patientUuid'];
-                $(location).attr('href', patientUrl);
+                redirectToPatient(data['patientUuid']);
             },
             cancel: function () {
                 m2SysErrorMessage(emr.message(

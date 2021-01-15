@@ -21,7 +21,8 @@
     <p>
         ${ui.message("registrationapp.biometrics.m2sys.register.question")}
     </p>
-    <button class="button app big" onClick="capture(); return false;">
+    <button class="button app big" onClick="capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }');
+    return false;">
         <i class="icon-hand-up"></i>
         ${ui.message("registrationapp.biometrics.m2sys.register.button.label")}
     </button>
@@ -29,11 +30,14 @@
     <p>
         <input type="text" name="localBiometricSubjectId" style="display: none"/>
         <input type="text" name="nationalBiometricSubjectId" style="display: none"/>
-        <input type="hidden" id="biometricXml" name="biometricXml" />
-	<input type="hidden" name="successMessage" id="successMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.success") }"/>
-	<input type="hidden" name="errorMessage" id="errorMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.failure") }"/>
-	<input type="hidden" name="engineMessage" id="engineMessage" value="${ ui.message("registrationapp.biometrics.m2sys.errorEngine") }"/>
-       <!--  <input type="text" id="serverResult" value="..."/> -->
+        <input type="hidden" id="biometricXml" name="biometricXml"/>
+        <input type="hidden" name="successMessage" id="successMessage"
+               value="${ui.message("registrationapp.biometrics.m2sys.register.success")}"/>
+        <input type="hidden" name="errorMessage" id="errorMessage"
+               value="${ui.message("registrationapp.biometrics.m2sys.register.failure")}"/>
+        <input type="hidden" name="engineMessage" id="engineMessage"
+               value="${ui.message("registrationapp.biometrics.m2sys.errorEngine")}"/>
+        <input type="hidden" id="searchFinger" name="searchFinger" value="1"/>
     </p>
 
     <div style="display:none" id="imported-patient-dialog" class="dialog">

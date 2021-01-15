@@ -16,6 +16,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.event.Event;
 import org.openmrs.event.EventMessage;
+import org.openmrs.module.m2sysbiometrics.M2SysBiometricsConstants;
 import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
 import org.openmrs.module.registrationapp.fragment.controller.RegisterPatientFragmentController;
@@ -36,6 +37,7 @@ import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentStatus
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.annotation.SpringBean;
+import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +57,7 @@ import org.openmrs.module.m2sysbiometrics.service.UpdateService;
 public class FingerprintM2sysFragmentController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FingerprintM2sysFragmentController.class);
-    private final Log log = LogFactory.getLog(RegisterPatientFragmentController.class);
+    private final Log log = LogFactory.getLog(FingerprintM2sysFragmentController.class);
 
     private BiometricEngine biometricEngine;
 
@@ -75,7 +77,19 @@ public class FingerprintM2sysFragmentController {
     }
 
    
-    public void controller() {
+    public void controller(FragmentModel model) {
+
+        String constTestTemplate = M2SysBiometricsConstants.CONST_TEST_TEMPLATE;
+        String testTemplate = adminService.getGlobalProperty(constTestTemplate);
+        if(StringUtils.isNotBlank(testTemplate)){
+            model.addAttribute("testTemplate", testTemplate);
+            model.addAttribute("useTemplate", true);
+        }
+        model.addAttribute("deviceName",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CAPTURE_DEVICE_NAME));
+        model.addAttribute("templateFormat",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUDABIS_TEMPLATE_FORMAT));
+        model.addAttribute("engineName",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUDABIS_ENGINE_NAME));
+        model.addAttribute("apiPath",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUD_SCANR_URL) +
+                adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CAPTURE_ENDPOINT));
     }
 
     public SimpleObject enroll(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
@@ -108,6 +122,20 @@ public class FingerprintM2sysFragmentController {
 
             LOGGER.error("Fingerprints enrollment failed", ex);
             LOGGER.error(ExceptionUtils.getFullStackTrace(ex));
+        }
+
+        return response;
+    }
+    public SimpleObject loadTemplateTemplate(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
+                               @SpringBean RegistrationCoreService registrationCoreService) {
+        SimpleObject response = new SimpleObject();
+
+        String constTestTemplate = M2SysBiometricsConstants.CONST_TEST_TEMPLATE;
+        String testTemplate = adminService.getGlobalProperty(constTestTemplate);
+        if(StringUtils.isNotBlank(testTemplate)){
+            response.put("testTemplate", testTemplate);
+        }else {
+            response.put("testTemplate", "Failed to load the test template");
         }
 
         return response;
