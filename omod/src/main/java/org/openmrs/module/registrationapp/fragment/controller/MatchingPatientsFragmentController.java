@@ -84,12 +84,16 @@ public class MatchingPatientsFragmentController {
 
         String localBiometricSubjectId = parameterMap.get("localBiometricSubjectId")[0];
         String nationalBiometricSubjectId = parameterMap.get("nationalBiometricSubjectId")[0];
+        String phoneNumber = parameterMap.get("Telephone Number")[0];
 
         if (StringUtils.isNotBlank(localBiometricSubjectId)) {
             otherDataPoints.put("localBiometricSubjectId",localBiometricSubjectId);
         }
         if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
             otherDataPoints.put("nationalBiometricSubjectId",nationalBiometricSubjectId);
+        }
+        if (StringUtils.isNotBlank(phoneNumber)) {
+            otherDataPoints.put("phoneNumber",phoneNumber);
         }
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, parameterMap);
         List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
