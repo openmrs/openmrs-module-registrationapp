@@ -240,12 +240,6 @@ for (Field fingerprintField : fingerprintData.keySet()) {
         try {
             // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
             patient = registrationService.registerPatient(registrationData);           
-            
-            if(StringUtils.isNotBlank(biometricXml)) {
-            	log.error("XML:"+subject1.getFingerprints().get(0).getTemplate());	
-            	Context.getService(RegistrationService.class).registerLocally(subject1);
-            }
-            
         }
         catch (Exception ex) {
             // TODO I remember getting into trouble if i called this validator before the above save method.

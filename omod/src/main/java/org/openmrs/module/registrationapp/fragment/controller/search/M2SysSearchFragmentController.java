@@ -14,15 +14,11 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.m2sysbiometrics.model.TempFingerprint;
-import org.openmrs.module.m2sysbiometrics.service.RegistrationService;
-import org.openmrs.module.m2sysbiometrics.service.SearchService;
 import org.openmrs.module.m2sysbiometrics.service.TempFingerprintService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
-import org.openmrs.module.registrationapp.fragment.controller.RegisterPatientFragmentController;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
-import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentResult;
 import org.openmrs.module.registrationcore.api.biometrics.model.EnrollmentStatus;
@@ -98,8 +94,14 @@ public class M2SysSearchFragmentController {
             response.put("status", result.getEnrollmentStatus().name());
 
             if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
-//                Check and load local patient
-                Patient patient = findByLocalFpId(result.getLocalBiometricSubject().getSubjectId());
+//                Check and load patient
+                Patient patient = null;
+                if(result.getNationalBiometricSubject()!=null){
+                    patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(),PropertiesUtil.getNationalFpType());
+                }else if (result.getLocalBiometricSubject()!=null){
+                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(),PropertiesUtil.getLocalFpType());
+                }
+
                 if (patient != null) {
                     response.put("patientUuid", patient.getUuid());
                 } else {
@@ -118,11 +120,9 @@ public class M2SysSearchFragmentController {
         return response;
     }
 
-    private Patient findByLocalFpId(String subjectId) {
-        PatientIdentifierType identifierType = PropertiesUtil.getLocalFpType();
+    private Patient findByFingerprintId(String subjectId,PatientIdentifierType identifierType) {
         Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierType.getUuid());
         if (patient == null) {
-//            throw new APIException(String.format("Patient with local fingerprint UUID %s doesn't exist", subjectId));
             LOGGER.error("Patient with local fingerprint ID " + subjectId + " doesn't exist: ");
         }
         return patient;

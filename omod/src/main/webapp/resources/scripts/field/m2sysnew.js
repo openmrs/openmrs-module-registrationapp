@@ -4,7 +4,6 @@ function capture(deviceName, templateFormat, engineName, useTemplate) {
     if (useTemplate) {
         jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/loadTemplateTemplate.action')
             .success(function (response) {
-                console.log(response.testTemplate);
                 processTemplate(response.testTemplate);
 
             })
