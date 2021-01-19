@@ -74,4 +74,9 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
                 }).join(', ');
             }
         }
+        field.value = function() {
+            return $scope.relationships.map(function(r) {
+                return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+            }).join(', ');
+        }
     }]);
