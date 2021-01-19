@@ -64,15 +64,15 @@ public class MatchingPatientsFragmentController {
             "gender", "birthdate", "personAddress"};
 
     public static final String[] MPI_PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
-            "gender", "birthdate", "personAddress", "mpiPatient", "sourceLocation"};
+            "gender", "birthdate", "personAddress", "mpiPatient", "sourceLocation", "mothersName", "phoneNumber"};
 
     public List<SimpleObject> getSimilarPatients(@RequestParam("appId") AppDescriptor app,
                                                  @SpringBean("registrationCoreService") RegistrationCoreService service,
                                                  @ModelAttribute("patient") @BindParams Patient patient,
                                                  @ModelAttribute("personName") @BindParams PersonName name,
                                                  @ModelAttribute("personAddress") @BindParams PersonAddress address,
-                                                 @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
-                                                 @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
+                                                 @RequestParam(value = "birthdateYears", required = false) Integer birthdateYears,
+                                                 @RequestParam(value = "birthdateMonths", required = false) Integer birthdateMonths,
                                                  HttpServletRequest request, UiUtils ui) throws Exception {
         addToPatient(patient, app, name, address, request);
 
@@ -215,6 +215,12 @@ public class MatchingPatientsFragmentController {
             if (Arrays.asList(defaultProperties).contains("sourceLocation")) {
                 propertiesToIncludeList.add("sourceLocation");
             }
+            if (Arrays.asList(defaultProperties).contains("mothersName")) {
+                propertiesToIncludeList.add("mothersName");
+            }
+            if (Arrays.asList(defaultProperties).contains("phoneNumber")) {
+                propertiesToIncludeList.add("phoneNumber");
+            }
             Iterator<JsonNode> i = app.getConfig().get("matchingPatientsPropertiesToDisplay").getElements();
             while (i.hasNext()) {
                 propertiesToIncludeList.add(i.next().getTextValue());
@@ -241,6 +247,8 @@ public class MatchingPatientsFragmentController {
         addIfMissing("personAddress", propertiesToInclude);
         addIfMissing("birthdate", propertiesToInclude);
         addIfMissing("sourceLocation", propertiesToInclude);
+        addIfMissing("mothersName", propertiesToInclude);
+        addIfMissing("phoneNumber", propertiesToInclude);
     }
 
     private void addIfMissing(String property, List<String> propertiesToInclude) {

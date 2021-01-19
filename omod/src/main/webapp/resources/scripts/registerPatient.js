@@ -102,6 +102,12 @@ jq(function() {
             if (item.sourceLocation) {
                 cloned.find('.location').append('Source :' + item.sourceLocation)
             }
+            if (item.mothersName) {
+                cloned.find('.mothersName').append('Mothers Name :' + item.mothersName)
+            }
+            if (item.phoneNumber) {
+                cloned.find('.phoneNumber').append('Phone :' + item.phoneNumber)
+            }
 
             var button;
             if (isMpi) {
