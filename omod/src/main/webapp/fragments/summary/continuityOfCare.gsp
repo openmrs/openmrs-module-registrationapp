@@ -20,10 +20,10 @@
             </div>
         </div>
         <div id="buttons">
-            <button type="button" class="confirm" onclick="viewCCD(${ config.patientId })">
+            <button type="button" class="confirm"onclick="location.href='${ui.pageLink("registrationapp", "viewCcd", [patientId: config.patientId, appId: appId ])}';">
                 ${ ui.message("registrationapp.continuityOfCare.document.view") }
             </button>
-            <a class="button confirm right" href="#" onclick="refreshCcd(${ config.patientId })">
+            <a class="button confirm right" href="#" onclick="refreshCcd(${ config.patientId },'${ui.pageLink("registrationapp", "viewCcd", [patientId: config.patientId, returnUrl: returnUrl, appId: appId ])}')">
                 ${ ui.message("registrationapp.continuityOfCare.document.refresh") }
                 <i id="ccdRefresh" class="icon-refresh" title="Update CCD"> </i>
             </a>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div id="import-buttons">
-            <button type="button" class="confirm" onclick="importCCD(${ config.patientId })">
+            <button type="button" class="confirm" onclick="importCCD(${ config.patientId }, '${ui.pageLink("registrationapp", "viewCcd", [patientId: config.patientId, appId: appId ])}')">
                 ${ ui.message("registrationapp.continuityOfCare.document.import") }
             </button>
         </div>
