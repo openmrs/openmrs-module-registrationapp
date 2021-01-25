@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -227,39 +228,61 @@ public class EditSectionPageController {
     private void updatePatientRelationships(Patient patient, String[] types, String[] persons, PersonService personService) {
         List<Relationship> relationships = new ArrayList<Relationship>();
 
-        for (int i = 0; i < types.length; i++) {
-            if (types[i] != null && types[i].length() > 0) {
-                // Remove flag characters at the end (used for relationship direction)
-                String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
-                
-                // Last character reveals relationship direction (aIsToB or bIsToA)
-                char relationshipDirection = types[i].charAt(types[i].length() - 1);                
-                if (relationshipDirection != 'A') {
-                	if (relationshipDirection != 'B') {
-                		throw new APIException("Relationship direction not specified");
-                	}
-                }
-                RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
-                
-                if (rt != null) {
-                    Person otherPerson = personService.getPersonByUuid(persons[i]);
-                    
-                    Person personA = relationshipDirection == 'A' ? otherPerson : patient;
-                    Person personB = relationshipDirection == 'B' ? otherPerson : patient;
-                    if (personA != null && personB != null) {
-                        relationships = personService.getRelationships(personA, personB, rt);
-                        if (CollectionUtils.isEmpty(relationships)) {
-                        	personService.saveRelationship(new Relationship(personA, personB, rt));
-                        } else {
-                        	Relationship relationship = relationships.get(0);
-                        	relationship.setPersonA(personA);
-                        	relationship.setPersonB(personB);
-                        	relationship.setRelationshipType(rt);
-                        	personService.saveRelationship(relationship);
+        if(types != null && types.length > 0) {
+            List<Relationship> existingRelationships = personService.getRelationshipsByPerson(patient);
+            for (int i = 0; i < types.length; i++) {
+                if (types[i] != null && types[i].length() > 0) {
+                    // Remove flag characters at the end (used for relationship direction)
+                    String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
+
+                    // Last character reveals relationship direction (aIsToB or bIsToA)
+                    char relationshipDirection = types[i].charAt(types[i].length() - 1);
+                    if (relationshipDirection != 'A') {
+                        if (relationshipDirection != 'B') {
+                            throw new APIException("Relationship direction not specified");
+                        }
+                    }
+                    RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
+
+                    if (rt != null) {
+                        Person otherPerson = personService.getPersonByUuid(persons[i]);
+
+                        Person personA = relationshipDirection == 'A' ? otherPerson : patient;
+                        Person personB = relationshipDirection == 'B' ? otherPerson : patient;
+                        if (personA != null && personB != null) {
+
+                            relationships = personService.getRelationships(personA, personB, rt);
+                            if (CollectionUtils.isEmpty(relationships)) {
+                                personService.saveRelationship(new Relationship(personA, personB, rt));
+                            } else {
+                                Relationship relationship = relationships.get(0);
+                                relationship.setPersonA(personA);
+                                relationship.setPersonB(personB);
+                                relationship.setRelationshipType(rt);
+                                Relationship newRelationship = personService.saveRelationship(relationship);
+                                if (!CollectionUtils.isEmpty(existingRelationships)) {
+                                    // if this is an existing relationship we make sure we remove it from the list of relationships to be deleted below
+                                    Iterator<Relationship> iterator = existingRelationships.iterator();
+                                    while (iterator.hasNext()) {
+                                        Relationship next = iterator.next();
+                                        if (next.getId().compareTo(newRelationship.getId()) == 0) {
+                                            iterator.remove();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+
+            if (!CollectionUtils.isEmpty(existingRelationships)) {
+                //assume that any relationship that was not posted to this form it was deleted?
+                for (Relationship existingRelationship : existingRelationships) {
+                    personService.voidRelationship(existingRelationship, "deleted via the Registration widget");
+                }
+            }
         }
+
     }
 }
