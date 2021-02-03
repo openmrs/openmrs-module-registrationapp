@@ -49,13 +49,13 @@
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
         <appuiVersion>1.9.0</appuiVersion>
-        <coreappsVersion>1.19.2</coreappsVersion>
+        <coreappsVersion>1.19.3</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <m2SysVersion>1.0.2-SNAPSHOT</m2SysVersion>
-        <xds-senderVersion>2.0.1-SNAPSHOT</xds-senderVersion>
+        <m2SysVersion>1.0.2</m2SysVersion>
+        <xds-senderVersion>2.0.2</xds-senderVersion>
     </properties>
 
     <dependencyManagement>
