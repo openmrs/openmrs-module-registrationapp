@@ -1,7 +1,8 @@
 /*API Call*/
 function capture(deviceName, templateFormat, engineName, useTemplate) {
     var apiPath = 'http://localhost:15896/api/CloudScanr/FPCapture';
-    if (useTemplate) {
+    toggleFingerprintButtonDisplay(jq('#captureButton'));
+    if (useTemplate === "yes") {
         jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/loadTemplateTemplate.action')
             .success(function (response) {
                 processTemplate(response.testTemplate);
@@ -52,6 +53,7 @@ function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, tem
 
     xmlhttp.onerror = function () {
         ErrorFunc(xmlhttp.statusText);
+        toggleFingerprintButtonDisplay(jq('#captureButton'));
     }
 }
 
@@ -134,13 +136,14 @@ function SuccessFunc(result, engineName) {
     } else {
         //$('#serverResult').val(result.CloudScanrStatus.Message);
         $('#fingerprintStatus').text(result.CloudScanrStatus.Message);
-
+        toggleFingerprintButtonDisplay(jq('#captureButton'));
     }
 }
 
 function ErrorFunc(status) {
 //$('#serverResult').val('CloudScanr client may not started. Please check.');
     alert(engineMessage);
+    toggleFingerprintButtonDisplay(jq('#captureButton'));
     //$('#fingerprintStatus').text(engineMessage);
 }
 
@@ -175,6 +178,7 @@ function searchPatient() {
                 } else {
                     m2SysSuccess();
                     m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId'])
+                    toggleFingerprintButtonDisplay(jq('#captureButton'));
                 }
             } else {
                 m2SysErrorMessage(data['message']);

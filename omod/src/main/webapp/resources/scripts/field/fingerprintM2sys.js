@@ -27,6 +27,7 @@ function m2SysShowAlreadyExistingFingerprintsDialog(data) {
             cancel: function () {
                 m2SysErrorMessage(emr.message(
                         'registrationapp.biometrics.m2sys.register.alreadyExists.failure'));
+                toggleFingerprintButtonDisplay(jq('#captureButton'));
             }
         }
     }).show();

@@ -84,7 +84,12 @@ public class MatchingPatientsFragmentController {
 
         String localBiometricSubjectId = parameterMap.get("localBiometricSubjectId")[0];
         String nationalBiometricSubjectId = parameterMap.get("nationalBiometricSubjectId")[0];
-        String phoneNumber = parameterMap.get("Telephone Number")[0];
+        if(parameterMap.get("Telephone Number") != null){
+            String phoneNumber = parameterMap.get("Telephone Number")[0];
+            if (StringUtils.isNotBlank(phoneNumber)) {
+                otherDataPoints.put("phoneNumber",phoneNumber);
+            }
+        }
 
         if (StringUtils.isNotBlank(localBiometricSubjectId)) {
             otherDataPoints.put("localBiometricSubjectId",localBiometricSubjectId);
@@ -92,9 +97,7 @@ public class MatchingPatientsFragmentController {
         if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
             otherDataPoints.put("nationalBiometricSubjectId",nationalBiometricSubjectId);
         }
-        if (StringUtils.isNotBlank(phoneNumber)) {
-            otherDataPoints.put("phoneNumber",phoneNumber);
-        }
+
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, parameterMap);
         List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
         List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));

@@ -6,6 +6,8 @@ jq = jQuery;
 var NavigatorController;
 
 function importMpiPatient(id) {
+    var importButton = jq('.mpi_button');
+    toggleImportButtonDisplay(importButton);
     $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: id}))
         .success(function (response) {
             var link = patientDashboardLink;
@@ -14,6 +16,7 @@ function importMpiPatient(id) {
         })
         .error(function (xhr, status, err) {
             alert('AJAX error ' + err);
+            toggleFingerprintButtonDisplay(importButton);
         });
 }
 
@@ -100,13 +103,16 @@ jq(function() {
             }
 
             if (item.sourceLocation) {
-                cloned.find('.location').append('Source :' + item.sourceLocation)
+                cloned.find('.locationLabel').append('Source :').addClass("iLabel");
+                cloned.find('.location').append(item.sourceLocation).addClass("iValue");
             }
             if (item.mothersName) {
-                cloned.find('.mothersName').append('Mothers Name :' + item.mothersName)
+                cloned.find('.mothersNameLabel').append('Mothers Name :').addClass("iLabel");
+                cloned.find('.mothersName').append(item.mothersName).addClass("iValue");
             }
             if (item.phoneNumber) {
-                cloned.find('.phoneNumber').append('Phone :' + item.phoneNumber)
+                cloned.find('.phoneNumberLabel').append('Phone :').addClass("iLabel");
+                cloned.find('.phoneNumber').append(item.phoneNumber).addClass("iValue");
             }
 
             var button;

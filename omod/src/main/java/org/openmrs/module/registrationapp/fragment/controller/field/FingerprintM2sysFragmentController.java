@@ -83,9 +83,9 @@ public class FingerprintM2sysFragmentController {
         String testTemplate = adminService.getGlobalProperty(constTestTemplate);
         if(StringUtils.isNotBlank(testTemplate)){
             model.addAttribute("testTemplate", testTemplate);
-            model.addAttribute("useTemplate", true);
+            model.addAttribute("useTemplate", "yes");
         }else{
-            model.addAttribute("useTemplate", false);
+            model.addAttribute("useTemplate", "no");
         }
         model.addAttribute("deviceName",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CAPTURE_DEVICE_NAME));
         model.addAttribute("templateFormat",adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUDABIS_TEMPLATE_FORMAT));
