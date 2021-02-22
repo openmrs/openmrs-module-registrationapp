@@ -20,7 +20,10 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.m2sysbiometrics.M2SysBiometricsConstants;
+import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.springframework.validation.BindingResult;
 
 public class RegistrationAppUiUtils {
@@ -34,7 +37,24 @@ public class RegistrationAppUiUtils {
 	
 	//Whole numbers valid ranges are 0-179 or 180
 	public static final String DEFAULT_LONGITUDE_REGEX = "[+-]?((((1?[0-7]?|[0-9]?)[0-9])(\\.\\d+)?)|180(\\.0+)?)";
-	
+
+
+	public static void fetchBiometricConstants(FragmentModel model, AdministrationService adminService) {
+		String constTestTemplate = M2SysBiometricsConstants.CONST_TEST_TEMPLATE;
+		String testTemplate = adminService.getGlobalProperty(constTestTemplate);
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(testTemplate)){
+			model.addAttribute("testTemplate", testTemplate);
+			model.addAttribute("useTemplate", "yes");
+		}else{
+			model.addAttribute("useTemplate", "no");
+		}
+		model.addAttribute("deviceName", adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CAPTURE_DEVICE_NAME));
+		model.addAttribute("templateFormat", adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUDABIS_TEMPLATE_FORMAT));
+		model.addAttribute("engineName", adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUDABIS_ENGINE_NAME));
+		model.addAttribute("apiPath", adminService.getGlobalProperty(M2SysBiometricsConstants.M2SYS_CLOUD_SCANR_URL) +
+				M2SysBiometricsConstants.M2SYS_CAPTURE_ENDPOINT);
+	}
+
 	/**
 	 * Gets the person attribute value for the specified person for the getPersonAttributeTypeByUuid
 	 * that matches the specified uuid

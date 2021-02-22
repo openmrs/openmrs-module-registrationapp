@@ -10,12 +10,14 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.m2sysbiometrics.model.TempFingerprint;
 import org.openmrs.module.m2sysbiometrics.service.TempFingerprintService;
 import org.openmrs.module.registrationapp.PropertiesUtil;
+import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationcore.RegistrationCoreConstants;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
@@ -47,11 +49,13 @@ public class M2SysSearchFragmentController {
     private BiometricEngine biometricEngine;
     private RegistrationCoreService registrationCoreService;
     private PatientService patientService;
+    private AdministrationService adminService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(M2SysSearchFragmentController.class);
     private final Log log = LogFactory.getLog(M2SysSearchFragmentController.class);
 
     public M2SysSearchFragmentController() {
+        adminService = Context.getAdministrationService();
         registrationCoreService = Context.getService(RegistrationCoreService.class);
         biometricEngine = registrationCoreService.getBiometricEngine();
         patientService = Context.getService(PatientService.class);
@@ -59,6 +63,7 @@ public class M2SysSearchFragmentController {
 
     public void controller(FragmentModel model) {
         model.addAttribute("test", "testval");
+        RegistrationAppUiUtils.fetchBiometricConstants(model, adminService);
     }
 
     public List<SimpleObject> getPatients(@SpringBean("registrationCoreService") RegistrationCoreService registrationCoreService,

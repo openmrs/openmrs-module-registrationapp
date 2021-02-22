@@ -28,9 +28,7 @@
     jq(function () {
         var searchButton = jq('#fingerprint_search_button');
         searchButton.click(function () {
-            toggleFingerprintButtonDisplay(searchButton);
-            capture();   
-            toggleFingerprintButtonDisplay(searchButton);             
+            biometricSearch('${deviceName}', '${ templateFormat }', '${ engineName }','${ useTemplate }',searchButton);
         });
     });
 
@@ -83,6 +81,23 @@
     <div class="dialog-content">
         <p>
             ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.description")}
+        </p>
+        <br/>
+
+        <div class="buttons">
+            <button class="confirm right">${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.redirectButton")}</button>
+            <button class="cancel">${ui.message("registrationapp.cancel")}</button>
+        </div>
+    </div>
+</div>
+<div style="display:none" id="patient-biometric-search-dialog" class="dialog">
+    <div class="dialog-header">
+        ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.searchingQuestion.label")}
+    </div>
+
+    <div class="dialog-content">
+        <p>
+            ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.searchingQuestion.description")}
         </p>
         <br/>
 
