@@ -99,10 +99,34 @@
         <p>
             ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.searchingQuestion.description")}
         </p>
-        <br/>
+        <div>
+            <b><span>Name:</span><span>&nbsp;&nbsp;</span><span id="patientName"></span></b><br/>
+            <b><span>D.O.B:</span><span>&nbsp;&nbsp;</span><span id="patientDob"></span></b><br/>
+            <b><span>Gender:</span><span>&nbsp;&nbsp;</span><span id="patientGender"></span></b><br/>
+        </div>
+
 
         <div class="buttons">
             <button class="confirm right">${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.importingQuestion.redirectButton")}</button>
+            <button class="cancel">${ui.message("registrationapp.cancel")}</button>
+        </div>
+    </div>
+</div>
+<div style="display:none" id="patient-biometric-search-import-dialog" class="dialog">
+    <div class="dialog-header">
+        ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.searchingQuestion.national.label")}
+    </div>
+
+    <div class="dialog-content">
+        <p>
+            ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.nationally.searchingQuestion.description")}
+        </p>
+        <br/>
+
+        <div class="buttons">
+            <button id="mpiImportButton" class="confirm right">
+                <i class=""></i>
+                ${ui.message("registrationapp.importAndOpen")}</button>
             <button class="cancel">${ui.message("registrationapp.cancel")}</button>
         </div>
     </div>

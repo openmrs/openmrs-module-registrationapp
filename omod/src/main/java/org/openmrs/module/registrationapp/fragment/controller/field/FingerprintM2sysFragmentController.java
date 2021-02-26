@@ -62,7 +62,7 @@ public class FingerprintM2sysFragmentController {
     private BiometricEngine biometricEngine;
 
     private AdministrationService adminService;
-    
+
     private LocationService locationService;
 
     private RegistrationCoreService registrationCoreService;
@@ -76,7 +76,7 @@ public class FingerprintM2sysFragmentController {
         patientService = Context.getService(PatientService.class);
     }
 
-   
+
     public void controller(FragmentModel model) {
         RegistrationAppUiUtils.fetchBiometricConstants(model, adminService);
     }
@@ -101,8 +101,8 @@ public class FingerprintM2sysFragmentController {
                 Patient patient = findByLocalFpId(result.getLocalBiometricSubject().getSubjectId());
                 if (patient != null) {
                     response.put("patientUuid", patient.getUuid());
-                }else{
-                    LOGGER.info("No patient found with a local fingerprint ID : "+ result.getLocalBiometricSubject().getSubjectId());
+                } else {
+                    LOGGER.info("No patient found with a local fingerprint ID : " + result.getLocalBiometricSubject().getSubjectId());
                 }
             }
         } catch (Exception ex) {
@@ -115,15 +115,16 @@ public class FingerprintM2sysFragmentController {
 
         return response;
     }
+
     public SimpleObject loadTemplateTemplate(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
-                               @SpringBean RegistrationCoreService registrationCoreService) {
+                                             @SpringBean RegistrationCoreService registrationCoreService) {
         SimpleObject response = new SimpleObject();
 
         String constTestTemplate = M2SysBiometricsConstants.CONST_TEST_TEMPLATE;
         String testTemplate = adminService.getGlobalProperty(constTestTemplate);
-        if(StringUtils.isNotBlank(testTemplate)){
+        if (StringUtils.isNotBlank(testTemplate)) {
             response.put("testTemplate", testTemplate);
-        }else {
+        } else {
             response.put("testTemplate", "Failed to load the test template");
         }
 
@@ -222,35 +223,47 @@ public class FingerprintM2sysFragmentController {
     }
 
     */
-    
- //   @RequestMapping(value = {"", "/update"}, method = RequestMethod.GET)
-    public SimpleObject update(@RequestParam("patientId") Integer patientId,@RequestParam("biometricXml") String biometricXml,@RequestParam("identifierValue") String identifierValue,
-            @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
+
+    public SimpleObject update(@RequestParam("patientId") Integer patientId,
+                               @RequestParam("biometricXml") String biometricXml,
+                               @RequestParam("identifierValue") String identifierValue,
+                               @SpringBean("messageSourceService") MessageSourceService messageSourceService) {
         SimpleObject response = new SimpleObject();
-        BiometricSubject subject=new BiometricSubject();
-        //log.error("this is a test for update fingerPrint >> "+identifierValue);
+        Patient patient = patientService.getPatient(patientId);
+        PatientIdentifierType localFpIdentifierType = PropertiesUtil.getLocalFpType();
+        PatientIdentifierType nationalFpIdentifierType = PropertiesUtil.getNationalFpType();
+
+        if (!isBiometricEngineEnabled()) {
+            response.put("success", false);
+            response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.errorEngine"));
+            return response;
+        }
+
         try {
-        	if(identifierValue.length()>1) {
-        		subject.setSubjectId(identifierValue);
-     		    subject.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));		
- 			    Context.getService(UpdateService.class).updateLocally(subject);
- 			    response.put("success", true);
-                response.put("message", subject.getSubjectId());
-        	}
-        	else 
-        	{
-        		UUID uuid = UUID.randomUUID();
-        		subject.setSubjectId(uuid.toString());
-        		subject.addFingerprint(new Fingerprint("DoubleCapture", "FP1", biometricXml));	 
-        		PatientIdentifierType identifierType=patientService.getPatientIdentifierTypeByUuid("e26ca279-8f57-44a5-9ed8-8cc16e90e559");        	
-        		Patient patient=patientService.getPatient(patientId); 
-        		PatientIdentifier identifier = new PatientIdentifier(uuid.toString(),identifierType,Context.getService(LocationService.class).getDefaultLocation());        		       		
-				patient.addIdentifier(identifier);
-				patientService.savePatientIdentifier(identifier);
-				Context.getService(RegistrationService.class).registerLocally(subject);
-				response.put("success", true);
-	            response.put("message", subject.getSubjectId());           		
-        	}
+//            1. Check if biometricXml exists locally and/or nationally
+            EnrollmentResult result = biometricEngine.enroll(biometricXml);
+            if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
+                //2. If exists locally or nationally - reject with updates to either local or national instance and update on patient identifiers
+                response.put("success", false);
+                response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.register.alreadyExists.failure"));
+                return response;
+            } else {
+                if (result.getLocalBiometricSubject() != null) {
+//                    Update local FP ID
+                    PatientIdentifier identifier = new PatientIdentifier(result.getLocalBiometricSubject().getSubjectId(), localFpIdentifierType, Context.getService(LocationService.class).getDefaultLocation());
+                    patient.addIdentifier(identifier);
+                    patientService.savePatientIdentifier(identifier);
+                }
+                if (result.getNationalBiometricSubject() != null) {
+//                    Update local FP ID
+                    PatientIdentifier identifier = new PatientIdentifier(result.getNationalBiometricSubject().getSubjectId(), nationalFpIdentifierType, Context.getService(LocationService.class).getDefaultLocation());
+                    patient.addIdentifier(identifier);
+                    patientService.savePatientIdentifier(identifier);
+                }
+                response.put("success", true);
+                response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.register.success"));
+            }
+
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
@@ -258,11 +271,8 @@ public class FingerprintM2sysFragmentController {
         }
         return response;
     }
-  
-    
-    
-    
-    
+
+
     public SimpleObject updateSubjectId(@RequestParam("oldId") String oldId,
                                         @RequestParam("newId") String newId) {
         if (!isBiometricEngineEnabled()) {
@@ -332,7 +342,7 @@ public class FingerprintM2sysFragmentController {
         }
         return patient;
     }
-    
+
     public PatientIdentifier createIdentifier(String identifierTypeUuid, String identifierValue, Location location) {
         location = getLocation(location);
         PatientIdentifierType identifierType = patientService.getPatientIdentifierTypeByUuid(identifierTypeUuid);
@@ -340,7 +350,7 @@ public class FingerprintM2sysFragmentController {
 
         return new PatientIdentifier(identifierValue, identifierType, location);
     }
-    
+
     private Location getLocation(Location identifierLocation) {
         if (identifierLocation == null) {
             identifierLocation = locationService.getDefaultLocation();
@@ -348,10 +358,10 @@ public class FingerprintM2sysFragmentController {
         }
         return identifierLocation;
     }
-    
+
     private void validateIdentifierLocation(Location identifierLocation) {
         if (identifierLocation == null)
             throw new APIException("Failed to resolve location to associate to patient identifiers");
     }
-    
+
 }

@@ -108,6 +108,9 @@ public class M2SysSearchFragmentController {
                 }
 
                 if (patient != null) {
+                    response.put("patientName", patient.getPersonName().getFullName());
+                    response.put("patientDob", patient.getBirthdate().toString());
+                    response.put("patientGender", patient.getGender().equals("M") ? "Male" : "Female");
                     response.put("patientUuid", patient.getUuid());
                 } else {
                     LOGGER.info("No patient found with a local fingerprint ID : " + result.getLocalBiometricSubject().getSubjectId());
