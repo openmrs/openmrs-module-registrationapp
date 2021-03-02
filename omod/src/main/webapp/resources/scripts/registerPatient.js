@@ -61,7 +61,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender = emr.message('emr.gender.' + item.gender);
+            var gender = emr.message('coreapps.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
@@ -162,7 +162,7 @@ jq(function() {
 
             cloned.find('.name').append(item.givenName + ' ' + item.familyName);
 
-            var gender = emr.message('emr.gender.' + item.gender);
+            var gender = emr.message('coreapps.gender.' + item.gender);
 
             var attributes = "";
             if (item.attributeMap) {
