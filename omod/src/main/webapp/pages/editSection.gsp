@@ -14,7 +14,7 @@
     def localizedGenderOptions = []
 
     genderOptions.each { optn ->
-    	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    	localizedGenderOptions << [label: ui.message("coreapps.gender." + optn), value: optn]
     }
 
     def monthOptions = [ [label: ui.message("registrationapp.month.1"), value: 1],
@@ -144,7 +144,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 </fieldset>
 
                 <fieldset id="demographics-gender">
-                    <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
+                    <legend id="genderLabel">${ ui.message("Patient.gender") }</legend>
                     ${ ui.includeFragment("uicommons", "field/dropDown", [
                             label: ui.message("registrationapp.patient.gender.question"),
                             emptyOptionLabel: "uicommons.select",

@@ -51,7 +51,7 @@
             <% } %>
 
             <div>
-                <h3>${ ui.message("emr.gender") }:</h3>
+                <h3>${ ui.message("Patient.gender") }:</h3>
                 <p class="left">
                     ${ui.message("coreapps.gender." + ui.encodeHtml(patient.gender))}&nbsp;
                 </p>

@@ -21,8 +21,8 @@
     def genderCodes = []
 
     genderOptions.each { optn ->
-    	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
-    	genderCodes << 'emr.gender.' + optn
+    	localizedGenderOptions << [label: ui.message("coreapps.gender." + optn), value: optn]
+    	genderCodes << 'coreapps.gender.' + optn
     }
 
     Calendar cal = Calendar.getInstance()
@@ -280,7 +280,7 @@ fieldset[id\$="-fieldset"] div > div {
 
                         <${combineSubSections == true ? "div" : "fieldset"} id="demographics-gender">
 
-                            ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("emr.gender") + "</legend>"}
+                            ${combineSubSections == true ? "" : "<legend id=\"genderLabel\">" + ui.message("Patient.gender") + "</legend>"}
 
                             ${ ui.includeFragment("uicommons", "field/dropDown", [
                                     id: "gender",
