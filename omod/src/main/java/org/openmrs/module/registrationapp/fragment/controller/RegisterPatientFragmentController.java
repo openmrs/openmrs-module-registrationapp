@@ -43,6 +43,7 @@ import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -134,6 +135,8 @@ public class RegisterPatientFragmentController {
             patient.addAttribute(new PersonAttribute(emrApiProperties.getUnknownPatientPersonAttributeType(), "true"));
         }
 
+        if(name.getFamilyName().isEmpty()  || name.getGivenName().isEmpty()){
+        }
         patient.addName(name);
         patient.addAddress(address);
 
@@ -164,8 +167,11 @@ public class RegisterPatientFragmentController {
 
         List<Relationship> relationships = null;
 
+        if(!request.getParameterMap().containsValue("other_person_uuid")){
+            return new FailureResult("No person provided");
+        }
         if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
-            relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
+                relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
         }
 
         RegistrationData registrationData = new RegistrationData();

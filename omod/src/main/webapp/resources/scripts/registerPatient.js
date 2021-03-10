@@ -234,7 +234,6 @@ jq(function() {
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
         var formData = jq('#registration').serialize();
-
         var url = '/' + OPENMRS_CONTEXT_PATH + '/registrationapp/registerPatient/submit.action?appId=' + appId;
         jq.ajax({
             url: url,
