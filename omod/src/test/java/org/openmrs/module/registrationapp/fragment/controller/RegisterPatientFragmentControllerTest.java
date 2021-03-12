@@ -56,8 +56,6 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
     public static final String CIVIL_STATUS_CONCEPT_UUID = "89ca642a-dab6-4f20-b712-e12ca4fc6d36";
     public static final String MARRIED_CONCEPT_UUID = "92afda7c-78c9-47bd-a841-0de0817027d4";
     public static final String OLD_IDENTIFIER_TYPE_UUID = "2f470aa8-1d73-43b7-81b5-01f0c0dfa53c";
-    public static final String RELATIONSHIP_TYPE = "52f8aaf1-cad3-4936-bd5b-b862f9cc4284";
-    public static final String OTHER_PERSON_UUID ="4f2296d6-8194-11eb-8dcd-0242ac130003";
 
     private RegisterPatientFragmentController controller;
 
@@ -356,31 +354,4 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
     }
 
-    @Test
-    public void testPostFailureWithExistingPerson() throws Exception{
-        request.addParameter("relationship_type", RELATIONSHIP_TYPE);
-        request.addParameter("other_person_uuid", OTHER_PERSON_UUID);
-
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
-                patientValidator, uiUtils);
-
-        assertTrue(result instanceof SuccessResult);
-        assertThat(((SuccessResult) result).getMessage(), is("url.html?patient=" + patient.getUuid()));
-
-    }
-
-    @Test
-    public void testPostFailureWithNonExistingPerson() throws Exception{
-
-        request.addParameter("relationship_type", RELATIONSHIP_TYPE);
-        request.addParameter("other_person_uuid", "");
-
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
-                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
-                patientValidator, uiUtils);
-        assertTrue(result instanceof FailureResult);
-    }
 }
