@@ -14,7 +14,7 @@
     "sections": [
         {
             "id": "contactInfo",
-            "label": "emr.patientDashBoard.contactinfo"
+            "label": "coreapps.patientDashBoard.contactinfo"
         }
     ]
 }
