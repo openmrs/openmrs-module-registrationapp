@@ -90,10 +90,8 @@ public class RegistrationSummaryFragmentController {
     	CollectionUtils.filter(ret, new Predicate<Extension>() {
     		@Override
     		public boolean evaluate(Extension extension) {
-       		 	if(extensionPointId.equals(extension.getExtensionPointId())) {
-	              return true;
-	            }
-	            return false;
+       		 	Boolean result = extensionPointId.equals(extension.getExtensionPointId());
+       		 	return result;
 	        }
 	    });
     	return ret; 
