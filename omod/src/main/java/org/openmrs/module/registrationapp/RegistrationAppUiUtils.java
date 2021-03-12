@@ -158,22 +158,16 @@ public class RegistrationAppUiUtils {
 			
 	        Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
 
-			if (StringUtils.isNotBlank(address.getLatitude())) {
-				if (regex != null && StringUtils.isBlank(regex.get("latitude"))) {
-					if (!RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
+			if (StringUtils.isNotBlank(address.getLatitude()) && regex != null && StringUtils.isBlank(regex.get("latitude")) 
+					&& !RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
 						errors.reject("registrationapp.latitude.invalid");
-					}
-				}
 			}
 			
-			if (StringUtils.isNotBlank(address.getLongitude())) {
-				if (regex != null && StringUtils.isBlank(regex.get("longitude"))) {
-					if (!RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
+			if (StringUtils.isNotBlank(address.getLongitude()) && regex != null && StringUtils.isBlank(regex.get("longitude"))
+			        && !RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
 						errors.reject("registrationapp.longitude.invalid");
 					}
 				}
-			}
-		}
 	}
 
 	public static void checkForIdentifierExceptions(Exception ex, Errors errors) {

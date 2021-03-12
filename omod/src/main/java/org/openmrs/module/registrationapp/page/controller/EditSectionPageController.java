@@ -237,10 +237,8 @@ public class EditSectionPageController {
 
                     // Last character reveals relationship direction (aIsToB or bIsToA)
                     char relationshipDirection = types[i].charAt(types[i].length() - 1);
-                    if (relationshipDirection != 'A') {
-                        if (relationshipDirection != 'B') {
+                    if (relationshipDirection != 'A' && relationshipDirection != 'B') {
                             throw new APIException("Relationship direction not specified");
-                        }
                     }
                     RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
 
