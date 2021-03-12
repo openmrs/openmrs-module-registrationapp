@@ -36,8 +36,14 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
         }
     	
         $scope.getPersons = function (searchString) {
-            return PersonService.getPersons({'q': searchString, 'v': 'full'});
+            var p = PersonService.getPersons({'q': searchString, 'v': 'full'})
+            if(p.$$state === ""){
+                    
+                }
+                return PersonService.getPersons({'q': searchString, 'v': 'full'});
+                
         };
+
 
         $scope.addNewRelationship = function () {
             $scope.relationships.push({uuid: '', name: '', type: ''});

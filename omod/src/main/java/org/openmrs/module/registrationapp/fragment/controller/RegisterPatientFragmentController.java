@@ -166,11 +166,8 @@ public class RegisterPatientFragmentController {
         }
 
         List<Relationship> relationships = null;
-
-        if(!request.getParameterMap().containsValue("other_person_uuid")){
-            return new FailureResult("No person provided");
-        }
-        if (request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
+        
+        if(request.getParameterMap().containsKey("relationship_type") && request.getParameterMap().containsKey("other_person_uuid")){
                 relationships = getPatientRelationships(request.getParameterValues("relationship_type"), request.getParameterValues("other_person_uuid"));
         }
 
