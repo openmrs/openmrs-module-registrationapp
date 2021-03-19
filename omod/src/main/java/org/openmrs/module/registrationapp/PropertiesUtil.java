@@ -53,6 +53,18 @@ public final class PropertiesUtil {
         return Context.getPatientService().getPatientIdentifierTypeByUuid(
                 "05a29f94-c0ed-11e2-94be-8c13b969e334");
     }
+    public static PatientIdentifierType getCodeStIdType() {
+        return Context.getPatientService().getPatientIdentifierTypeByUuid(
+                "d059f6d0-9e42-4760-8de1-8316b48bc5f1");
+    }
+    public static PatientIdentifierType getCodeNationalIdType() {
+        return Context.getPatientService().getPatientIdentifierTypeByUuid(
+                "9fb4533d-4fd5-4276-875b-2ab41597f5dd");
+    }
+    public static PatientIdentifierType getCodePcIdType() {
+        return Context.getPatientService().getPatientIdentifierTypeByUuid(
+                "b7a154fd-0097-4071-ac09-af11ee7e0310");
+    }
 
     private PropertiesUtil() {
     }

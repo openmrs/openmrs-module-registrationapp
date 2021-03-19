@@ -100,9 +100,24 @@
             ${ui.message("registrationapp.biometrics.m2sys.register.alreadyExists.searchingQuestion.description")}
         </p>
         <div>
-            <b><span>Name:</span><span>&nbsp;&nbsp;</span><span id="patientName"></span></b><br/>
-            <b><span>D.O.B:</span><span>&nbsp;&nbsp;</span><span id="patientDob"></span></b><br/>
-            <b><span>Gender:</span><span>&nbsp;&nbsp;</span><span id="patientGender"></span></b><br/>
+            <b>
+                Name:<span>&nbsp;&nbsp;</span><span id="patientName"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                Phone Number:<span>&nbsp;&nbsp;</span><span id="phoneNumber"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </b><br/>
+            <b>
+                D.O.B:<span>&nbsp;&nbsp;</span><span id="patientDob"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                Source:<span>&nbsp;&nbsp;</span><span id="sourceLocation"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </b><br/>
+            <b>
+                Gender:<span>&nbsp;&nbsp;</span><span id="patientGender"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                Mother's Name:<span>&nbsp;&nbsp;</span><span id="mothersName"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </b><br/>
+            <b>
+                Address:<span>&nbsp;&nbsp;</span><span id="personAddress"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            </b><br/>
+            <b>
+                Identifiers:<span>&nbsp;&nbsp;</span><span id="patientIdentifiers"></span>
+            </b>
         </div>
 
 

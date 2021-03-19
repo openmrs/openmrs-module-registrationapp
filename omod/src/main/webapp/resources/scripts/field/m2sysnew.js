@@ -223,12 +223,13 @@ function searchPatient(sourceButton) {
 }
 
 function mpiImportingDialog(data,sourceButton) {
-    jq('#patientName').textContent=data['patientUuid'];
-    jq('#patientDob').textContent=data['patientUuid'];
-    jq('#patientGender').textContent=data['patientUuid'];
     document.getElementById("patientName").textContent=data['patientName'];
     document.getElementById("patientDob").textContent=data['patientDob'];
     document.getElementById("patientGender").textContent=data['patientGender'];
+    document.getElementById("phoneNumber").textContent=data['phoneNumber'];
+    document.getElementById("mothersName").textContent=data['mothersName'];
+    document.getElementById("personAddress").textContent=data['personAddress'];
+    document.getElementById("patientIdentifiers").textContent=data['patientIdentifiers'];
     var emrDialog = emr.setupConfirmationDialog({
         selector: '#patient-biometric-search-dialog',
         actions: {

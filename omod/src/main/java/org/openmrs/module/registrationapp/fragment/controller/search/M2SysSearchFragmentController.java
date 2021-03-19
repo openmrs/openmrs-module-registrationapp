@@ -111,6 +111,29 @@ public class M2SysSearchFragmentController {
                     response.put("patientName", patient.getPersonName().getFullName());
                     response.put("patientDob", patient.getBirthdate().toString());
                     response.put("patientGender", patient.getGender().equals("M") ? "Male" : "Female");
+                    if( patient.getAttribute("Telephone Number") != null){
+                        response.put("phoneNumber", patient.getAttribute("Telephone Number").getValue());
+                    }
+                    if(patient.getAttribute("Health Center")!=null){
+                        response.put("sourceLocation", patient.getAttribute("Health Center").getValue());
+                    }
+                    if(patient.getAttribute("First Name of Mother")!=null){
+                        response.put("mothersName", patient.getAttribute("First Name of Mother").getValue());
+                    }
+                    response.put("personAddress", patient.getPersonAddress().getAddress1() + ", " +
+                            patient.getPersonAddress().getCityVillage()+ ", " +
+                            patient.getPersonAddress().getStateProvince()+ ", " +
+                            patient.getPersonAddress().getCountry());
+                    StringBuffer identifierString = new StringBuffer();
+                    for(PatientIdentifier pId:patient.getIdentifiers()){
+                        if(pId.getIdentifierType().equals(PropertiesUtil.getCodeNationalIdType()) ||
+                                pId.getIdentifierType().equals(PropertiesUtil.getCodePcIdType()) ||
+                                pId.getIdentifierType().equals(PropertiesUtil.getCodeStIdType()) ||
+                                pId.getIdentifierType().equals(PropertiesUtil.getIsantePlusIdType())){
+                            identifierString.append(pId.getIdentifierType().getName()+ ": " +pId.getIdentifier() + "\n");
+                        }
+                    }
+                    response.put("patientIdentifiers", identifierString);
                     response.put("patientUuid", patient.getUuid());
                 } else {
                     LOGGER.info("No patient found with a local fingerprint ID : " + result.getLocalBiometricSubject().getSubjectId());
