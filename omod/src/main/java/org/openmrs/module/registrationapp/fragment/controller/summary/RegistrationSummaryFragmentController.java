@@ -85,7 +85,8 @@ public class RegistrationSummaryFragmentController {
      */
     protected List<Extension> filter(final List<Extension> extensionList, final String extensionPointId) {
     	
-    	List<Extension> ret = new ArrayList<Extension>() {{ addAll(extensionList); }};
+    	List<Extension> ret = new ArrayList<Extension>();
+    	ret.addAll(extensionList);
     	
     	CollectionUtils.filter(ret, new Predicate<Extension>() {
     		@Override
