@@ -259,7 +259,7 @@ function mpiSearchImport(data) {
                         if(response.message){
                             redirectToPatient(response.message);
                         }else{
-                            alert("No Patient with the given Biometric ID does not exist in the MPI");
+                            alert("No Patient with the given Biometric ID exists in the MPI");
                             toggleFingerprintButtonDisplay(importButton);
                         }
                     })
