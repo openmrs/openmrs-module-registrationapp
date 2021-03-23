@@ -154,21 +154,19 @@ public class RegistrationAppUiUtils {
 	}
 	
 	public static void validateLatitudeAndLongitudeIfNecessary(PersonAddress address, BindingResult errors) {
-		if (address != null) {
+	 if (address != null) {
 			
-	        Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
+	    Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
 
-			if (StringUtils.isNotBlank(address.getLatitude()) && regex != null && StringUtils.isBlank(regex.get("latitude")) 
-					&& !RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
-						errors.reject("registrationapp.latitude.invalid");
-			}
+	  if (StringUtils.isNotBlank(address.getLatitude()) && regex != null && StringUtils.isBlank(regex.get("latitude")) && !RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
+		  errors.reject("registrationapp.latitude.invalid");
+		}
 			
-			if (StringUtils.isNotBlank(address.getLongitude()) && regex != null && StringUtils.isBlank(regex.get("longitude"))
-			        && !RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
-						errors.reject("registrationapp.longitude.invalid");
-					}
-				}
+	  if (StringUtils.isNotBlank(address.getLongitude()) && regex != null && StringUtils.isBlank(regex.get("longitude")) && !RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
+		 errors.reject("registrationapp.longitude.invalid");
+		}
 	}
+}
 
 	public static void checkForIdentifierExceptions(Exception ex, Errors errors) {
 		// add any patient identifier validation exceptions
@@ -205,6 +203,4 @@ public class RegistrationAppUiUtils {
     	}
     	return new String[] {"M", "F"};
     }
-
-
 }

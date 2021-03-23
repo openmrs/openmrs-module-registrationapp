@@ -203,7 +203,6 @@ public class EditSectionPageController {
         return null;
     }
 
-
     private void addModelAttributes(PageModel model, Patient patient, Section section,
                                     AdministrationService adminService, String returnUrl,
                                     AppDescriptor app) throws Exception {
@@ -233,16 +232,16 @@ public class EditSectionPageController {
             for (int i = 0; i < types.length; i++) {
                 if (types[i] != null && types[i].length() > 0) {
                     // Remove flag characters at the end (used for relationship direction)
-                    String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
+                  String relationshipTypeUUID = types[i].substring(0, types[i].length() - 2);
 
                     // Last character reveals relationship direction (aIsToB or bIsToA)
-                    char relationshipDirection = types[i].charAt(types[i].length() - 1);
-                    if (relationshipDirection != 'A' && relationshipDirection != 'B') {
-                            throw new APIException("Relationship direction not specified");
-                    }
-                    RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
+                  char relationshipDirection = types[i].charAt(types[i].length() - 1);
+                  if (relationshipDirection != 'A' && relationshipDirection != 'B') {
+                     throw new APIException("Relationship direction not specified");
+                   }
+                  RelationshipType rt = personService.getRelationshipTypeByUuid(relationshipTypeUUID);
 
-                    if (rt != null) {
+                   if (rt != null) {
                         Person otherPerson = personService.getPersonByUuid(persons[i]);
 
                         Person personA = relationshipDirection == 'A' ? otherPerson : patient;
