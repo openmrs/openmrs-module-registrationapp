@@ -118,7 +118,7 @@ public class RegisterPatientFragmentController {
 
     public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
-        String patientUuid = registrationService.importMpiPatient(personId);
+        String patientUuid = registrationService.importMpiPatient(personId, RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
         return new SuccessResult(patientUuid);
     }
 
