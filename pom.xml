@@ -44,12 +44,12 @@
         <emrapiVersion>1.18</emrapiVersion>
         <calculationVersion>1.2</calculationVersion>
         <providerManagementVersion>2.5.0</providerManagementVersion>
-        <registrationcoreVersion>2.1.0-SNAPSHOT</registrationcoreVersion>
+        <registrationcoreVersion>2.0.0</registrationcoreVersion>
         <reportingModuleVersion>0.10.4</reportingModuleVersion>
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
         <appuiVersion>1.9.0</appuiVersion>
-        <coreappsVersion>1.19.3</coreappsVersion>
+        <coreappsVersion>1.20.0-SNAPSHOT</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
