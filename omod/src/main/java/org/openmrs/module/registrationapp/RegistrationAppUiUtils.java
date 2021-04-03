@@ -95,7 +95,7 @@ public class RegistrationAppUiUtils {
 		if (person != null) {
 			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(person);
 			for (Relationship relationship : relationships) {
-				if(relationship.getPersonA().getUuid() != person.getUuid()){
+				if(!relationship.getPersonA().getUuid().equals(person.getUuid())){
 					rels.append(relationship.getPersonA().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getaIsToB()));
                 } else {
                 	rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getbIsToA()));
