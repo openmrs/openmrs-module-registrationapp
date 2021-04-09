@@ -34,6 +34,9 @@ public class DropdownWidget extends Widget {
         private Boolean hideEmptyLabel;
 
         @JsonProperty
+        private Boolean autocomplete;
+
+        @JsonProperty
         private String initialValue;
 
         @JsonProperty
@@ -45,6 +48,14 @@ public class DropdownWidget extends Widget {
 
         public void setExpanded(Boolean expanded) {
             this.expanded = expanded;
+        }
+
+        public Boolean isAutcompleteEnabled() {
+            return autocomplete;
+        }
+
+        public void setAutocompleteEnabled(Boolean autocompleteEnabled) {
+            this.autocomplete = autocompleteEnabled;
         }
 
         public Boolean isHideEmptyLabel() {
