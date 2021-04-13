@@ -140,6 +140,9 @@
 
 	<globalProperty>
 		<property>registrationapp.paperRecordIdentifierDefinition</property>
+		<defaultValue>
+			paperrecord.patientDataDefinition.paperRecordIdentifier
+		</defaultValue>
 		<description>
 			Paper record identifier definition
 		</description>

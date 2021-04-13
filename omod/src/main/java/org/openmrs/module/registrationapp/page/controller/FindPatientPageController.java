@@ -104,7 +104,7 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
         String gpPaperRecordIdDef = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.GP_PAPER_RECORD_IDENTIFIER_DEFINITION);
         model.addAttribute("paperRecordIdentifierDefinitionAvailable", false);
         if (StringUtils.isNotBlank(gpPaperRecordIdDef)) {
-            // add the paper record identifier, if the definition is available (provided by the paper record module)
+            // if a definition is available (the default is provided by the paper record module)
             PatientDataDefinition paperRecordIdentifierDefinition =  libraries.getDefinition(PatientDataDefinition.class, gpPaperRecordIdDef);
             if (paperRecordIdentifierDefinition != null) {
                 model.addAttribute("paperRecordIdentifierDefinitionAvailable", true);
