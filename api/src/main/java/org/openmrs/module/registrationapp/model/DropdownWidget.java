@@ -50,12 +50,12 @@ public class DropdownWidget extends Widget {
             this.expanded = expanded;
         }
 
-        public Boolean isAutcompleteEnabled() {
+        public Boolean getAutcomplete() {
             return autocomplete;
         }
 
-        public void setAutocompleteEnabled(Boolean autocompleteEnabled) {
-            this.autocomplete = autocompleteEnabled;
+        public void setAutocomplete(Boolean autocomplete) {
+            this.autocomplete = autocomplete;
         }
 
         public Boolean isHideEmptyLabel() {
