@@ -138,6 +138,13 @@
 	</messages>
 	<!-- /Internationalization -->
 
+	<globalProperty>
+		<property>registrationapp.paperRecordIdentifierDefinition</property>
+		<description>
+			Paper record identifier definition
+		</description>
+	</globalProperty>
+
 	<privilege>
 		<name>App: registrationapp.registerPatient</name>
 		<description>Able to access the register patient app</description>
