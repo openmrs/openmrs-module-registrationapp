@@ -144,7 +144,7 @@
 			paperrecord.patientDataDefinition.paperRecordIdentifier
 		</defaultValue>
 		<description>
-			Paper record identifier definition
+			Report Definition to retrieve the paper record identifier for a patient; default comes from paper record module
 		</description>
 	</globalProperty>
 
