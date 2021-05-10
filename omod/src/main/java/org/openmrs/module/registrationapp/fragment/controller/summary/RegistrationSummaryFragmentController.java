@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.module.appframework.context.AppContextModel;
@@ -14,7 +15,10 @@ import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.coreapps.contextmodel.PatientContextModel;
+import org.openmrs.module.coreapps.contextmodel.VisitContextModel;
+import org.openmrs.module.emrapi.adt.AdtService;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.module.emrapi.visit.VisitDomainWrapper;
 import org.openmrs.module.registrationapp.RegistrationAppConstants;
 import org.openmrs.module.registrationapp.converter.RegistrationSummaryExtensionsGenerator;
 import org.openmrs.ui.framework.annotation.InjectBeans;
@@ -29,6 +33,7 @@ public class RegistrationSummaryFragmentController {
                            FragmentModel model,
                            @SpringBean AppFrameworkService appFrameworkService,
                            @SpringBean("adminService") AdministrationService administrationService,
+                           @SpringBean("adtService") AdtService adtService,
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
                            @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
@@ -40,10 +45,24 @@ public class RegistrationSummaryFragmentController {
         Object patient = config.get("patient");
         if (patient instanceof Patient) {
             patientDomainWrapper.setPatient((Patient) patient);
-            appContextModel.put("patient", new PatientContextModel((Patient) patient));
         } else if (patient instanceof PatientDomainWrapper) {
             patientDomainWrapper = (PatientDomainWrapper) patient;
             appContextModel.put("patient", new PatientContextModel(((PatientDomainWrapper) patient).getPatient()));
+        }
+
+        Location visitLocation = null;
+        if (adtService != null) {
+        try {
+            visitLocation = adtService.getLocationThatSupportsVisits(sessionContext.getSessionLocation());
+        }
+        catch (IllegalArgumentException ex) {
+            // location does not support visits
+        }
+        VisitDomainWrapper activeVisit = null;
+        if (visitLocation != null) {
+            activeVisit = adtService.getActiveVisit((Patient) patient, visitLocation);
+        }
+        appContextModel.put("visit", activeVisit == null ? null : new VisitContextModel(activeVisit));
         }
         appContextModel.put("search", search); // TODO consider putting all request params in the module in some structured way
         model.addAttribute("patient", patientDomainWrapper);
