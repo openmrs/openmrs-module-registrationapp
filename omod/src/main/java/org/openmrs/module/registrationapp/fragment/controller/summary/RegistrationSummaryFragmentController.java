@@ -37,7 +37,7 @@ public class RegistrationSummaryFragmentController {
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
                            @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
-                           ) {
+    ) {
 
         config.require("patient");
         AppContextModel appContextModel = sessionContext.generateAppContextModel();
@@ -52,17 +52,16 @@ public class RegistrationSummaryFragmentController {
 
         Location visitLocation = null;
         if (adtService != null) {
-        try {
-            visitLocation = adtService.getLocationThatSupportsVisits(sessionContext.getSessionLocation());
-        }
-        catch (IllegalArgumentException ex) {
-            // location does not support visits
-        }
-        VisitDomainWrapper activeVisit = null;
-        if (visitLocation != null) {
-            activeVisit = adtService.getActiveVisit((Patient) patient, visitLocation);
-        }
-        appContextModel.put("visit", activeVisit == null ? null : new VisitContextModel(activeVisit));
+            try {
+                visitLocation = adtService.getLocationThatSupportsVisits(sessionContext.getSessionLocation());
+            } catch (IllegalArgumentException ex) {
+                // location does not support visits
+            }
+            VisitDomainWrapper activeVisit = null;
+            if (visitLocation != null) {
+                activeVisit = adtService.getActiveVisit((Patient) patient, visitLocation);
+            }
+            appContextModel.put("visit", activeVisit == null ? null : new VisitContextModel(activeVisit));
         }
         appContextModel.put("search", search); // TODO consider putting all request params in the module in some structured way
         model.addAttribute("patient", patientDomainWrapper);
