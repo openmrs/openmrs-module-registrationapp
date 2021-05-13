@@ -178,7 +178,7 @@ public class MatchingPatientsFragmentController {
 
     private Boolean alreadyInResults(Patient patient, List<SimpleObject> results) {
         for (SimpleObject result : results) {
-            if (result.get("uuid").toString().equals(patient.getId())) {
+            if (result.get("uuid").toString().equals(patient.getUuid())) {
                 return true;
             }
         }
