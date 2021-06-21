@@ -122,7 +122,7 @@ public class MatchingPatientsFragmentController {
             for (Field biometricField : biometricFields.keySet()) {
                 BiometricSubject subject = biometricFields.get(biometricField);
                 List<BiometricMatch> biometricMatches = biometricEngine.search(subject);
-                if (biometricMatches.size() > 0) {
+                if (!biometricMatches.isEmpty()) {
                     List<PatientIdentifierType> biometricIdList = Arrays.asList(patientService.getPatientIdentifierTypeByUuid(biometricField.getUuid()));
                     for (BiometricMatch match : biometricMatches) {
                         List<Patient> patients = patientService.getPatients(null, match.getSubjectId(), biometricIdList, true);
