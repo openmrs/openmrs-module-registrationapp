@@ -247,33 +247,54 @@ function mpiImportingDialog(data,sourceButton) {
 
 function mpiSearchImport(data) {
     var importButton = jq('#mpiImportButton');
-    var emrDialog = emr.setupConfirmationDialog({
-        selector: '#patient-biometric-search-import-dialog',
-        actions: {
-            confirm: function () {
-                toggleFingerprintButtonDisplay(importButton);
-                var biometricId = data['nationalBiometricSubjectId'];
-                $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: biometricId}))
-                    .success(function (response) {
-                        console.log(response);
-                        if(response.message){
+    var biometricId = data['nationalBiometricSubjectId'];
+    $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "fetchMpiFpMatch", {mpiPersonId: biometricId}))
+        .success(function (response) {
+            console.log(response);
+            if(!response.fpMatch === "NOTFOUND"){
+                document.getElementById("patientName").textContent=data['patientName'];
+                document.getElementById("patientDob").textContent=data['patientDob'];
+                document.getElementById("patientGender").textContent=data['patientGender'];
+                document.getElementById("phoneNumber").textContent=data['phoneNumber'];
+                document.getElementById("mothersName").textContent=data['mothersName'];
+                document.getElementById("personAddress").textContent=data['personAddress'];
+                document.getElementById("patientIdentifiers").textContent=data['patientIdentifiers'];
+                var emrDialog = emr.setupConfirmationDialog({
+                    selector: '#patient-biometric-search-dialog',
+                    actions: {
+                        confirm: function () {
+                            $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: biometricId}))
+                                .success(function (response) {
+                                    console.log(response);
+                                    if(response.message){
+                                        redirectToPatient(response.message);
+                                    }else{
+                                        alert("No Patient with the given Biometric ID exists in the MPI");
+                                        toggleFingerprintButtonDisplay(importButton);
+                                    }
+                                })
+                                .error(function (xhr, status, err) {
+                                    alert('AJAX error ' + err);
+                                    toggleFingerprintButtonDisplay(importButton);
+                                });
                             redirectToPatient(response.message);
-                        }else{
-                            alert("No Patient with the given Biometric ID exists in the MPI");
-                            toggleFingerprintButtonDisplay(importButton);
+                        },
+                        cancel: function () {
+                            emrDialog.close();
                         }
-                    })
-                    .error(function (xhr, status, err) {
-                        alert('AJAX error ' + err);
-                        toggleFingerprintButtonDisplay(importButton);
-                    });
-            },
-            cancel: function () {
-                emrDialog.close();
+                    }
+                });
+                emrDialog.show();
+            }else{
+                alert("No Patient with the given Biometric ID exists in the MPI");
+                toggleFingerprintButtonDisplay(importButton);
             }
-        }
-    });
-    emrDialog.show();
+        })
+        .error(function (xhr, status, err) {
+            alert('Fingerprint matched but encountered and error while fetching patient details from the MPI');
+            console.log(err.mesage);
+            toggleFingerprintButtonDisplay(importButton);
+        });
 }
 
 function searchPatientByBiometricXml(biometricXml,sourceButton) {

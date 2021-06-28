@@ -49,7 +49,9 @@ import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricData;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.biometrics.model.Fingerprint;
+import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
+import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -120,6 +122,18 @@ public class RegisterPatientFragmentController {
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
         String patientUuid = registrationService.importMpiPatient(personId, RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
         return new SuccessResult(patientUuid);
+    }
+
+    public SimpleObject fetchMpiFpMatch(@RequestParam("mpiPersonId") String personId,
+                                        @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+        PatientAndMatchQuality patientFetch = registrationService.fetchMpiFpMatch(personId, RegistrationCoreConstants.GP_BIOMETRICS_NATIONAL_PERSON_IDENTIFIER_TYPE_UUID);
+        SimpleObject response = new SimpleObject();
+        if (patientFetch != null) {
+            response.put("fpMatch", patientFetch);
+        } else {
+            response.put("fpMatch", "NOTFOUND");
+        }
+        return response;
     }
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
