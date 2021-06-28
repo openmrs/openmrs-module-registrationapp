@@ -248,13 +248,13 @@ public class FingerprintM2sysFragmentController {
                 response.put("message", messageSourceService.getMessage("registrationapp.biometrics.m2sys.register.alreadyExists.failure"));
                 return response;
             } else {
-                if (result.getLocalBiometricSubject() != null) {
+                if (result.getLocalBiometricSubject() != null && StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
 //                    Update local FP ID
                     PatientIdentifier identifier = new PatientIdentifier(result.getLocalBiometricSubject().getSubjectId(), localFpIdentifierType, Context.getService(LocationService.class).getDefaultLocation());
                     patient.addIdentifier(identifier);
                     patientService.savePatientIdentifier(identifier);
                 }
-                if (result.getNationalBiometricSubject() != null) {
+                if (result.getNationalBiometricSubject() != null && StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId())) {
 //                    Update local FP ID
                     PatientIdentifier identifier = new PatientIdentifier(result.getNationalBiometricSubject().getSubjectId(), nationalFpIdentifierType, Context.getService(LocationService.class).getDefaultLocation());
                     patient.addIdentifier(identifier);

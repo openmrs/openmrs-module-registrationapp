@@ -8,13 +8,13 @@
 	<name>Registration App Module</name>
 	<description>Registration App for the Reference Application</description>
 	<url>https://wiki.openmrs.org/display/docs/Registration+App+Module+Module</url>
-	
+
 	<developers>
 		<developer>
 			<name>OpenMRS</name>
 		</developer>
 	</developers>
-	
+
 	<organization>
 		<name>OpenMRS</name>
 		<url>http://openmrs.org</url>
@@ -33,7 +33,7 @@
 		<module>web-2.0</module>
 		<module>omod</module>
 	</modules>
-	
+
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
         <uiframeworkVersion>3.13.0</uiframeworkVersion>
@@ -49,13 +49,13 @@
         <addresshierarchyVersion>2.9</addresshierarchyVersion>
         <htmlformentryVersion>3.3.0</htmlformentryVersion>
         <appuiVersion>1.9.0</appuiVersion>
-        <coreappsVersion>1.20.0</coreappsVersion>
+        <coreappsVersion>1.19.3</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
         <eventVersion>2.5</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <m2SysVersion>1.0.3</m2SysVersion>
-        <xds-senderVersion>2.1.1</xds-senderVersion>
+        <xds-senderVersion>2.0.2</xds-senderVersion>
     </properties>
 
     <dependencyManagement>

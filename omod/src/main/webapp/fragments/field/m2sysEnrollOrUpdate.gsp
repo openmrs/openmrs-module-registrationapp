@@ -52,7 +52,6 @@
 
         jq(fingerprintButton).click(function () {
             capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }',this);
-
         });
 
         jq(fingerprintSubjectIdField).change(function () {

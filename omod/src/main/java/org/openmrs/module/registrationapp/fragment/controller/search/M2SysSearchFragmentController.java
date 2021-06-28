@@ -101,42 +101,51 @@ public class M2SysSearchFragmentController {
             if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
 //                Check and load patient
                 Patient patient = null;
-                if(result.getNationalBiometricSubject()!=null){
-                    patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(),PropertiesUtil.getNationalFpType());
-                }else if (result.getLocalBiometricSubject()!=null){
-                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(),PropertiesUtil.getLocalFpType());
+                if (StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId()) && StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
+                    log.info("Matches Found on Both the Local and National FP Servers");
+//                    Search by local FP id first, then national
+                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(), PropertiesUtil.getLocalFpType());
+                    if (patient == null) {
+                        patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(), PropertiesUtil.getNationalFpType());
+                    }
+                } else if (StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId())){
+                    log.info("Match Found on National FP Server");
+                    patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(), PropertiesUtil.getNationalFpType());
+                } else if (StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
+                    log.info("Match Found on Local FP");
+                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(), PropertiesUtil.getLocalFpType());
                 }
 
                 if (patient != null) {
                     response.put("patientName", patient.getPersonName().getFullName());
-                    response.put("patientDob", patient.getBirthdate().toString());
+                    response.put("patientDob", new SimpleDateFormat("dd-MM-yyyy").format(patient.getBirthdate()));
                     response.put("patientGender", patient.getGender().equals("M") ? "Male" : "Female");
-                    if( patient.getAttribute("Telephone Number") != null){
+                    if (patient.getAttribute("Telephone Number") != null) {
                         response.put("phoneNumber", patient.getAttribute("Telephone Number").getValue());
                     }
-                    if(patient.getAttribute("Health Center")!=null){
+                    if (patient.getAttribute("Health Center") != null) {
                         response.put("sourceLocation", patient.getAttribute("Health Center").getValue());
                     }
-                    if(patient.getAttribute("First Name of Mother")!=null){
+                    if (patient.getAttribute("First Name of Mother") != null) {
                         response.put("mothersName", patient.getAttribute("First Name of Mother").getValue());
                     }
                     response.put("personAddress", patient.getPersonAddress().getAddress1() + ", " +
-                            patient.getPersonAddress().getCityVillage()+ ", " +
-                            patient.getPersonAddress().getStateProvince()+ ", " +
+                            patient.getPersonAddress().getCityVillage() + ", " +
+                            patient.getPersonAddress().getStateProvince() + ", " +
                             patient.getPersonAddress().getCountry());
                     StringBuffer identifierString = new StringBuffer();
-                    for(PatientIdentifier pId:patient.getIdentifiers()){
-                        if(pId.getIdentifierType().equals(PropertiesUtil.getCodeNationalIdType()) ||
+                    for (PatientIdentifier pId : patient.getIdentifiers()) {
+                        if (pId.getIdentifierType().equals(PropertiesUtil.getCodeNationalIdType()) ||
                                 pId.getIdentifierType().equals(PropertiesUtil.getCodePcIdType()) ||
                                 pId.getIdentifierType().equals(PropertiesUtil.getCodeStIdType()) ||
-                                pId.getIdentifierType().equals(PropertiesUtil.getIsantePlusIdType())){
-                            identifierString.append(pId.getIdentifierType().getName()+ ": " +pId.getIdentifier() + "\n");
+                                pId.getIdentifierType().equals(PropertiesUtil.getIsantePlusIdType())) {
+                            identifierString.append(pId.getIdentifierType().getName() + ": " + pId.getIdentifier() + ", \n");
                         }
                     }
                     response.put("patientIdentifiers", identifierString);
                     response.put("patientUuid", patient.getUuid());
                 } else {
-                    LOGGER.info("No patient found with a local fingerprint ID : " + result.getLocalBiometricSubject().getSubjectId());
+                    log.info("No patient found with the used  fingerprint IDs ");
                 }
             }
 
@@ -151,7 +160,7 @@ public class M2SysSearchFragmentController {
         return response;
     }
 
-    private Patient findByFingerprintId(String subjectId,PatientIdentifierType identifierType) {
+    private Patient findByFingerprintId(String subjectId, PatientIdentifierType identifierType) {
         Patient patient = registrationCoreService.findByPatientIdentifier(subjectId, identifierType.getUuid());
         if (patient == null) {
             LOGGER.error("Patient with local fingerprint ID " + subjectId + " doesn't exist: ");

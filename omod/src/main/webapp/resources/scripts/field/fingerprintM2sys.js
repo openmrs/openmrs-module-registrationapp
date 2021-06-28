@@ -17,7 +17,15 @@ function m2SysSuccess() {
     $("#fingerprintError").text("");
 }
 
-function m2SysShowAlreadyExistingFingerprintsDialog(data) {
+function m2SysShowAlreadyExistingFingerprintsDialog(data,sourceButton) {
+    document.getElementById("patientName").textContent=data['patientName'];
+    document.getElementById("patientDob").textContent=data['patientDob'];
+    document.getElementById("patientGender").textContent=data['patientGender'];
+    document.getElementById("phoneNumber").textContent=data['phoneNumber'];
+    document.getElementById("mothersName").textContent=data['mothersName'];
+    document.getElementById("sourceLocation").textContent=data['sourceLocation'] ? data['sourceLocation'] : 'Local' ;
+    document.getElementById("personAddress").textContent=data['personAddress'];
+    document.getElementById("patientIdentifiers").textContent=data['patientIdentifiers'];
     emr.setupConfirmationDialog({
         selector: '#imported-patient-dialog',
         actions: {
@@ -27,7 +35,7 @@ function m2SysShowAlreadyExistingFingerprintsDialog(data) {
             cancel: function () {
                 m2SysErrorMessage(emr.message(
                         'registrationapp.biometrics.m2sys.register.alreadyExists.failure'));
-                toggleFingerprintButtonDisplay(jq('#captureButton'));
+                toggleFingerprintButtonDisplay(sourceButton);
             }
         }
     }).show();

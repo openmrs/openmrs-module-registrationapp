@@ -88,19 +88,6 @@ public class MatchingPatientsFragmentController {
             }
         }
 
-        if(parameterMap.get("localBiometricSubjectId") != null){
-            String localBiometricSubjectId = parameterMap.get("localBiometricSubjectId")[0];
-            if (StringUtils.isNotBlank(localBiometricSubjectId)) {
-                otherDataPoints.put("localBiometricSubjectId",localBiometricSubjectId);
-            }
-        }
-        if(parameterMap.get("nationalBiometricSubjectId") != null){
-            String nationalBiometricSubjectId = parameterMap.get("nationalBiometricSubjectId")[0];
-            if (StringUtils.isNotBlank(nationalBiometricSubjectId)) {
-                otherDataPoints.put("nationalBiometricSubjectId",nationalBiometricSubjectId);
-            }
-        }
-
         RegisterPatientFormBuilder.resolvePatientIdentifierFields(formStructure, patient, parameterMap);
         List<PatientAndMatchQuality> matches = new ArrayList<PatientAndMatchQuality>();
         List<PatientAndMatchQuality> fastSimilarPatients = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
