@@ -27,7 +27,7 @@
         </p>
 
         <p class="left">
-            <input type="text" class="person-typeahead" placeholder="${ui.message('registrationapp.person.name')}"
+            <input type="text" class="person-typeahead" placeholder="${ui.message(ui.encodeHtmlAttribute('registrationapp.person.name'))}"
                    ng-model="relationship.name"
                    typeahead="person as person.display for person in getPersons(\$viewValue) | limitTo:5"
                    typeahead-min-length="3"
