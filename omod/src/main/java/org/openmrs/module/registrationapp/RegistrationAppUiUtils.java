@@ -57,8 +57,7 @@ public class RegistrationAppUiUtils {
 	 */
 	public String getAttribute(Person person, String attributeTypeUuid) {
 		if (person != null) {
-			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(
-			    attributeTypeUuid));
+			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(attributeTypeUuid));
 			if (attr != null) {
 				return attr.getValue();
 			}
@@ -73,8 +72,7 @@ public class RegistrationAppUiUtils {
 	 */
 	public String getPersonAttributeDisplayValue(Person person, String attributeTypeUuid) {
 		if (person != null) {
-			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(
-					attributeTypeUuid));
+			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(attributeTypeUuid));
 			if (attr != null) {
 				return attr.toString();
 			}
@@ -97,9 +95,9 @@ public class RegistrationAppUiUtils {
 			for (Relationship relationship : relationships) {
 				if(relationship.getPersonA().getUuid() != person.getUuid()){
 					rels.append(relationship.getPersonA().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getaIsToB()));
-                } else {
-                	rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getbIsToA()));
-                }
+				} else {
+					rels.append(relationship.getPersonB().getPersonName()).append(" - ").append(ui.message(relationship.getRelationshipType().getbIsToA()));
+				}
 				rels.append(", ");
 			}
 		}
@@ -155,16 +153,19 @@ public class RegistrationAppUiUtils {
 	
 	public static void validateLatitudeAndLongitudeIfNecessary(PersonAddress address, BindingResult errors) {
 		if (address != null) {
-			
 	    Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
-
-	  if (StringUtils.isNotBlank(address.getLatitude()) && regex != null && StringUtils.isBlank(regex.get("latitude")) && !RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
-		  errors.reject("registrationapp.latitude.invalid");
-		}
-			
-	  if (StringUtils.isNotBlank(address.getLongitude()) && regex != null && StringUtils.isBlank(regex.get("longitude")) && !RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
-		 errors.reject("registrationapp.longitude.invalid");
-		}
+			if (StringUtils.isNotBlank(address.getLatitude()) &&
+					regex != null &&
+					StringUtils.isBlank(regex.get("latitude")) &&
+					!RegistrationAppUiUtils.isValidLatitude(address.getLatitude())) {
+				errors.reject("registrationapp.latitude.invalid");
+			}
+			if (StringUtils.isNotBlank(address.getLongitude()) &&
+					regex != null &&
+					StringUtils.isBlank(regex.get("longitude")) &&
+					!RegistrationAppUiUtils.isValidLongitude(address.getLongitude())) {
+				errors.reject("registrationapp.longitude.invalid");
+			}
 	}
 }
 
@@ -174,9 +175,13 @@ public class RegistrationAppUiUtils {
 			if (ex instanceof InvalidCheckDigitException) {
 				errors.reject("registrationapp.error.identifier.invalidCheckDigit");
 			} else if (ex instanceof DuplicateIdentifierException) {
-				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((DuplicateIdentifierException) ex).getPatientIdentifier()).toArray(), null);
+				errors.reject("registrationapp.error.identifier.duplicate",
+					Collections.singleton(((DuplicateIdentifierException) ex).getPatientIdentifier()).toArray(),
+					null);
 			} else if (ex instanceof IdentifierNotUniqueException) {
-				errors.reject("registrationapp.error.identifier.duplicate", Collections.singleton(((IdentifierNotUniqueException) ex).getPatientIdentifier()).toArray(), null);
+				errors.reject("registrationapp.error.identifier.duplicate",
+					Collections.singleton(((IdentifierNotUniqueException) ex).getPatientIdentifier()).toArray(),
+					null);
 			} else if (ex instanceof InvalidIdentifierFormatException) {
 				errors.reject(ex.getMessage());
 			} else {
