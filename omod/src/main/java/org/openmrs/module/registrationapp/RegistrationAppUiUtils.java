@@ -154,7 +154,7 @@ public class RegistrationAppUiUtils {
 	}
 	
 	public static void validateLatitudeAndLongitudeIfNecessary(PersonAddress address, BindingResult errors) {
-	 if (address != null) {
+		if (address != null) {
 			
 	    Map<String, String> regex = Context.getRegisteredComponent(AddressSupportCompatibility.ID, AddressSupportCompatibility.class).getElementRegex();
 
