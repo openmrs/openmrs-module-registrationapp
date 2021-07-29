@@ -61,8 +61,6 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
             $scope.relationships[index].uuid = person.uuid;
             $scope.relationships[index].name = person.display;
         };
-        
-
 
         // this is a (hack?) that provides integration with the one-question-per-screen navigator, since the navigator doesn't play well with angular
         // specifically, we override the "displayValue" function on the relationship_type field within the navigator so that:
@@ -72,12 +70,12 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
             var field = NavigatorController.getFieldById("relationship_type");
             field.displayValue = function() {
                 return $scope.relationships.map(function(r) {
-                    if(r.type == ''){
-                       return '--';
-                    }else if(r.type != ''){
-                   return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
-               }}).join(', ');
-            
+                    if (!r.type) {
+                        return "---";
+                    } else {
+                        return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+                    }
+                }).join(', ');
             }
         }
     }]);
