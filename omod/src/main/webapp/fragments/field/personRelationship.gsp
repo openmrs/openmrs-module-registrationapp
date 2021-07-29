@@ -25,7 +25,7 @@
                 <% } %>
                 <% relationshipTypes.each { type -> %>
                     <% if (type.aIsToB != type.bIsToA) { %>
-                        <option value="${type.uuid}-A" data-val="${type.bIsToA}">
+                        <option value="${type.uuid}-B" data-val="${type.bIsToA}">
                             <% def msgString = "ui.i18n.RelationshipType.bIsToA." + type.uuid %>
                             ${ui.message(msgString) == msgString ?
                                     type.bIsToA :
