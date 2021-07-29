@@ -122,7 +122,7 @@ public class MatchingPatientsFragmentController {
             for (Field biometricField : biometricFields.keySet()) {
                 BiometricSubject subject = biometricFields.get(biometricField);
                 List<BiometricMatch> biometricMatches = biometricEngine.search(subject);
-				if (!biometricMatches.isEmpty()) {
+                if (!biometricMatches.isEmpty()) {
                     List<PatientIdentifierType> biometricIdList = Arrays.asList(patientService.getPatientIdentifierTypeByUuid(biometricField.getUuid()));
                     for (BiometricMatch match : biometricMatches) {
                         List<Patient> patients = patientService.getPatients(null, match.getSubjectId(), biometricIdList, true);
@@ -178,7 +178,7 @@ public class MatchingPatientsFragmentController {
 
     private Boolean alreadyInResults(Patient patient, List<SimpleObject> results) {
         for (SimpleObject result : results) {
-            if (Integer.valueOf(result.get("patientId").toString()).equals(patient.getId())) {
+            if (result.get("uuid").toString().equals(patient.getUuid())) {
                 return true;
             }
         }

@@ -70,8 +70,13 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
             var field = NavigatorController.getFieldById("relationship_type");
             field.displayValue = function() {
                 return $scope.relationships.map(function(r) {
-                    return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+                    return jq('<div>').text(r.name).html() +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
                 }).join(', ');
             }
+          field.value = function() {
+            return $scope.relationships.map(function(r) {
+              return jq('<div>').text(r.name).html()  +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+            }).join(', ');
+          }
         }
     }]);

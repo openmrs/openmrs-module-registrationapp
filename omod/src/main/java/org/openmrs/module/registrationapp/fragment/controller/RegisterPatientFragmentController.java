@@ -226,7 +226,7 @@ public class RegisterPatientFragmentController {
         if (obsGroupMap.size() > 0 ){
             buildGroupObs(conceptService, obsToCreate, obsGroupMap);
         }
-		if (!obsToCreate.isEmpty()) {
+        if (!obsToCreate.isEmpty()) {
             if (registrationEncounter != null) {
                 for (Obs obs : obsToCreate) {
                     registrationEncounter.addObs(obs);
@@ -270,7 +270,7 @@ public class RegisterPatientFragmentController {
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
-        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid().toString());
+        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid());
         if (registrationEncounter != null) {
             redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
         }
@@ -298,7 +298,7 @@ public class RegisterPatientFragmentController {
     }
 
     private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate, Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
-		if (obsGroupMap != null && !obsGroupMap.isEmpty()) {
+        if (obsGroupMap != null && !obsGroupMap.isEmpty()) {
             for (String groupConceptUuid : obsGroupMap.keySet()) {
                 Concept groupConcept = RegistrationAppUtils.getConcept(groupConceptUuid, conceptService);
                 if (groupConcept == null) {
@@ -311,7 +311,7 @@ public class RegisterPatientFragmentController {
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
                     buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
                 }
-				if (!groupObsToCreate.isEmpty()) {
+                if (!groupObsToCreate.isEmpty()) {
                     for (Obs obs : groupObsToCreate) {
                         groupObs.addGroupMember(obs);
                     }

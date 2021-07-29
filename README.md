@@ -4,3 +4,5 @@ Registration App Module
 ========================
 
 Registration App for the Reference Application
+
+Documentation is in the [wiki](https://wiki.openmrs.org/display/docs/Registration+Module).

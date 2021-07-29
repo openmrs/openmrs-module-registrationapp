@@ -16,10 +16,10 @@ public class SectionTest {
     public void testParsing() throws Exception {
         Section parsed = new ObjectMapper().readValue(getClass().getClassLoader().getResourceAsStream("section.json"), Section.class);
         assertThat(parsed.getId(), is("contactInfo"));
-        assertThat(parsed.getLabel(), is("emr.patientDashBoard.contactinfo"));
+        assertThat(parsed.getLabel(), is("coreapps.patientDashBoard.contactinfo"));
         assertTrue(parsed.getSkipConfirmation());
         assertThat(parsed.getQuestions().size(), is(1));
-        assertThat(parsed.getQuestions().get(0).getLegend(), is("emr.person.telephoneNumber"));
+        assertThat(parsed.getQuestions().get(0).getLegend(), is("coreapps.person.telephoneNumber"));
         assertThat(parsed.getQuestions().get(0).getFields().size(), is(1));
         assertThat(parsed.getQuestions().get(0).getFields().get(0).getType(), is("personAttribute"));
         assertThat(parsed.getQuestions().get(0).getFields().get(0).getLabel(), is("registrationapp.patient.phone.label"));

@@ -29,7 +29,6 @@ public class NavigableFormStructure {
         if(sections!=null && sections.size()>0){
             fields = new ArrayList<Field>();
             for (Section section : sections.values()) {
-                Map<String, Question> questions = new LinkedHashMap<String, Question>();
                 if (section.getQuestions() != null) {
                     for (Question question : section.getQuestions()) {
                         List<Field> qFields = question.getFields();

@@ -1,10 +1,10 @@
 {
     "id": "contactInfo",
-    "label": "emr.patientDashBoard.contactinfo",
+    "label": "coreapps.patientDashBoard.contactinfo",
     "skipConfirmation": true,
     "questions": [
         {
-            "legend": "emr.person.telephoneNumber",
+            "legend": "coreapps.person.telephoneNumber",
             "fields": [
                 {
                     "type": "personAttribute",
