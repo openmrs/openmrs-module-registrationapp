@@ -18,6 +18,7 @@ public class DropdownWidgetTest {
         assertThat(parsed.getProviderName(), is("uicommons"));
         assertThat(parsed.getFragmentId(), is("field/dropDown"));
         assertTrue(parsed.getConfig().isExpanded());
+        assertTrue(parsed.getConfig().getAutcomplete());
         assertTrue(parsed.getConfig().isHideEmptyLabel());
         assertThat(parsed.getConfig().getInitialValue(), is("2"));
         assertThat(parsed.getConfig().getOptions().size(), is(3));

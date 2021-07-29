@@ -43,7 +43,7 @@
                 	<div>
                 		<h3>${ ui.message(field.label) }</h3>
                 			<p class="left">
-                				${ ui.encodeHtml(uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />")) ?: ''}&nbsp;
+                				${ ui.encodeHtml(uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid))?.replace("\n", "<br />") ?: ''}&nbsp;
                 			</p>
                 		</div>
                 	<% } %>
@@ -51,7 +51,7 @@
             <% } %>
 
             <div>
-                <h3>${ ui.message("emr.gender") }:</h3>
+                <h3>${ ui.message("Patient.gender") }:</h3>
                 <p class="left">
                     ${ui.message("coreapps.gender." + ui.encodeHtml(patient.gender))}&nbsp;
                 </p>
@@ -82,20 +82,20 @@
 	                    <% fields.each { field ->
 	                        def displayValue = "";
 	                        if (field.type == 'personAttribute') {
-	                            displayValue = uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid)?.replace("\n", "<br />");
+	                            displayValue = uiUtils.getPersonAttributeDisplayValue(patient.patient, field.uuid);
 	                        }
 	                        else if (field.type == 'personAddress') {
-	                            displayValue = ui.format(config.patient.personAddress).replace("\n", "<br />");
+	                            displayValue = ui.format(config.patient.personAddress);
 	                        }
 	                        else if (field.type == "patientIdentifier") {
 	                            displayValue = uiUtils.getIdentifier(patient.patient, field.uuid)
 	                        }
                             else if (field.type == "personRelationships") {
-                                displayValue = uiUtils.getPatientRelationships(patient.patient)
+                                displayValue = uiUtils.getPatientRelationships(patient.patient, ui)
                             }
 	                        // TODO support other types besides personAttribute and personAddress
 	                    %>
-	                        ${ displayValue ? ui.encodeHtmlContent(displayValue): ''}&nbsp;
+	                        ${ displayValue ? ui.encodeHtmlContent(displayValue).replace("\n", "<br />") : ''}&nbsp;
 	                    <% } %>
 	                </p>
 	            </div>

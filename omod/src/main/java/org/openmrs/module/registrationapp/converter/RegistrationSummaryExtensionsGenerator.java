@@ -89,9 +89,6 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * Generates a comprehensive registration summary ID from an app ID and section ID.
 	 */
 	public static String generateRegSummaryId(String regAppId, String sectionId) {
-		String regSummaryId = regAppId.substring(0, regAppId.indexOf("registerPatient")) 
-								+ "summary." 
-								+ sectionId;
-		return regSummaryId;
+		return (regAppId.substring(0, regAppId.indexOf("registerPatient")) + "summary." + sectionId);
 	}
 }

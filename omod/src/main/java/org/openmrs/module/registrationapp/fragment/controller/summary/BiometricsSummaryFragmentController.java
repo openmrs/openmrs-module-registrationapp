@@ -8,6 +8,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
+import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
@@ -31,7 +32,8 @@ public class BiometricsSummaryFragmentController {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
-    public void controller(FragmentConfiguration config,
+    public void controller(UiSessionContext sessionContext,
+    		               FragmentConfiguration config,
                            FragmentModel model,
                            @SpringBean RegistrationCoreProperties registrationCoreProperties,
                            @SpringBean("patientService") PatientService patientService,
@@ -48,7 +50,8 @@ public class BiometricsSummaryFragmentController {
         String registrationAppId = app.getConfig().get("registrationAppId").getTextValue();
         model.put("registrationAppId", registrationAppId);
         AppDescriptor registrationApp = appFrameworkService.getApp(registrationAppId);
-        NavigableFormStructure form = RegisterPatientFormBuilder.buildFormStructure(registrationApp);
+        NavigableFormStructure form = RegisterPatientFormBuilder.buildFormStructure(registrationApp, appFrameworkService,
+		        sessionContext.generateAppContextModel());
 
         BiometricEngine engine = registrationCoreProperties.getBiometricEngine();
         BiometricEngineStatus status =  engine.getStatus();

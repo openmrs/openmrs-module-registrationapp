@@ -2,6 +2,7 @@
     "providerName": "uicommons",
     "fragmentId": "field/dropDown",
     "config" : {
+        "autocomplete": true,
         "expanded": true,
         "hideEmptyLabel": true,
         "initialValue": "2",

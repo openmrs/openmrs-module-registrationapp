@@ -138,6 +138,16 @@
 	</messages>
 	<!-- /Internationalization -->
 
+	<globalProperty>
+		<property>registrationapp.paperRecordIdentifierDefinition</property>
+		<defaultValue>
+			paperrecord.patientDataDefinition.paperRecordIdentifier
+		</defaultValue>
+		<description>
+			Report Definition to retrieve the paper record identifier for a patient; default comes from paper record module
+		</description>
+	</globalProperty>
+
 	<privilege>
 		<name>App: registrationapp.registerPatient</name>
 		<description>Able to access the register patient app</description>

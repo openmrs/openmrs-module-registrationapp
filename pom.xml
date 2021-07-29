@@ -1,23 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>registrationapp</artifactId>
-	<version>1.16.0-SNAPSHOT</version>
+	<version>1.24.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Registration App Module</name>
 	<description>Registration App for the Reference Application</description>
 	<url>https://wiki.openmrs.org/display/docs/Registration+App+Module+Module</url>
-	
+
 	<developers>
 		<developer>
 			<name>OpenMRS</name>
 		</developer>
 	</developers>
-	
+
 	<organization>
 		<name>OpenMRS</name>
-		<url>http://openmrs.org</url>
+		<url>https://openmrs.org</url>
 	</organization>
 
 	<scm>
@@ -33,11 +34,11 @@
 		<module>web-2.0</module>
 		<module>omod</module>
 	</modules>
-	
+
 	<properties>
 		<openMRSVersion>1.9.9</openMRSVersion>
         <uiframeworkVersion>3.9</uiframeworkVersion>
-        <appframeworkVersion>2.9</appframeworkVersion>
+        <appframeworkVersion>2.15.0</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
         <idgenVersion>4.4.0</idgenVersion>
         <uicommonsVersion>2.4.0</uicommonsVersion>
@@ -51,7 +52,7 @@
         <appuiVersion>1.7</appuiVersion>
         <coreappsVersion>1.11.1</coreappsVersion>
         <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
-        <eventVersion>2.5</eventVersion>
+        <eventVersion>2.8.0</eventVersion>
         <groovyVersion>1.8.7</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -270,11 +271,11 @@
 
         <dependency>
             <groupId>org.openmrs</groupId>
-            <artifactId>event-api-1.x</artifactId>
+            <artifactId>event-api</artifactId>
             <version>${eventVersion}</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
@@ -372,7 +373,11 @@
 		<repository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+		</repository>
+		<repository>
+	        <id>rubygems-releases</id>
+	        <url>http://rubygems-proxy.torquebox.org/releases</url>
 		</repository>
 	</repositories>
 
@@ -380,7 +385,7 @@
 		<pluginRepository>
 			<id>openmrs-repo</id>
 			<name>OpenMRS Nexus Repository</name>
-			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/public</url>
+			<url>https://mavenrepo.openmrs.org/public</url>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
@@ -391,12 +396,12 @@
         <repository>
             <id>openmrs-repo-modules</id>
             <name>OpenMRS Modules</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
+            <url>https://mavenrepo.openmrs.org/modules</url>
         </repository>
         <snapshotRepository>
             <id>openmrs-repo-snapshots</id>
             <name>OpenMRS Snapshots</name>
-            <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+            <url>https://mavenrepo.openmrs.org/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 

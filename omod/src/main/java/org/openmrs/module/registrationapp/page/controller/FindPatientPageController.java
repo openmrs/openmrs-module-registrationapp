@@ -6,8 +6,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
@@ -98,15 +100,16 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
         d.addColumn("encounterId", libraries.getDefinition(EncounterDataDefinition.class, "reporting.library.encounterDataDefinition.builtIn.encounterId"), "");
         d.addColumn("dateCreated", libraries.getDefinition(EncounterDataDefinition.class, "reporting.library.encounterDataDefinition.builtIn.dateCreated"), "");
         d.addColumn("encounterDatetime", libraries.getDefinition(EncounterDataDefinition.class, "reporting.library.encounterDataDefinition.builtIn.encounterDatetime"), "");
-
-        // add the paper record identifier, if the definition is available (provided by the paper record module)
-        PatientDataDefinition paperRecordIdentifierDefinition =  libraries.getDefinition(PatientDataDefinition.class, "paperrecord.patientDataDefinition.paperRecordIdentifier");
-        if (paperRecordIdentifierDefinition != null) {
-            model.addAttribute("paperRecordIdentifierDefinitionAvailable", true);
-            d.addColumn("paperRecordIdentifier", paperRecordIdentifierDefinition, "", new PropertyConverter(String.class, "identifier"));
-        }
-        else {
-            model.addAttribute("paperRecordIdentifierDefinitionAvailable", false);
+        
+        String gpPaperRecordIdDef = Context.getAdministrationService().getGlobalProperty(RegistrationAppConstants.GP_PAPER_RECORD_IDENTIFIER_DEFINITION);
+        model.addAttribute("paperRecordIdentifierDefinitionAvailable", false);
+        if (StringUtils.isNotBlank(gpPaperRecordIdDef)) {
+            // if a definition is available (the default is provided by the paper record module)
+            PatientDataDefinition paperRecordIdentifierDefinition =  libraries.getDefinition(PatientDataDefinition.class, gpPaperRecordIdDef);
+            if (paperRecordIdentifierDefinition != null) {
+                model.addAttribute("paperRecordIdentifierDefinitionAvailable", true);
+                d.addColumn("paperRecordIdentifier", paperRecordIdentifierDefinition, "", new PropertyConverter(String.class, "identifier"));
+            }
         }
 
         d.addSortCriteria("dateCreated", SortCriteria.SortDirection.DESC);

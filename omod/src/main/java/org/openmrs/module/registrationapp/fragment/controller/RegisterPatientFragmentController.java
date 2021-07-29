@@ -28,6 +28,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
@@ -118,11 +119,13 @@ public class RegisterPatientFragmentController {
                             @SpringBean("obsService") ObsService obsService,
                             @SpringBean("conceptService") ConceptService conceptService,
                             @SpringBean("patientService") PatientService patientService,
+                            @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                             @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                             @SpringBean("patientValidator") PatientValidator patientValidator, UiUtils ui) throws Exception {
 
 
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app);
+        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
+		        sessionContext.generateAppContextModel());
 
         if (unknown != null && unknown) {
             // TODO make "UNKNOWN" be configurable
@@ -223,7 +226,7 @@ public class RegisterPatientFragmentController {
         if (obsGroupMap.size() > 0 ){
             buildGroupObs(conceptService, obsToCreate, obsGroupMap);
         }
-        if (obsToCreate.size() > 0) {
+        if (!obsToCreate.isEmpty()) {
             if (registrationEncounter != null) {
                 for (Obs obs : obsToCreate) {
                     registrationEncounter.addObs(obs);
@@ -267,7 +270,7 @@ public class RegisterPatientFragmentController {
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
         String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
-        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid().toString());
+        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid());
         if (registrationEncounter != null) {
             redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
         }
@@ -295,7 +298,7 @@ public class RegisterPatientFragmentController {
     }
 
     private void buildGroupObs(ConceptService conceptService, List<Obs> obsToCreate, Map<String, List<ObsGroupItem>> obsGroupMap) throws ParseException {
-        if (obsGroupMap != null && obsGroupMap.size() > 0 ) {
+        if (obsGroupMap != null && !obsGroupMap.isEmpty()) {
             for (String groupConceptUuid : obsGroupMap.keySet()) {
                 Concept groupConcept = RegistrationAppUtils.getConcept(groupConceptUuid, conceptService);
                 if (groupConcept == null) {
@@ -308,7 +311,7 @@ public class RegisterPatientFragmentController {
                 for (ObsGroupItem obsGroupItem : obsGroupItems) {
                     buildObs(conceptService, groupObsToCreate, obsGroupItem.getObsConcept(), obsGroupItem.getObsValues());
                 }
-                if (groupObsToCreate.size() > 0) {
+                if (!groupObsToCreate.isEmpty()) {
                     for (Obs obs : groupObsToCreate) {
                         groupObs.addGroupMember(obs);
                     }

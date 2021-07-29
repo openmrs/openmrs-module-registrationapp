@@ -27,7 +27,9 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appframework.context.AppContextModel;
 import org.openmrs.module.appframework.domain.AppDescriptor;
+import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
@@ -38,7 +40,6 @@ import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.validator.PatientIdentifierValidator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,49 +53,87 @@ import java.util.Map;
  */
 public class RegisterPatientFormBuilder {
 
-	protected final static Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
+	protected static final Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 
 	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
-		
+
 	/**
 	 * Builds the navigable form structure for the specified app descriptor
 	 *
 	 * @param app the app descriptor
 	 * @return the form structure
-	 * @throws IOException
 	 * @should flatten the widget config
 	 */
-	public static NavigableFormStructure buildFormStructure(AppDescriptor app) throws IOException {
-		return buildFormStructure(app, false);
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app) {
+		return buildFormStructure(app, false, null, null);
 	}
-	
+
 	/**
-	 * @since 1.15.0
-	 * 
-	 * Builds the navigable form structure for the specified app descriptor combining sections
-	 * if specified
+	 * Builds the navigable form structure for the specified app descriptor
 	 *
-	 * @param app the app descriptor
+	 * @param app             the app descriptor
 	 * @param combineSections if true, sections are combined into one demographics section
 	 * @return the form structure
-	 * @throws IOException
 	 * @should flatten the widget config
 	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * @since 1.15.0
+	 * Builds the navigable form structure for the specified app descriptor combining sections
+	 * if specified
 	 */
-	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections) throws IOException {
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections) {
+		return buildFormStructure(app, combineSections, null, null);
+	}
+
+	/**
+	 * Builds the navigable form structure for the specified app descriptor
+	 *
+	 * @param app the app descriptor
+	 * @return the form structure
+	 * @should flatten the widget config
+	 */
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, AppFrameworkService appFrameworkService,
+			AppContextModel appContextModel) {
+		return buildFormStructure(app, false, appFrameworkService, appContextModel);
+	}
+
+	/**
+	 * @param app             the app descriptor
+	 * @param combineSections if true, sections are combined into one demographics section
+	 * @return the form structure
+	 * @should flatten the widget config
+	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * @since 1.15.0
+	 * Builds the navigable form structure for the specified app descriptor combining sections
+	 * if specified
+	 */
+	public static NavigableFormStructure buildFormStructure(AppDescriptor app, Boolean combineSections,
+			AppFrameworkService appFrameworkService, AppContextModel appContextModel) {
 		NavigableFormStructure formStructure = new NavigableFormStructure();
 
 		// Get the ordered list of sections out of the configuration
 		Map<String, Section> configuredSections = new LinkedHashMap<String, Section>();
 		ArrayNode sections = (ArrayNode) app.getConfig().get("sections");
+
+		// should we attempt to evaluate whether section or question should be included?
+		boolean evaluateContext = appFrameworkService != null && appContextModel != null;
 		for (JsonNode i : sections) {
 			ObjectNode config = (ObjectNode) i;
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			Section section = objectMapper.convertValue(config, Section.class);
 
+			if (evaluateContext && !appFrameworkService.checkRequireExpression(section, appContextModel)) {
+				continue;
+			}
+
 			if (section.getQuestions() != null) {
-				for (Question question : section.getQuestions()) {
+				for (Iterator<Question> it = section.getQuestions().iterator(); it.hasNext(); ) {
+					Question question = it.next();
+					if (evaluateContext && !appFrameworkService.checkRequireExpression(question, appContextModel)) {
+						it.remove();
+						continue;
+					}
+
 					if (question.getFields() != null) {
 						for (Field field : question.getFields()) {
 							ObjectNode widget = field.getWidget();
@@ -116,36 +155,36 @@ public class RegisterPatientFormBuilder {
 		}
 
 		// If no demographics section is explicitly included, ensure the default one is included first
-        if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
-            Section demographics = new Section();
-            demographics.setId(DEMOGRAPHICS_SECTION_ID);
-            demographics.setLabel("registrationapp.patient.demographics.label");
-            formStructure.addSection(demographics);
-        }
-        
-        // Will combine sections into the demographics section if 'combineSections' is true
-        // This is because demographics section is already hard coded in registerPatient.gsp
-        if (combineSections) {
-        	// get the freshly created demographics section on the configured one if available
-        	Section combinedSection = formStructure.getSections().get(DEMOGRAPHICS_SECTION_ID);
-        	if (combinedSection == null) {
-        		combinedSection = configuredSections.get(DEMOGRAPHICS_SECTION_ID);
-        	}
-        	// Transfer questions in other sections into the demographics section (combined-sections)
-        	for (Section section : configuredSections.values()) {
-        		if (!DEMOGRAPHICS_SECTION_ID.equalsIgnoreCase(section.getId())) {
+		if (!configuredSections.containsKey(DEMOGRAPHICS_SECTION_ID)) {
+			Section demographics = new Section();
+			demographics.setId(DEMOGRAPHICS_SECTION_ID);
+			demographics.setLabel("registrationapp.patient.demographics.label");
+			formStructure.addSection(demographics);
+		}
+
+		// Will combine sections into the demographics section if 'combineSections' is true
+		// This is because demographics section is already hard coded in registerPatient.gsp
+		if (combineSections) {
+			// get the freshly created demographics section on the configured one if available
+			Section combinedSection = formStructure.getSections().get(DEMOGRAPHICS_SECTION_ID);
+			if (combinedSection == null) {
+				combinedSection = configuredSections.get(DEMOGRAPHICS_SECTION_ID);
+			}
+			// Transfer questions in other sections into the demographics section (combined-sections)
+			for (Section section : configuredSections.values()) {
+				if (!DEMOGRAPHICS_SECTION_ID.equalsIgnoreCase(section.getId())) {
 					for (Question question : section.getQuestions()) {
 						combinedSection.addQuestion(question);
-					} 
+					}
 				}
-            }
-        	formStructure.addSection(combinedSection);
-        	
-        } else {
-        	for (Section section : configuredSections.values()) {
-                formStructure.addSection(section);
-            }
-        }
+			}
+			formStructure.addSection(combinedSection);
+
+		} else {
+			for (Section section : configuredSections.values()) {
+				formStructure.addSection(section);
+			}
+		}
 		return formStructure;
 	}
 
@@ -187,6 +226,16 @@ public class RegisterPatientFormBuilder {
 		return obj;
 	}
 
+	private static void voidPatientIdentifier(Patient patient, PatientIdentifierType identifierType) {
+		// void any existing identifiers of this type
+		for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
+			oldIdentifier.setVoided(true);
+			oldIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+			oldIdentifier.setDateVoided(new Date());
+			oldIdentifier.setVoidReason("updated via registration app");
+		}
+	}
+
 	public static void resolvePersonAttributeFields(NavigableFormStructure form, Person person,
 													Map<String, String[]> parameterMap) {
 		List<Field> fields = form.getFields();
@@ -224,32 +273,28 @@ public class RegisterPatientFormBuilder {
 						if (parameterValues.length > 1) {
 							log.warn("Multiple values for a single patient identifier type not supported, ignoring extra values");
 						}
-						String parameterValue = parameterValues[0];
-						if (StringUtils.isNotBlank(parameterValue)) {
-							PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
-							if (identifierType  != null) {
-
+						PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
+						if (identifierType != null) {
+							String parameterValue = parameterValues[0];
+							if (StringUtils.isNotBlank(parameterValue)) {
+								boolean hasChanged = true;
 								// see if there is existing identifier with this value, if so, no need to update
 								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
 									if (oldIdentifier.getIdentifier().equals(parameterValue)) {
-										return;
+										hasChanged = false;
 									}
 								}
-
-								// validate the new identifier before saving
-								PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
-								PatientIdentifierValidator.validateIdentifier(identifier);
-
-								// void any existing identifiers of this type
-								for (PatientIdentifier oldIdentifier : patient.getPatientIdentifiers(identifierType)) {
-									oldIdentifier.setVoided(true);
-									oldIdentifier.setVoidedBy(Context.getAuthenticatedUser());
-									oldIdentifier.setDateVoided(new Date());
-									oldIdentifier.setVoidReason("updated via registration app");
+								if (hasChanged) {
+									// validate the new identifier before saving
+									PatientIdentifier identifier = new PatientIdentifier(parameterValue, identifierType, null);
+									PatientIdentifierValidator.validateIdentifier(identifier);
+									voidPatientIdentifier(patient, identifierType);
+									// add the new identifier
+									patient.addIdentifier(identifier);
 								}
-
-								// add the new identifier
-								patient.addIdentifier(identifier);
+							} else {
+								// void any existing identifiers of this type
+								voidPatientIdentifier(patient, identifierType);
 							}
 						}
 					}
@@ -317,7 +362,7 @@ public class RegisterPatientFormBuilder {
 	/**
 	 * Utility method that, given a NavigableFormStructure, returns all the unqiue patient identifier types configured for biometrics
 	 */
-	static public List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
+	public static List<String> extractBiometricIdentifierTypes(NavigableFormStructure form) {
 
 		List<String> biometricIdentifierUuids = new ArrayList<String>();
 

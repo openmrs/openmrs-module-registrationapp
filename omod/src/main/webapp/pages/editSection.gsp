@@ -12,9 +12,9 @@
     ui.includeCss("registrationapp", "editSection.css")
 
     def localizedGenderOptions = []
-                              
+
     genderOptions.each { optn ->
-    	localizedGenderOptions << [label: ui.message("emr.gender." + optn), value: optn]
+    	localizedGenderOptions << [label: ui.message("coreapps.gender." + optn), value: optn]
     }
 
     def monthOptions = [ [label: ui.message("registrationapp.month.1"), value: 1],
@@ -118,7 +118,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                     ])}
 
                     <% } %>
-                    
+
                     <div style="display:inline-block;width:100%">
                             <% section.questions.each { question ->
                             // Render custom/additional name fields if present in app defition/formStructure
@@ -133,9 +133,9 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 			                            configOptions.classes = field.cssClasses
 			                            configOptions.initialValue = ui.escapeAttribute(uiUtils.getAttribute(patient, field.uuid))
 		                            %>
-		                              
+
 		                              ${ ui.includeFragment(field.fragmentRequest.providerName, field.fragmentRequest.fragmentId, configOptions)}
-		                    
+
 		                        	<% } %>
 			                	<% } %>
 		                    <% } %>
@@ -144,7 +144,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
                 </fieldset>
 
                 <fieldset id="demographics-gender">
-                    <legend id="genderLabel">${ ui.message("emr.gender") }</legend>
+                    <legend id="genderLabel">${ ui.message("Patient.gender") }</legend>
                     ${ ui.includeFragment("uicommons", "field/dropDown", [
                             label: ui.message("registrationapp.patient.gender.question"),
                             emptyOptionLabel: "uicommons.select",
@@ -215,7 +215,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
             <input id="patientUuid" type="hidden" name="patientUuid" value="${patientUuid}"/>
         </section>
 
-        <div id="confirmation">
+        <div id="confirmation" class="container">
             <span class="title">${ui.message("registrationapp.patient.confirm.label")}</span>
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>

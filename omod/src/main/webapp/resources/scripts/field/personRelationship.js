@@ -7,7 +7,7 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
     	if (jq('#patientUuid')) {
     		patientUuid = jq('#patientUuid').val();
     	}
-    	if (patientUuid != '') {
+    	if (patientUuid) {
     		RelationshipService.getRelationships({'person': patientUuid,
     			'v': 'custom:(uuid,personA:(uuid,display,personName,birthdate,isPatient,personId),personB:(uuid,display,personName,birthdate,isPatient,personId),relationshipType)'}).then(function(patientRelationships) {
                     if (patientRelationships) {
@@ -73,9 +73,14 @@ angular.module('personRelationships', ['personService', 'relationshipService', '
                     if (!r.type) {
                         return "---";
                     } else {
-                        return r.name +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+                        return jq('<div>').text(r.name).html() +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
                     }
                 }).join(', ');
             }
+          field.value = function() {
+            return $scope.relationships.map(function(r) {
+              return jq('<div>').text(r.name).html()  +  " - " + jq('.rel_type:first').children("[value='" + r.type + "']").text();
+            }).join(', ');
+          }
         }
     }]);
