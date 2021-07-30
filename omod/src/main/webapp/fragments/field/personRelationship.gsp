@@ -16,12 +16,22 @@
             <select id="relationship_type" name="relationship_type" class="rel_type" ng-model="relationship.type">
                 <option value="">${ui.message('registrationapp.person.relationship.selectRelationshipType')}</option>
                 <% relationshipTypes.each { type -> %>
-                <option value="${type.uuid}-A">${ui.encodeHtmlContent(ui.message(type.aIsToB))}</option>
+                    <option value="${type.uuid}-A" data-val="${type.aIsToB}">
+                        <% def msgString = "ui.i18n.RelationshipType.aIsToB." + type.uuid %>
+                        ${ui.message(msgString) == msgString ?
+                                type.aIsToB :
+                                ui.encodeHtmlContent(ui.message(msgString))}
+                    </option>
                 <% } %>
                 <% relationshipTypes.each { type -> %>
-                <% if (type.aIsToB != type.bIsToA) { %>
-                <option value="${type.uuid}-B">${ui.message(ui.encodeHtmlContent(type.bIsToA))}</option>
-                <% } %>
+                    <% if (type.aIsToB != type.bIsToA) { %>
+                        <option value="${type.uuid}-B" data-val="${type.bIsToA}">
+                            <% def msgString = "ui.i18n.RelationshipType.bIsToA." + type.uuid %>
+                            ${ui.message(msgString) == msgString ?
+                                    type.bIsToA :
+                                    ui.encodeHtmlContent(ui.message(msgString))}
+                        </option>
+                    <% } %>
                 <% } %>
             </select>
         </p>
