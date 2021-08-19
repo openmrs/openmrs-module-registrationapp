@@ -1,12 +1,16 @@
 /*API Call*/
-function capture(deviceName, templateFormat, engineName, useTemplate,sourceButton) {
-    var apiPath = 'http://localhost:15896/api/CloudScanr/FPCapture';
+function capture(deviceName, templateFormat, engineName, useTemplate,apiPath,sourceButton) {
+    console.log(deviceName);
+    console.log(templateFormat);
+    console.log(engineName);
+    console.log(useTemplate);
+    console.log(apiPath);
     toggleFingerprintButtonDisplay(sourceButton);
     if (useTemplate === "yes") {
+        console.log("Bypassing the scanner....Using the stored FP template instead!");
         jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/loadTemplateTemplate.action')
             .success(function (response) {
                 processTemplate(response.testTemplate,sourceButton);
-
             })
             .error(function (xhr, status, err) {
                 console.log("Error Processing");
@@ -15,15 +19,11 @@ function capture(deviceName, templateFormat, engineName, useTemplate,sourceButto
             });
     } else {
         console.log("Using the scanner");
-        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName);
+        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton);
     }
 }
 
 function biometricSearch(deviceName, templateFormat, engineName, useTemplate,sourceButton,apiPath) {
-    // var apiPath = 'http://localhost:15896/api/CloudScanr/FPCapture';
-    console.log(apiPath);
-    console.log(deviceName);
-    console.log(templateFormat);
     toggleFingerprintButtonDisplay(sourceButton);
     if (useTemplate === "yes") {
         jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/field/fingerprintM2sys/loadTemplateTemplate.action')
@@ -35,21 +35,21 @@ function biometricSearch(deviceName, templateFormat, engineName, useTemplate,sou
                 alert('AJAX error ' + err);
             });
     } else {
-        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName);
+        console.log("Using the scanner");
+        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton);
     }
 }
 
-function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName) {
-
+function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton) {
     var uri = apiPath;
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             fpobject = JSON.parse(xmlhttp.responseText);
-            SuccessFunc(fpobject, engineName);
+            SuccessFunc(fpobject, sourceButton);
         } else if (xmlhttp.status == 404) {
-            ErrorFunc(xmlhttp.status)
+            ErrorFunc(xmlhttp.status,sourceButton)
         }
     }
 
@@ -75,8 +75,8 @@ function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, tem
     }));
 
     xmlhttp.onerror = function () {
-        ErrorFunc(xmlhttp.statusText);
-        toggleFingerprintButtonDisplay(jq('#captureButton'));
+        ErrorFunc(xmlhttp.statusText,sourceButton);
+        // toggleFingerprintButtonDisplay(jq('#captureButton'));
     }
 }
 
@@ -109,14 +109,16 @@ function processTemplate(result,sourceButton) {
     }
 
     if (searchFinger == '1') {
+        legacySearchPatient(sourceButton);
+    }
+    if (searchFinger == '2') {
         searchPatient(sourceButton);
     }
 
 }
 
-function SuccessFunc(result, engineName) {
+function SuccessFunc(result, sourceButton) {
     if (result.CloudScanrStatus.Success) {
-
         if (result.TemplateData != null && result.TemplateData.length > 0) {
             document.getElementById('biometricXml').value = result.TemplateData;
         }
@@ -150,21 +152,27 @@ function SuccessFunc(result, engineName) {
         }
 
         if (searchFinger == '1') {
-            searchPatient();
+            searchPatient(sourceButton);
+        }
+
+        if(searchFinger == '2'){
+            legacySearchPatient(sourceButton)
         }
 
 
     } else {
         //$('#serverResult').val(result.CloudScanrStatus.Message);
         $('#fingerprintStatus').text(result.CloudScanrStatus.Message);
-        toggleFingerprintButtonDisplay(jq('#captureButton'));
+        toggleFingerprintButtonDisplay(sourceButton);
     }
 }
 
-function ErrorFunc(status) {
+function ErrorFunc(status,sourceButton) {
 //$('#serverResult').val('CloudScanr client may not started. Please check.');
-    alert(engineMessage);
-    toggleFingerprintButtonDisplay(jq('#captureButton'));
+    console.log(status);
+    console.log(sourceButton);
+    alert("Error while accessing the FP engine!");
+    toggleFingerprintButtonDisplay(sourceButton);
     //$('#fingerprintStatus').text(engineMessage);
 }
 
@@ -195,28 +203,69 @@ function saveFinger(sourceButton) {
         });
 }
 
+function legacySearchPatient(sourceButton) {
+    var biometricXml = document.getElementById('biometricXml').value;
+    jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/search/M2SysSearch/search.action', {biometricXml: biometricXml})
+        .success(function (data) {
+            if (data['success'] === true) {
+                if (data['status'] === 'ALREADY_REGISTERED' && data['patientUuid']) {
+                    redirectToPatient(data['patientUuid']);
+                } else if(data['status'] === 'ALREADY_REGISTERED' && data['nationalBiometricSubjectId'] !== "") {
+                    mpiSearchImport(data,sourceButton);
+                } else if(data['status'] === 'ALREADY_REGISTERED' || data['status'] === 'SUCCESS') {
+                    m2SysSuccess();
+                    //Disable the trigger here  - to not allow the OCR search to proceed
+                    // m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId']);
+                    toggleFingerprintButtonDisplay(sourceButton);
+                }else if(data['status'] === 'ERROR') {
+                    m2SysErrorMessage(data['message']);
+                    toggleFingerprintButtonDisplay(sourceButton);
+                }
+            } else {
+                if(data['message']){
+                    m2SysErrorMessage(data['message']);
+                }else{
+                    m2SysErrorMessage("Encountered an error while processing the fingerprint!");
+                }
+                toggleFingerprintButtonDisplay(sourceButton);
+            }
+        })
+        .error(function (data) {
+            alert(errorMessage);
+            $('#fingerprintError').text(errorMessage);
+        });
+}
+
 
 function searchPatient(sourceButton) {
     var biometricXml = document.getElementById('biometricXml').value;
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/search/M2SysSearch/search.action', {biometricXml: biometricXml})
         .success(function (data) {
             console.log(data);
-            document.getElementById('nationalBiometricSubjectId').value = data['nationalBiometricSubjectId'];
-            document.getElementById('localBiometricSubjectId').value = data['localBiometricSubjectId'];
+            document.getElementById('nationalBiometricSubjectId').value = data['nationalBiometricSubjectId'] ? data['nationalBiometricSubjectId'] : "";
+            document.getElementById('localBiometricSubjectId').value = data['localBiometricSubjectId'] ? data['localBiometricSubjectId'] : "";
             if (data['success'] === true) {
                 if (data['status'] === 'ALREADY_REGISTERED' && data['patientUuid']) {
                     m2SysShowAlreadyExistingFingerprintsDialog(data,sourceButton);
                 } else if(data['status'] === 'ALREADY_REGISTERED' && data['nationalBiometricSubjectId'] !== "") {
                     mpiSearchImport(data,sourceButton);
-                } else {
+                } else if(data['status'] === 'ALREADY_REGISTERED' || data['status'] === 'SUCCESS') {
                     m2SysSuccess();
-                    //Disable the trigger here  - to not allow the search to proceed
+                    //Disable the trigger here  - to not allow the OCR search to proceed
                     // m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId']);
+                    toggleFingerprintButtonDisplay(sourceButton);
+                }else if(data['status'] === 'ERROR') {
+                    m2SysErrorMessage(data['message']);
                     toggleFingerprintButtonDisplay(sourceButton);
                 }
             } else {
-                m2SysErrorMessage(data['message']);
+                if(data['message']){
+                    m2SysErrorMessage(data['message']);
+                }else{
+                    m2SysErrorMessage("Encountered an error while processing the fingerprint!");
+                }
                 m2SysClearSubjectIdInput();
+                toggleFingerprintButtonDisplay(sourceButton);
             }
         })
         .error(function (data) {

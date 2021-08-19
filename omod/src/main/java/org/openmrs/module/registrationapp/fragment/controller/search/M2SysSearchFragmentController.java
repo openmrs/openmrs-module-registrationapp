@@ -84,6 +84,7 @@ public class M2SysSearchFragmentController {
     public SimpleObject search(@SpringBean("messageSourceService") MessageSourceService messageSourceService,
                                @RequestParam("biometricXml") String biometricXml,
                                @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
+        log.error("RegistrationApp.search() =============================================> ");
         SimpleObject response = new SimpleObject();
         if (!isBiometricEngineEnabled()) {
             response.put("success", false);
@@ -93,27 +94,31 @@ public class M2SysSearchFragmentController {
 
         try {
             EnrollmentResult result = biometricEngine.enroll(biometricXml);
+            log.error("Match processing on FP done.....==============>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             response.put("success", true);
-            response.put("localBiometricSubjectId", result.getLocalBiometricSubject().getSubjectId());
-            response.put("nationalBiometricSubjectId", result.getNationalBiometricSubject().getSubjectId());
+            String localFpId = result.getLocalBiometricSubject() != null ? result.getLocalBiometricSubject().getSubjectId() : null;
+            String nationalFpId = result.getNationalBiometricSubject() != null ? result.getNationalBiometricSubject().getSubjectId() : null;
+            response.put("localBiometricSubjectId", localFpId);
+            response.put("nationalBiometricSubjectId", nationalFpId);
+            log.error("Match processing on FP done.....==============>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Local: "+localFpId + ", National => "+nationalFpId);
             response.put("status", result.getEnrollmentStatus().name());
 
             if (result.getEnrollmentStatus() == EnrollmentStatus.ALREADY_REGISTERED) {
 //                Check and load patient
                 Patient patient = null;
-                if (StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId()) && StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
-                    log.info("Matches Found on Both the Local and National FP Servers");
+                if (StringUtils.isNotBlank(nationalFpId) && StringUtils.isNotBlank(localFpId)) {
+                    log.error("Matches Found on Both the Local and National FP Servers");
 //                    Search by local FP id first, then national
-                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(), PropertiesUtil.getLocalFpType());
+                    patient = findByFingerprintId(localFpId, PropertiesUtil.getLocalFpType());
                     if (patient == null) {
-                        patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(), PropertiesUtil.getNationalFpType());
+                        patient = findByFingerprintId(nationalFpId, PropertiesUtil.getNationalFpType());
                     }
-                } else if (StringUtils.isNotBlank(result.getNationalBiometricSubject().getSubjectId())){
-                    log.info("Match Found on National FP Server");
-                    patient = findByFingerprintId(result.getNationalBiometricSubject().getSubjectId(), PropertiesUtil.getNationalFpType());
-                } else if (StringUtils.isNotBlank(result.getLocalBiometricSubject().getSubjectId())) {
-                    log.info("Match Found on Local FP");
-                    patient = findByFingerprintId(result.getLocalBiometricSubject().getSubjectId(), PropertiesUtil.getLocalFpType());
+                } else if (StringUtils.isNotBlank(localFpId)) {
+                    log.error("Match Found on Local FP");
+                    patient = findByFingerprintId(localFpId, PropertiesUtil.getLocalFpType());
+                }else if (StringUtils.isNotBlank(nationalFpId)){
+                    log.error("Match Found on National FP Server");
+                    patient = findByFingerprintId(nationalFpId, PropertiesUtil.getNationalFpType());
                 }
 
                 if (patient != null) {
@@ -145,14 +150,13 @@ public class M2SysSearchFragmentController {
                     response.put("patientIdentifiers", identifierString);
                     response.put("patientUuid", patient.getUuid());
                 } else {
-                    log.info("No patient found with the used  fingerprint IDs ");
+                    log.error("Fingerprints already registered but no patient found with the identified  fingerprint IDs ");
                 }
             }
 
         } catch (Exception ex) {
             response.put("success", false);
             response.put("message", ex.getMessage());
-
             LOGGER.error("Fingerprints enrollment failed", ex);
             LOGGER.error(ExceptionUtils.getFullStackTrace(ex));
         }

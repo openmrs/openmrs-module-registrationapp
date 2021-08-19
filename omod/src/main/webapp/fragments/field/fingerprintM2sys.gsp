@@ -40,7 +40,7 @@
     <p>
         ${ui.message("registrationapp.biometrics.m2sys.register.question")}
     </p>
-    <button id="captureButton" class="button app big" onClick="capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }',this);
+    <button id="captureButton" class="button app big" onClick="capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }','${ apiPath }',this);
     return false;">
         <i class="icon-hand-up"></i>
         ${ui.message("registrationapp.biometrics.m2sys.register.button.label")}
@@ -56,7 +56,7 @@
                value="${ui.message("registrationapp.biometrics.m2sys.register.failure")}"/>
         <input type="hidden" name="engineMessage" id="engineMessage"
                value="${ui.message("registrationapp.biometrics.m2sys.errorEngine")}"/>
-        <input type="hidden" id="searchFinger" name="searchFinger" value="1"/>
+        <input type="hidden" id="searchFinger" name="searchFinger" value="2"/>
     </p>
 
 

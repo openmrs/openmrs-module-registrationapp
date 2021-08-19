@@ -50,8 +50,9 @@
             }
         });
 
-        jq(fingerprintButton).click(function () {
-            capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }',this);
+        jq('#fingerprintButton').click(function () {
+            // deviceName, templateFormat, engineName, useTemplate,apiPath,sourceButton
+            capture('${ deviceName }','${ templateFormat }','${ engineName }','${ useTemplate }','${ apiPath }',this);
         });
 
         jq(fingerprintSubjectIdField).change(function () {

@@ -1,6 +1,6 @@
 function m2SysSetSubjectIdInput(localSubjectId, nationalSubjectId) {
-    $("[name='localBiometricSubjectId']").val(localSubjectId).trigger('change');
-    $("[name='nationalBiometricSubjectId']").val(nationalSubjectId).trigger('change');
+    $("[name='localBiometricSubjectId']").val(localSubjectId);
+    $("[name='nationalBiometricSubjectId']").val(nationalSubjectId);
 }
 
 function m2SysClearSubjectIdInput() {
