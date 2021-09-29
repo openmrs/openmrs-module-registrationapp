@@ -13,6 +13,10 @@ jobs:
           server-id: github-packages # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: pmanko
           server-password: ${{ secrets.TOKEN }} # env variable for token in deploy
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.3
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
