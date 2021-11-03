@@ -105,14 +105,17 @@ function processTemplate(result,sourceButton) {
 
 
     if (patient_id != '') {
-        saveFinger(sourceButton);
-    }
+        //Save or Update existing patient details
+        saveFinger();
+    }else{
+        //Do a legacy or 'common' search
+        if (searchFinger == '1') {
+            legacySearchPatient(sourceButton);
+        }
 
-    if (searchFinger == '1') {
-        legacySearchPatient(sourceButton);
-    }
-    if (searchFinger == '2') {
-        searchPatient(sourceButton);
+        if(searchFinger == '2'){
+            searchPatient(sourceButton);
+        }
     }
 
 }
@@ -148,16 +151,20 @@ function SuccessFunc(result, sourceButton) {
 
 
         if (patient_id != '') {
+            //Save or Update existing patient details
             saveFinger();
+        }else{
+            //Do a legacy or 'common' search
+            if (searchFinger == '1') {
+                legacySearchPatient(sourceButton);
+            }
+
+            if(searchFinger == '2'){
+                searchPatient(sourceButton);
+            }
         }
 
-        if (searchFinger == '1') {
-            searchPatient(sourceButton);
-        }
 
-        if(searchFinger == '2'){
-            legacySearchPatient(sourceButton)
-        }
 
 
     } else {
@@ -189,6 +196,7 @@ function saveFinger(sourceButton) {
         identifierValue: identifierValue
     })
         .success(function (data) {
+            console.log("Successful operation!!!...................");
             var messageStatus = data.success === false ? "Failure! " : "Success! ";
             var message = data.message;
 
@@ -196,7 +204,7 @@ function saveFinger(sourceButton) {
             toggleFingerprintButtonDisplay(sourceButton);
         })
         .error(function (data) {
-            console.log("Error occurred!!!...................")
+            console.log("Error occurred!!!...................");
             console.log(data);
             toggleFingerprintButtonDisplay(sourceButton);
             $('#fingerprintError').text(errorMessage);
@@ -214,8 +222,6 @@ function legacySearchPatient(sourceButton) {
                     mpiSearchImport(data,sourceButton);
                 } else if(data['status'] === 'ALREADY_REGISTERED' || data['status'] === 'SUCCESS') {
                     m2SysSuccess();
-                    //Disable the trigger here  - to not allow the OCR search to proceed
-                    // m2SysSetSubjectIdInput(data['localBiometricSubjectId'], data['nationalBiometricSubjectId']);
                     toggleFingerprintButtonDisplay(sourceButton);
                 }else if(data['status'] === 'ERROR') {
                     m2SysErrorMessage(data['message']);
@@ -241,14 +247,13 @@ function searchPatient(sourceButton) {
     var biometricXml = document.getElementById('biometricXml').value;
     jq.getJSON('/' + OPENMRS_CONTEXT_PATH + '/registrationapp/search/M2SysSearch/search.action', {biometricXml: biometricXml})
         .success(function (data) {
-            console.log(data);
             document.getElementById('nationalBiometricSubjectId').value = data['nationalBiometricSubjectId'] ? data['nationalBiometricSubjectId'] : "";
             document.getElementById('localBiometricSubjectId').value = data['localBiometricSubjectId'] ? data['localBiometricSubjectId'] : "";
             if (data['success'] === true) {
                 if (data['status'] === 'ALREADY_REGISTERED' && data['patientUuid']) {
                     m2SysShowAlreadyExistingFingerprintsDialog(data,sourceButton);
                 } else if(data['status'] === 'ALREADY_REGISTERED' && data['nationalBiometricSubjectId'] !== "") {
-                    mpiSearchImport(data,sourceButton);
+                    mpiFpSearchImport(data,sourceButton);
                 } else if(data['status'] === 'ALREADY_REGISTERED' || data['status'] === 'SUCCESS') {
                     m2SysSuccess();
                     //Disable the trigger here  - to not allow the OCR search to proceed
@@ -304,23 +309,23 @@ function mpiSearchImport(data,sourceButton) {
         .success(function (response) {
             console.log(response);
             if(response.fpMatch === "FOUND"){
-                document.getElementById("mpatientName").textContent=response.patientName;
-                document.getElementById("mpatientDob").textContent=response.patientDob;
-                document.getElementById("mpatientGender").textContent=response.patientGender;
-                document.getElementById("msourceLocation").textContent=response.sourceLocation ? response.sourceLocation : 'OpenCR' ;
-                document.getElementById("mphoneNumber").textContent=response.phoneNumber;
-                document.getElementById("mmothersName").textContent=response.mothersName;
-                document.getElementById("mpersonAddress").textContent=response.personAddress;
-                document.getElementById("mpatientIdentifiers").textContent=response.patientIdentifiers;
+                document.getElementById("patientName").textContent=response.patientName;
+                document.getElementById("patientDob").textContent=response.patientDob;
+                document.getElementById("patientGender").textContent=response.patientGender;
+                document.getElementById("sourceLocation").textContent=response.sourceLocation ? response.sourceLocation : 'OpenCR' ;
+                document.getElementById("phoneNumber").textContent=response.phoneNumber;
+                document.getElementById("mothersName").textContent=response.mothersName;
+                document.getElementById("personAddress").textContent=response.personAddress;
+                document.getElementById("patientIdentifiers").textContent=response.patientIdentifiers;
                 var emrDialog = emr.setupConfirmationDialog({
-                    selector: '#patient-fp-search-dialog',
+                    selector: '#patient-biometric-search-dialog',
                     actions: {
                         confirm: function () {
                             $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: biometricId}))
                                 .success(function (response) {
                                     console.log(response);
                                     if(response.message){
-                                        redirectToPatient(response.message);
+                                        redirectToPatient(response.message);9
                                     }else{
                                         alert("No Patient with the given Biometric ID exists in the MPI")
                                         m2SysSuccess();
@@ -386,7 +391,7 @@ function mpiFpSearchImport(data,sourceButton) {
                 document.getElementById("personAddress").textContent=response.personAddress;
                 document.getElementById("patientIdentifiers").textContent=response.patientIdentifiers;
                 var emrDialog = emr.setupConfirmationDialog({
-                    selector: '#patient-biometric-search-dialog',
+                    selector: '#imported-patient-dialog',
                     actions: {
                         confirm: function () {
                             $.getJSON(emr.fragmentActionLink("registrationapp", "registerPatient", "importMpiPatient", {mpiPersonId: biometricId}))
@@ -429,7 +434,7 @@ function mpiFpSearchImport(data,sourceButton) {
             }
         })
         .error(function (xhr, status, err) {
-            alert('Error occurred while searching hte OpenCR');
+            alert('Error occurred while searching the OpenCR');
             console.log(xhr);
             console.log(status);
             console.log(err);

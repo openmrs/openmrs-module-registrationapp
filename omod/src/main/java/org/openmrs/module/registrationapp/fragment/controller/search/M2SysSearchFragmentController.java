@@ -117,8 +117,10 @@ public class M2SysSearchFragmentController {
                     log.error("Match Found on Local FP");
                     patient = findByFingerprintId(localFpId, PropertiesUtil.getLocalFpType());
                 }else if (StringUtils.isNotBlank(nationalFpId)){
-                    log.error("Match Found on National FP Server");
                     patient = findByFingerprintId(nationalFpId, PropertiesUtil.getNationalFpType());
+                }else{
+                    log.error("Patient file extraction failed......");
+
                 }
 
                 if (patient != null) {
