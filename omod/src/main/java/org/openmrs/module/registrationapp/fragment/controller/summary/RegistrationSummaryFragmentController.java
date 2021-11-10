@@ -1,9 +1,5 @@
 package org.openmrs.module.registrationapp.fragment.controller.summary;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.openmrs.Patient;
@@ -22,6 +18,10 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RegistrationSummaryFragmentController {
 
@@ -46,6 +46,8 @@ public class RegistrationSummaryFragmentController {
             appContextModel.put("patient", new PatientContextModel(((PatientDomainWrapper) patient).getPatient()));
         }
         appContextModel.put("search", search); // TODO consider putting all request params in the module in some structured way
+		appContextModel.put("patientId", patientDomainWrapper != null ? patientDomainWrapper.getPatient().getUuid() : null);  // support legacy substitution methods that use "{{patientId}}" as a template and expect a uuid substitution
+
         model.addAttribute("patient", patientDomainWrapper);
         model.addAttribute("appContextModel", appContextModel);
 
@@ -54,20 +56,20 @@ public class RegistrationSummaryFragmentController {
             app = appFrameworkService.getApp((String) config.get("appId"));
         }
         model.addAttribute("appId", app !=null ? app.getId() : "referenceapplication.registrationapp.registerPatient");
-       
+
         List<Extension> firstColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.contentFragments", appContextModel);
         List<Extension> secondColumnFragments = appFrameworkService.getExtensionsForCurrentUser("registrationSummary.secondColumnContentFragments", appContextModel);
-        
-        // if no summary widget(s) provided then auto-generate them from the registration app configuration 
+
+        // if no summary widget(s) provided then auto-generate them from the registration app configuration
         if (CollectionUtils.isEmpty(firstColumnFragments) && CollectionUtils.isEmpty(secondColumnFragments)) {
         	String distribute = administrationService.getGlobalProperty(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS, "false");
-        	
+
         	List<Extension> extensions = RegistrationSummaryExtensionsGenerator.generate(app, "true".equalsIgnoreCase(distribute));
-        	
-        	firstColumnFragments = filter(extensions, "registrationSummary.contentFragments");        			
+
+        	firstColumnFragments = filter(extensions, "registrationSummary.contentFragments");
         	secondColumnFragments = filter(extensions, "registrationSummary.secondColumnContentFragments");
         }
-       
+
         Collections.sort(firstColumnFragments);
         model.addAttribute("firstColumnFragments", firstColumnFragments);
 
@@ -79,15 +81,15 @@ public class RegistrationSummaryFragmentController {
         model.addAttribute("overallActions", overallActions);
 
     }
-    
+
     /**
      * Filters an extension list by selecting extensions that match a given extension point ID.
      */
     protected List<Extension> filter(final List<Extension> extensionList, final String extensionPointId) {
-    	
+
     	List<Extension> ret = new ArrayList<Extension>();
     	ret.addAll(extensionList);
-    	
+
     	CollectionUtils.filter(ret, new Predicate<Extension>() {
     		@Override
     		public boolean evaluate(Extension extension) {
@@ -97,6 +99,6 @@ public class RegistrationSummaryFragmentController {
 	            return false;
 	        }
 	    });
-    	return ret; 
+    	return ret;
     }
 }
