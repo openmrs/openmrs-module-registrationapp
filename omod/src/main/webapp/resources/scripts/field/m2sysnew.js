@@ -19,7 +19,8 @@ function capture(deviceName, templateFormat, engineName, useTemplate,apiPath,sou
             });
     } else {
         console.log("Using the scanner");
-        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton);
+        var captureType = 'DoubleCapture';
+        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton, captureType);
     }
 }
 
@@ -36,11 +37,12 @@ function biometricSearch(deviceName, templateFormat, engineName, useTemplate,sou
             });
     } else {
         console.log("Using the scanner");
-        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton);
+        var captureType = 'SingleCapture';
+        CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton, captureType);
     }
 }
 
-function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton) {
+function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, templateFormat, engineName,sourceButton, captureType) {
     var uri = apiPath;
 
     var xmlhttp = new XMLHttpRequest();
@@ -53,8 +55,6 @@ function CallFPBioMetricCapture(SuccessFunc, ErrorFunc, apiPath, deviceName, tem
         }
     }
 
-
-    var captureType = 'DoubleCapture';
     var quickScan = 'Enable';
     var successMessage = document.getElementById('successMessage').value;
     var errorMessage = document.getElementById('errorMessage').value;
