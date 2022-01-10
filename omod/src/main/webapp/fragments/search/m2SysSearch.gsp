@@ -87,7 +87,9 @@
     </button>
     <input type="text" name="fingerprintSubjectId" class="invisible" size="1" style="min-width:1em;"/>
     <input type="hidden" id="biometricXml" name="biometricXml"/>
-    <input type="hidden" id="searchFinger" name="searchFinger" value="1"/>
+    <input type="hidden" id="localBiometricSubjectId" name="localBiometricSubjectId"/>
+	<input type="hidden" id="nationalBiometricSubjectId" name="nationalBiometricSubjectId"/>
+	<input type="hidden" id="searchFinger" name="searchFinger" value="1"/>
 	<input type="hidden" name="successMessage" id="successMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.success") }"/>
 	<input type="hidden" name="errorMessage" id="errorMessage" value="${ ui.message("registrationapp.biometrics.m2sys.register.failure") }"/>
 	<input type="hidden" name="engineMessage" id="engineMessage" value="${ ui.message("registrationapp.biometrics.m2sys.errorEngine") }"/>
