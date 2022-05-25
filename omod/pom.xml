@@ -12,12 +12,6 @@
 	<name>Registration App Module OMOD</name>
 	<description>OMOD project for RegistrationApp</description>
 
-    <!-- by default rubygems are installed in the target directory, which we don't want, because then they'd need to be reinstalled after every clean -->
-    <properties>
-        <gem.home>${basedir}/.rubygems</gem.home>
-        <gem.path>${basedir}/.rubygems</gem.path>
-    </properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -48,22 +42,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-omod</artifactId>
             <version>${uicommonsVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>rubygems</groupId>
-            <artifactId>compass</artifactId>
-            <version>0.11.7</version>
-            <type>gem</type>
-            <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>rubygems</groupId>
-            <artifactId>chunky_png</artifactId>
-            <version>1.3.12</version>
-            <type>gem</type>
             <scope>provided</scope>
         </dependency>
 
@@ -143,7 +121,6 @@
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[2.4,)</versionRange>
 										<goals>
 											<goal>unpack-dependencies</goal>
 										</goals>
@@ -199,13 +176,6 @@
 							<outputDirectory>${project.build.directory}/classes</outputDirectory>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
                     <execution>
                         <id>Fetch SASS sources from uicommons</id>
                         <goals>
@@ -220,7 +190,7 @@
                                     <version>${uicommonsVersion}</version>
                                     <type>zip</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>src/main/compass/sass-external</outputDirectory>
+                                    <outputDirectory>src/main/webapp/resources/styles/lib</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -228,55 +198,41 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>de.saumya.mojo</groupId>
-                <artifactId>gem-maven-plugin</artifactId>
-		   <version>1.1.8</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jrubyVersion>1.7.10</jrubyVersion>
-                    <execArgs>${gem.home}/bin/compass compile ${basedir}/src/main/compass</execArgs>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.11.3</version>
+				<configuration>
+					<nodeVersion>v14.17.0</nodeVersion>
+					<npmVersion>7.6.2</npmVersion>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>npm run build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 
 		</plugins>
 	</build>
-
-    <profiles>
-        <profile>
-            <id>watch-sass</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>de.saumya.mojo</groupId>
-                        <artifactId>gem-maven-plugin</artifactId>
-                        <extensions>true</extensions>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>generate-resources</phase>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <jrubyVersion>1.7.10</jrubyVersion>
-                            <execArgs>${gem.home}/bin/compass watch ${basedir}/src/main/compass</execArgs>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
 
 </project>

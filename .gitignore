@@ -8,9 +8,9 @@ target
 *.sass-cache
 *.DS_Store
 
+# SASS
 *.css
-omod/src/main/compass/sass-external/*
-
-# Rubygems build directories #
-omod/.rubygems
-omod/.rubygems-provided
+*.css.map
+omod/node
+omod/node_modules
+omod/src/main/webapp/resources/styles/lib/
