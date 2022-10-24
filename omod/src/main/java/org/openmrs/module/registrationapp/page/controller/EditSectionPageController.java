@@ -113,6 +113,7 @@ public class EditSectionPageController {
 
         // handle person address, if present
         if (address != null && !address.isBlank()) {
+            address.setPreferred(true);
             PersonAddress currentAddress = patient.getPersonAddress();
             if (currentAddress != null) {
                 if (!currentAddress.equalsContent(address)) {
