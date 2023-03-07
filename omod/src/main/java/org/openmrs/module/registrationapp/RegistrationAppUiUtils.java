@@ -75,7 +75,7 @@ public class RegistrationAppUiUtils {
 			PersonAttribute attr = person.getAttribute(Context.getPersonService().getPersonAttributeTypeByUuid(attributeTypeUuid));
 			if (attr != null) {
 				// special case to display Yes/No for Booleans, since the Core PersonAttribute toString does not do this for us
-				if (attr.getHydratedObject() != null && attr.getHydratedObject().getClass().equals(Boolean.class)){
+				if (attr.getHydratedObject() != null && attr.getHydratedObject() instanceof  Boolean){
 					Boolean value = (Boolean) attr.getHydratedObject();
 					return value ?
 						Context.getMessageSourceService().getMessage("general.yes") :
