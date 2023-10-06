@@ -40,13 +40,39 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         }
     }
 
+    // Starting from this level down disable all remaining levels and associated input boxes
+    function disableLevelsAfter(level) {
+        if (!_.contains(personAddressWithHierarchy.manualFields, level.addressField)) {
+            let inputElement = getInputElementFor(level.addressField);
+            if (inputElement) {
+                // if this is not a manual field, then disable it
+                inputElement._removeClass('required');
+                inputElement._addClass('disabled');
+                inputElement.attr('disabled', true);
+            }
+        }
+        let nextLevel = levelAfter(level.addressField);
+        if ( nextLevel != null ) {
+            let  isManualField = _.contains(personAddressWithHierarchy.manualFields, nextLevel.addressField);
+            if ( !isManualField ) {
+                disableLevelsAfter(nextLevel);
+            } else {
+                // focus on the first manual field
+                getInputElementFor(nextLevel.addressField).focus();
+            }
+        }
+    }
+
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
     function preloadLevels(level) {
         var searchString = searchStringUntil(level.addressField);
         if (searchString != null) {
             queryWithCallback(searchString, function (result) {
-                if (result.length == 1) {
+                if (result.length == 0) {
+                    // there are no more entries from this level down, therefore disable all remaining levels of the hierarchy
+                    disableLevelsAfter(level);
+                } else if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
                     preloadLevels(levelAfter(level.addressField));
                 }
@@ -168,6 +194,12 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
 
     function clearLevelsAfter(addressField) {
         _.each(levelsAfter(addressField), function (level) {
+            let inputElement = getInputElementFor(level.addressField);
+            if (inputElement) {
+                // reset any elements that might have been disabled when selecting a level with no descendants
+                inputElement._removeClass('disabled');
+                inputElement.attr('disabled', false);
+            }
             setValue(level.addressField, '');
         });
     }
@@ -219,6 +251,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     var level = levelFor(addressField);
                     if (ui.item.value != level.lastSelection) {
                         clearLevelsAfter(addressField);
+                        setValue(level.addressField, ui.item.value);
+                        preloadLevels(levelAfter(level.addressField));
                     }
                     level.lastSelection = ui.item.value;
                 }
