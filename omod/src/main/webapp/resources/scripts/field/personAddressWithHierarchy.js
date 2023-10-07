@@ -45,10 +45,9 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         if (!_.contains(personAddressWithHierarchy.manualFields, level.addressField)) {
             let inputElement = getInputElementFor(level.addressField);
             if (inputElement) {
-                // if this is not a manual field, then disable it
-                inputElement._removeClass('required');
-                inputElement._addClass('disabled');
-                inputElement.attr('disabled', true);
+                inputElement.attr('disabled', 'true');
+                inputElement.addClass("disabled");
+                inputElement.triggerHandler("disable", this);
             }
         }
         let nextLevel = levelAfter(level.addressField);
@@ -197,8 +196,9 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
             let inputElement = getInputElementFor(level.addressField);
             if (inputElement) {
                 // reset any elements that might have been disabled when selecting a level with no descendants
-                inputElement._removeClass('disabled');
-                inputElement.attr('disabled', false);
+                inputElement.removeAttr('disabled');
+                inputElement.removeClass("disabled");
+                inputElement.triggerHandler("enable", this);
             }
             setValue(level.addressField, '');
         });
@@ -251,7 +251,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     var level = levelFor(addressField);
                     if (ui.item.value != level.lastSelection) {
                         clearLevelsAfter(addressField);
-                        setValue(level.addressField, ui.item.value);
+                        //setValue(level.addressField, ui.item.value);
                         preloadLevels(levelAfter(level.addressField));
                     }
                     level.lastSelection = ui.item.value;
@@ -271,7 +271,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                 }
                 // There is no 'select' event when you clear the autocomplete, so handle that scenario here
                 if (element.val() == '') {
-                    clearLevelsAfter(addressField);
+                    //clearLevelsAfter(addressField);
                 }
             }).focus(function () {
                 $(this).select(); // selecting the entire field on focus makes this feel more like an autocomplete
