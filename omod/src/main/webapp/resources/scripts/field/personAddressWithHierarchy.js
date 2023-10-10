@@ -40,15 +40,43 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         }
     }
 
+    // Starting from this level down disable all remaining levels and associated input boxes
+    function disableLevelsAfter(level) {
+        if (!_.contains(personAddressWithHierarchy.manualFields, level.addressField)) {
+            let inputElement = getInputElementFor(level.addressField);
+            if (inputElement) {
+                inputElement.attr('disabled', 'true');
+                inputElement.addClass("disabled");
+                inputElement.triggerHandler("disable", this);
+            }
+        }
+        let nextLevel = levelAfter(level.addressField);
+        if ( nextLevel != null ) {
+            let  isManualField = _.contains(personAddressWithHierarchy.manualFields, nextLevel.addressField);
+            if ( !isManualField ) {
+                disableLevelsAfter(nextLevel);
+            } else {
+                // focus on the first manual field
+                getInputElementFor(nextLevel.addressField).focus();
+            }
+        }
+    }
+
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
     function preloadLevels(level) {
         var searchString = searchStringUntil(level.addressField);
         if (searchString != null) {
             queryWithCallback(searchString, function (result) {
-                if (result.length == 1) {
+                if (result.length == 0) {
+                    // there are no more entries from this level down, therefore disable all remaining levels of the hierarchy
+                    disableLevelsAfter(level);
+                } else if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
                     preloadLevels(levelAfter(level.addressField));
+                } else {
+                    // focus on the element
+                    getInputElementFor(level.addressField).focus();
                 }
             });
         }
@@ -166,8 +194,18 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         return null;
     }
 
+    function enableAddressField(level) {
+        let inputElement = getInputElementFor(level.addressField);
+        if (inputElement) {
+            // reset any elements that might have been disabled when selecting a level with no descendants
+            inputElement.removeAttr('disabled');
+            inputElement.removeClass("disabled");
+            inputElement.triggerHandler("enable", this);
+        }
+    }
     function clearLevelsAfter(addressField) {
         _.each(levelsAfter(addressField), function (level) {
+            enableAddressField(level);
             setValue(level.addressField, '');
         });
     }
@@ -219,6 +257,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     var level = levelFor(addressField);
                     if (ui.item.value != level.lastSelection) {
                         clearLevelsAfter(addressField);
+                        setValue(level.addressField, ui.item.value);
+                        preloadLevels(levelAfter(level.addressField));
                     }
                     level.lastSelection = ui.item.value;
                 }
@@ -234,10 +274,6 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     setTimeout(function () {
                         element.focus();
                     });
-                }
-                // There is no 'select' event when you clear the autocomplete, so handle that scenario here
-                if (element.val() == '') {
-                    clearLevelsAfter(addressField);
                 }
             }).focus(function () {
                 $(this).select(); // selecting the entire field on focus makes this feel more like an autocomplete
@@ -269,6 +305,7 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         select: function (event, ui) {
             // first, clear everything else
             _.each(levels, function (item) {
+                enableAddressField(item);
                 setValue(item.addressField, '');
             });
             _.each(ui.item.data, function (value, key) {

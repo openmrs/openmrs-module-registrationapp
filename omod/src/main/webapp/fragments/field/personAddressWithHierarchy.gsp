@@ -1,5 +1,6 @@
 <%
     ui.includeJavascript("registrationapp", "field/personAddressWithHierarchy.js")
+    ui.includeCss("registrationapp","registerPatient.css")
 
     def parseAsBoolean = {
         if (it instanceof org.codehaus.jackson.node.BooleanNode) {
