@@ -15,6 +15,14 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     setValue(key, personAddressWithHierarchy.initialValue[key]);
                 }
             }
+            //After setting all the initial values, look for empty(not filled in) levels
+            // and disable the levels which have no hierarchy entries available in the db
+            for (let i=0; i <levels.length; i++ ) {
+                if (!levels[i].lastSelection) {
+                    //this level is empty, check to see if there are available entries
+                    preloadLevels(levels[i]);
+                }
+            }
         } else {
             preloadLevels(levels[0]);
         }
