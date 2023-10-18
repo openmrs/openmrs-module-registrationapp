@@ -2,7 +2,7 @@ package org.openmrs.module.registrationapp.model;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class RegisterPersonRelationshipWidget extends Widget{
+public class RegisterPersonRelationshipWidget extends Widget {
 
     private Config config = new Config();
 
@@ -16,13 +16,13 @@ public class RegisterPersonRelationshipWidget extends Widget{
         }
         return config;
     }
+
     public void setConfig(Config config) {
         this.config = config;
     }
 
     public static class Config {
-        @JsonProperty
-        private String type;
+
         @JsonProperty
         private String relationshipType;
 
@@ -34,14 +34,8 @@ public class RegisterPersonRelationshipWidget extends Widget{
 
         @JsonProperty
         private Boolean required;
-        public Config() {}
 
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
+        public Config() {
         }
 
         public String getRelationshipType() {

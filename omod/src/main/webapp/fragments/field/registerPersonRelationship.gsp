@@ -29,7 +29,7 @@
   }
 
   patientRelationship.id = '${ config.id }';
-  patientRelationship.type = '${ config.type }';
+  patientRelationship.gender = '${ config.gender }';
   patientRelationship.multipleValues = '${ multipleValues }';
   patientRelationship.relationshipType = '${ config.relationshipType }';
   patientRelationship.container = jq('#${ config.id }-container');

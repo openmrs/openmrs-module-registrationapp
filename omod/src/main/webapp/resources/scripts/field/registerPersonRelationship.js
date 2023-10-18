@@ -27,13 +27,19 @@ function RegisterPatientRelationship(patientRelationship) {
             q: request.term,
             v: 'custom:(id,uuid,display,gender,age)'
           }, function (result) {
-            let persons = _.map(result.results, function (item) {
-              return {
-                label: item.display + ", " + item.age + ", " + item.gender,
-                data: item.uuid
+              let items = null;
+              if ( patientRelationship.gender ) {
+                items = _.filter(result.results, function(person) {
+                  return (person.gender === patientRelationship.gender);
+                });
               }
-            });
-            response(persons);
+              let persons = _.map( items != null ? items : result.results, function (item) {
+                return {
+                  label: item.display + ", " + item.age + ", " + item.gender,
+                  data: item.uuid
+                }
+              });
+              response(persons);
           });
         },
         select: function (event, ui) {
