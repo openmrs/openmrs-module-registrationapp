@@ -28,7 +28,7 @@ function RegisterPatientRelationship(patientRelationship) {
             v: 'custom:(id,uuid,display,gender,age)'
           }, function (result) {
               let items = null;
-              if ( patientRelationship.gender ) {
+              if ( patientRelationship.gender && patientRelationship.gender != 'null') {
                 items = _.filter(result.results, function(person) {
                   return (person.gender === patientRelationship.gender);
                 });
@@ -43,7 +43,18 @@ function RegisterPatientRelationship(patientRelationship) {
           });
         },
         select: function (event, ui) {
-              setValue("other_person_uuid", ui.item.data);
+              setValue(patientRelationship.id + "-other_person_uuid", ui.item.data);
+              if (ui.item.data) {
+                setValue(patientRelationship.id + "-relationship_type",  patientRelationship.relationshipType + "-" + patientRelationship.relationshipDirection);
+              } else {
+                setValue(patientRelationship.id + "-relationship_type", '');
+              }
+        },
+        change: function (event, ui) {
+          if ( !ui.item ) {
+            setValue(patientRelationship.id + "-relationship_type", '');
+            getInputElementFor(patientRelationship.id + "-field").focus();
+          }
         }
     });
 }

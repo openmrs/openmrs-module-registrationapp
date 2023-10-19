@@ -27,6 +27,9 @@ public class RegisterPersonRelationshipWidget extends Widget {
         private String relationshipType;
 
         @JsonProperty
+        private String relationshipDirection;
+
+        @JsonProperty
         private String gender;
 
         @JsonProperty
@@ -38,12 +41,21 @@ public class RegisterPersonRelationshipWidget extends Widget {
         public Config() {
         }
 
+
         public String getRelationshipType() {
             return relationshipType;
         }
 
         public void setRelationshipType(String relationshipType) {
             this.relationshipType = relationshipType;
+        }
+
+        public String getRelationshipDirection() {
+            return relationshipDirection;
+        }
+
+        public void setRelationshipDirection(String relationshipDirection) {
+            this.relationshipDirection = relationshipDirection;
         }
 
         public Boolean getMultipleValues() {

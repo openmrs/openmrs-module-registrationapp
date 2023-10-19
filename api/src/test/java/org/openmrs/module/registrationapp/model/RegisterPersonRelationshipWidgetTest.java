@@ -14,6 +14,7 @@ public class RegisterPersonRelationshipWidgetTest {
         assertThat(parsed.getProviderName(), is("registrationapp"));
         assertThat(parsed.getFragmentId(), is("field/registerPersonRelationship"));
         assertThat(parsed.getConfig().getRelationshipType(), is("8d91a210-c2cc-11de-8d13-0010c6dffd0f"));
+        assertThat(parsed.getConfig().getRelationshipDirection(), is("A"));
         assertThat(parsed.getConfig().getGender(), is("F"));
         assertThat(parsed.getConfig().getMultipleValues(), is(false));
     }

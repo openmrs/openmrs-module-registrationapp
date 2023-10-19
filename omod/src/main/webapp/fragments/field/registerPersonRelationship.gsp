@@ -7,7 +7,7 @@
 
 <div id="${ config.id }-container">
     <p>
-        <input type="hidden" id="relationship_type" name="relationship_type" class="rel_type" value="${ config.relationshipType }-A"/>
+        <input type="hidden" id="${ config.id }-relationship_type" name="relationship_type" class="rel_type" value="" data-display-value="-"/>
     </p>
     <p>
         <label for="${ config.id }-field">
@@ -15,23 +15,25 @@
         </label>
 
         <input type="text"  id="${ config.id }-field" class="searchablePerson" size="50" placeholder="${ui.message(ui.encodeHtmlAttribute('registrationapp.person.name'))}"/>
-        <input type="hidden" name="other_person_uuid" id="other_person_uuid"/>
+        <input type="hidden" name="other_person_uuid" id="${ config.id }-other_person_uuid"/>
     </p>
 </div>
 
 <script type="text/javascript">
-  let patientRelationship = {
+  var patientRelationship = {
     id: null,
-    type: null,
+    relationshipType: null,
+    relationshipDirection: null,
     container: null,
     multipleValues: null,
     gender: null
   }
 
   patientRelationship.id = '${ config.id }';
-  patientRelationship.gender = '${ config.gender }';
+  patientRelationship.gender = '${ config.gender ? config.gender : null }';
   patientRelationship.multipleValues = '${ multipleValues }';
   patientRelationship.relationshipType = '${ config.relationshipType }';
+  patientRelationship.relationshipDirection = '${ config.relationshipDirection }';
   patientRelationship.container = jq('#${ config.id }-container');
 
   RegisterPatientRelationship(patientRelationship);
