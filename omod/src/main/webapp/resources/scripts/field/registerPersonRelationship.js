@@ -74,7 +74,7 @@ function RegisterPatientRelationship(patientRelationship) {
           + '</div>').insertBefore('#' + patientRelationship.id + '-fields-div');
 
         $(".removeRelationship").click(function() {
-          //implement removing relationship
+          $(this).closest('div').remove();
         });
 
         setValue(patientRelationship.id + "-relationship_type", '');
