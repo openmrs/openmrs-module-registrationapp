@@ -57,4 +57,30 @@ function RegisterPatientRelationship(patientRelationship) {
           }
         }
     });
+
+    patientRelationship.container.find(".addRelationship").on("click", function() {
+
+      let otherPersonName = $('#' + patientRelationship.id + '-field').val();
+      let otherPersonUuid = $('#' + patientRelationship.id + '-other_person_uuid').val();
+      if (otherPersonName && otherPersonUuid) {
+        $('<div>' +
+          '<p><input type="hidden" name="relationship_type" class="rel_type" ' +
+          'value="' + patientRelationship.relationshipType + '-' + patientRelationship.relationshipDirection
+          + '" data-display-value="-"></p>'
+          + '<p><input type="text" value="' + otherPersonName + '" data-display-value="' + otherPersonName + '" size="40" readonly>' +
+          '<input type="hidden" name="other_person_uuid" value="' + otherPersonUuid + '">'
+          + '<a class="removeRelationship" style="padding-left: 20px;"><i class="icon-minus-sign edit-action"></i></a>'
+          + '</p>'
+          + '</div>').insertBefore('#' + patientRelationship.id + '-fields-div');
+
+        $(".removeRelationship").click(function() {
+          //implement removing relationship
+        });
+
+        setValue(patientRelationship.id + "-relationship_type", '');
+        setValue(patientRelationship.id + "-field", '');
+        setValue(patientRelationship.id + "-other_person_uuid", '');
+      }
+    });
+
 }
