@@ -1,0 +1,11 @@
+{
+  "providerName": "registrationapp",
+  "fragmentId": "field/registerPersonRelationship",
+  "config" : {
+    "relationshipType": "8d91a210-c2cc-11de-8d13-0010c6dffd0f",
+    "relationshipDirection": "A",
+    "gender": "F",
+    "multipleValues": false,
+    "required": true
+  }
+}
