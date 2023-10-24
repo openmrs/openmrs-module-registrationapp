@@ -1,5 +1,22 @@
 function RegisterPatientRelationship(patientRelationship) {
 
+  let selectedPersons = [];
+
+  function updatePersonNames() {
+    let confirmNames = '';
+    for (const [key, value] of Object.entries(selectedPersons)) {
+      if (value && value.length > 0) {
+        if (confirmNames.length > 0) {
+          confirmNames = confirmNames + "; " + value;
+        } else {
+          confirmNames = value;
+        }
+      }
+    }
+    if (confirmNames.length > 0 ) {
+      $('#' + patientRelationship.id + "-selected_persons").attr('data-display-value', confirmNames);
+    }
+  }
   function getInputElementFor(fieldId) {
     // this is to handle integration with HFE, when the id is set on the parent span,
     // not the input element itself
@@ -73,13 +90,18 @@ function RegisterPatientRelationship(patientRelationship) {
           + '</p>'
           + '</div>').insertBefore('#' + patientRelationship.id + '-fields-div');
 
-        $(".removeRelationship").click(function() {
+        $(".removeRelationship").click(function(event) {
+          event.stopImmediatePropagation();
           $(this).closest('div').remove();
+          delete selectedPersons[otherPersonUuid];
+          updatePersonNames();
         });
 
         setValue(patientRelationship.id + "-relationship_type", '');
         setValue(patientRelationship.id + "-field", '');
         setValue(patientRelationship.id + "-other_person_uuid", '');
+        selectedPersons[otherPersonUuid] = otherPersonName;
+        updatePersonNames();
       }
     });
 

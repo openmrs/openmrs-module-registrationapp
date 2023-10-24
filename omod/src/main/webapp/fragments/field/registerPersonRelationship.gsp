@@ -8,6 +8,9 @@
 <div id="${ config.id }-container">
     <div id="${ config.id }-fields-div">
         <p>
+            <input type="hidden" id="${ config.id }-selected_persons" name="selected_persons" data-display-value=""/>
+        </p>
+        <p>
             <input type="hidden" id="${ config.id }-relationship_type" name="relationship_type" class="rel_type" value="" data-display-value="-"/>
         </p>
         <p>
