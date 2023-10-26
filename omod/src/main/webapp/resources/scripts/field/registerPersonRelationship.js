@@ -32,7 +32,7 @@ function RegisterPatientRelationship(patientRelationship) {
     getInputElementFor(fieldId).val(value);
   }
 
-  patientRelationship.container.find(".searchablePerson").autocomplete({
+  $('#' + patientRelationship.id + '-field').autocomplete({
         autoFocus: true,
         source: function (request, response) {
           if (request.term.length < 3) {
@@ -68,9 +68,39 @@ function RegisterPatientRelationship(patientRelationship) {
               }
         },
         change: function (event, ui) {
+          let fieldId = patientRelationship.id + "-field";
+          let element = getInputElementFor(fieldId);
           if ( !ui.item ) {
             setValue(patientRelationship.id + "-relationship_type", '');
-            getInputElementFor(patientRelationship.id + "-field").focus();
+            if (getValue(fieldId).length > 0 ) {
+              if (typeof(NavigatorController) != 'undefined') {
+                let currentSection = selectedModel(NavigatorController.getSections());
+                let currentQuestion = selectedModel(NavigatorController.getQuestions());
+                var field = NavigatorController.getFieldById(fieldId);
+                if ( currentSection && currentQuestion ) {
+                  setTimeout(function () {
+                    let newSection = selectedModel(NavigatorController.getSections());
+                    let newQuestion = selectedModel(NavigatorController.getQuestions());
+                    if ( newQuestion ) {
+                      newQuestion.toggleSelection();
+                    }
+                    if ( newSection && newSection != currentSection) {
+                      newSection.toggleSelection();
+                      currentSection.toggleSelection();
+                    }
+                    currentQuestion.toggleSelection();
+                    if (field) {
+                      field.select();
+                    }
+                    $('<span class="field-error" style="">Invalid entry</span>').insertAfter('#' + patientRelationship.id + '-field');
+                  });
+                }
+              }
+            } else {
+              $(element).next(".field-error").remove();
+            }
+          } else {
+            $(element).next(".field-error").remove();
           }
         }
     });
