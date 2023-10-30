@@ -5,6 +5,10 @@ function RegisterPatientRelationship(patientRelationship) {
   //returns Date in the String format YYYY-MM-DD
   function formatDate(inputDate) {
     if (inputDate) {
+      if ( inputDate.length > 23 ) {
+        //remove the timezone suffix
+        inputDate = inputDate.substring(0,23);
+      }
       let date = new Date(inputDate);
       let year = date.toLocaleString("default", { year: "numeric" });
       let month = date.toLocaleString("default", { month: "short" });
