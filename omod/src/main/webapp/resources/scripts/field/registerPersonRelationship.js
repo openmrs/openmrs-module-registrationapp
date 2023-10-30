@@ -2,6 +2,17 @@ function RegisterPatientRelationship(patientRelationship) {
 
   let selectedPersons = [];
 
+  //returns Date in the String format YYYY-MM-DD
+  function formatDate(inputDate) {
+    if (inputDate) {
+      let date = new Date(inputDate);
+      let year = date.toLocaleString("default", { year: "numeric" });
+      let month = date.toLocaleString("default", { month: "short" });
+      let day = date.toLocaleString("default", { day: "2-digit" });
+      return year + "-" + month + "-" + day;
+    }
+    return '';
+  }
   function updatePersonNames() {
     let confirmNames = '';
     for (const [key, value] of Object.entries(selectedPersons)) {
@@ -38,11 +49,11 @@ function RegisterPatientRelationship(patientRelationship) {
           if (request.term.length < 3) {
             return;
           }
-          let url = '/' + OPENMRS_CONTEXT_PATH + '/ws/rest/v1/person/';
+          let url = '/' + OPENMRS_CONTEXT_PATH + '/ws/rest/v1/patient/';
           $.getJSON(url, {
             limit: 10,
             q: request.term,
-            v: 'custom:(id,uuid,display,gender,age)'
+            v: 'custom:(id,uuid,display,gender,age,person:(birthdate))'
           }, function (result) {
               let items = null;
               if ( patientRelationship.gender && patientRelationship.gender != 'null') {
@@ -52,7 +63,7 @@ function RegisterPatientRelationship(patientRelationship) {
               }
               let persons = _.map( items != null ? items : result.results, function (item) {
                 return {
-                  label: item.display + ", " + item.age + ", " + item.gender,
+                  label: item.display + ", " + item.age + ", " + item.gender + ", " +  formatDate(item.person.birthdate),
                   data: item.uuid
                 }
               });
