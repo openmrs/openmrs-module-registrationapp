@@ -2,6 +2,28 @@ function RegisterPatientRelationship(patientRelationship) {
 
   let selectedPersons = [];
 
+  var relationshipExitHandler = {
+    handleExit: function(field) {
+                  let fieldId = patientRelationship.id + "-field";
+                  let element = getInputElementFor(fieldId);
+                  // clear any previous errors
+                  $(element).next(".field-error").remove();
+                  if (!field.value()) {
+                    return true;
+                  } else {
+                    let selectedVal = getValue(patientRelationship.id + "-relationship_type");
+                    if ( !selectedVal ) {
+                      // no person from the search results list was selected
+                      $('<span class="field-error" style="">Invalid entry</span>').insertAfter('#' + fieldId);
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  }
+                  return false;
+                }
+  }
+  ExitHandlers['relationships-' + patientRelationship.id] = relationshipExitHandler;
   //returns Date in the String format YYYY-MM-DD
   function formatDate(inputDate) {
     if (inputDate) {
@@ -76,6 +98,7 @@ function RegisterPatientRelationship(patientRelationship) {
         },
         select: function (event, ui) {
               setValue(patientRelationship.id + "-other_person_uuid", ui.item.data);
+              $(getInputElementFor(patientRelationship.id + "-field")).next(".field-error").remove();
               if (ui.item.data) {
                 setValue(patientRelationship.id + "-relationship_type",  patientRelationship.relationshipType + "-" + patientRelationship.relationshipDirection);
               } else {
@@ -87,35 +110,6 @@ function RegisterPatientRelationship(patientRelationship) {
           let element = getInputElementFor(fieldId);
           if ( !ui.item ) {
             setValue(patientRelationship.id + "-relationship_type", '');
-            if (getValue(fieldId).length > 0 ) {
-              if (typeof(NavigatorController) != 'undefined') {
-                let currentSection = selectedModel(NavigatorController.getSections());
-                let currentQuestion = selectedModel(NavigatorController.getQuestions());
-                var field = NavigatorController.getFieldById(fieldId);
-                if ( currentSection && currentQuestion ) {
-                  setTimeout(function () {
-                    let newSection = selectedModel(NavigatorController.getSections());
-                    let newQuestion = selectedModel(NavigatorController.getQuestions());
-                    if ( newQuestion ) {
-                      newQuestion.toggleSelection();
-                    }
-                    if ( newSection && newSection != currentSection) {
-                      newSection.toggleSelection();
-                      currentSection.toggleSelection();
-                    }
-                    currentQuestion.toggleSelection();
-                    if (field) {
-                      field.select();
-                    }
-                    $('<span class="field-error" style="">Invalid entry</span>').insertAfter('#' + patientRelationship.id + '-field');
-                  });
-                }
-              }
-            } else {
-              $(element).next(".field-error").remove();
-            }
-          } else {
-            $(element).next(".field-error").remove();
           }
         }
     });

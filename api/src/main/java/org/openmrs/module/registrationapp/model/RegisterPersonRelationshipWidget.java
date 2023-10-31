@@ -24,6 +24,8 @@ public class RegisterPersonRelationshipWidget extends Widget {
     public static class Config {
 
         @JsonProperty
+        private String id;
+        @JsonProperty
         private String relationshipType;
 
         @JsonProperty
@@ -41,6 +43,13 @@ public class RegisterPersonRelationshipWidget extends Widget {
         public Config() {
         }
 
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
 
         public String getRelationshipType() {
             return relationshipType;
