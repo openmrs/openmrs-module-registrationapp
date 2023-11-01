@@ -20,6 +20,7 @@
 
             <input type="text"  id="${ config.id }-field" class="searchablePerson" size="40" placeholder="${ui.message(ui.encodeHtmlAttribute('registrationapp.person.name'))}"/>
             <input type="hidden" name="other_person_uuid" id="${ config.id }-other_person_uuid"/>
+            <input type="hidden" name="other_person_name" id="${ config.id }-other_person_name"/>
             <% if ( multipleValues ) { %>
                     <a style="padding-left: 20px;" class="addRelationship">
                         <i class="icon-plus-sign edit-action"></i>

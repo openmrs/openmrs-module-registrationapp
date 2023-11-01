@@ -5,22 +5,25 @@ function RegisterPatientRelationship(patientRelationship) {
   var relationshipExitHandler = {
     handleExit: function(field) {
                   let fieldId = patientRelationship.id + "-field";
-                  let element = getInputElementFor(fieldId);
-                  // clear any previous errors
-                  $(element).next(".field-error").remove();
-                  if (!field.value()) {
-                    return true;
-                  } else {
-                    let selectedVal = getValue(patientRelationship.id + "-relationship_type");
-                    if ( !selectedVal ) {
-                      // no person from the search results list was selected
-                      $('<span class="field-error" style="">Invalid entry</span>').insertAfter('#' + fieldId);
-                      return false;
-                    } else {
+                  if ( field.id == fieldId) {
+                    let element = getInputElementFor(fieldId);
+                    // clear any previous errors
+                    $(element).next(".field-error").remove();
+                    if (!field.value()) {
                       return true;
+                    } else {
+                      let selectedPersonName = getValue(patientRelationship.id + "-other_person_name");
+                      if (field.value() != selectedPersonName) {
+                        // no person from the search results list was selected, the user typed in an invalid entry
+                        $('<span class="field-error" style="">Invalid entry</span>').insertAfter('#' + fieldId);
+                        return false;
+                      } else {
+                        return true;
+                      }
                     }
+                    return false;
                   }
-                  return false;
+                  return true;
                 }
   }
   ExitHandlers['relationships-' + patientRelationship.id] = relationshipExitHandler;
@@ -97,11 +100,14 @@ function RegisterPatientRelationship(patientRelationship) {
           });
         },
         select: function (event, ui) {
-              setValue(patientRelationship.id + "-other_person_uuid", ui.item.data);
               $(getInputElementFor(patientRelationship.id + "-field")).next(".field-error").remove();
               if (ui.item.data) {
+                setValue(patientRelationship.id + "-other_person_uuid", ui.item.data);
+                setValue(patientRelationship.id + "-other_person_name", ui.item.label);
                 setValue(patientRelationship.id + "-relationship_type",  patientRelationship.relationshipType + "-" + patientRelationship.relationshipDirection);
               } else {
+                setValue(patientRelationship.id + "-other_person_uuid", '');
+                setValue(patientRelationship.id + "-other_person_name", '');
                 setValue(patientRelationship.id + "-relationship_type", '');
               }
         },
