@@ -322,6 +322,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
 
             // go to the first level we didn't just set
             var goToLevel = firstLevelNotIncluded(ui.item.data);
+            //this will disable next mandatory levels if no entries are configured in the system
+            preloadLevels(goToLevel);
 
             // if we are using the simple UI navigator, use the NavigatorController so that the simple for UI keeps up
             if (typeof(NavigatorController) != 'undefined') {
