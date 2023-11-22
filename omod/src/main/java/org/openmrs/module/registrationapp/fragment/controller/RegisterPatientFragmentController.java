@@ -34,6 +34,8 @@ import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.RegistrationAppUtils;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
+import org.openmrs.module.registrationapp.api.RegistrationAppData;
+import org.openmrs.module.registrationapp.api.RegistrationAppService;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -104,7 +106,7 @@ public class RegisterPatientFragmentController {
     }
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
-                            @SpringBean("registrationCoreService") RegistrationCoreService registrationService,
+                            @SpringBean("registrationAppService") RegistrationAppService registrationService,
                             @ModelAttribute("patient") @BindParams Patient patient,
                             @ModelAttribute("personName") @BindParams PersonName name,
                             @ModelAttribute("personAddress") @BindParams PersonAddress address,
@@ -185,33 +187,18 @@ public class RegisterPatientFragmentController {
             registrationData.addBiometricData(new BiometricData(subject, identifierType));
         }
 
-        try {
-            // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
-            patient = registrationService.registerPatient(registrationData);
-        }
-        catch (Exception ex) {
+        RegistrationAppData registrationAppData = new RegistrationAppData();
 
-            // TODO I remember getting into trouble if i called this validator before the above save method.
-            // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
-            patientValidator.validate(patient, errors);
-            int originalErrorCount = errors.getErrorCount();
-            RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
+        // add core registration data
+        registrationAppData.setRegistrationData(registrationData);
 
-            if (!errors.hasErrors() || (originalErrorCount == errors.getErrorCount())) {
-                errors.reject(ex.getMessage());
-            }
-            return new FailureResult(createErrorMessage(errors, messageSourceService));
-        }
-
-        // now create the registration encounter, if configured to do so
+        // add a registration encounter if submitted
         Encounter registrationEncounter = buildRegistrationEncounter(patient, registrationDate, sessionContext, app, encounterService);
-        if (registrationEncounter != null) {
-            encounterService.saveEncounter(registrationEncounter);
-        }
+        registrationAppData.setRegistrationEncounter(registrationEncounter);
 
-        Map<String, List<ObsGroupItem>> obsGroupMap = new LinkedHashMap<String, List<ObsGroupItem>>();
         // build any obs that are submitted
         List<Obs> obsToCreate = new ArrayList<Obs>();
+        Map<String, List<ObsGroupItem>> obsGroupMap = new LinkedHashMap<String, List<ObsGroupItem>>();
         for (Enumeration<String> e = request.getParameterNames(); e.hasMoreElements(); ) {
             String param = e.nextElement();
             if (param.startsWith("obsgroup.")) {
@@ -222,31 +209,21 @@ public class RegisterPatientFragmentController {
                 buildObs(conceptService, obsToCreate, conceptUuid, request.getParameterValues(param));
             }
         }
-
-        if (obsGroupMap.size() > 0 ){
+        if (!obsGroupMap.isEmpty()){
             buildGroupObs(conceptService, obsToCreate, obsGroupMap);
         }
-        if (!obsToCreate.isEmpty()) {
-            if (registrationEncounter != null) {
-                for (Obs obs : obsToCreate) {
-                    registrationEncounter.addObs(obs);
-                }
-                encounterService.saveEncounter(registrationEncounter);
-            }
-            else {
-                Date datetime = registrationDate != null ? registrationDate : new Date();
-                for (Obs obs : obsToCreate) {
-                    // since we don't inherit anything from the Encounter, we need to specify these
-                    obs.setPerson(patient);
-                    obs.setLocation(sessionContext.getSessionLocation());
-                    obs.setObsDatetime(datetime);
-                    obsService.saveObs(obs, null);
-                }
+        if (registrationEncounter == null) {
+            // since we don't inherit anything from the Encounter, we need to specify these
+            Date datetime = registrationDate != null ? registrationDate : new Date();
+            for (Obs obs : obsToCreate) {
+                obs.setPerson(patient);
+                obs.setLocation(sessionContext.getSessionLocation());
+                obs.setObsDatetime(datetime);
             }
         }
+        registrationAppData.setRegistrationObs(obsToCreate);
 
-        // run any AfterPatientCreated actions
-        // TODO wrap everything here in a single transaction
+        // construct any AfterPatientCreated actions
         ArrayNode afterCreatedArray = (ArrayNode) app.getConfig().get("afterCreatedActions");
         if (afterCreatedArray != null) {
             for (JsonNode actionNode : afterCreatedArray) {
@@ -262,9 +239,27 @@ public class RegisterPatientFragmentController {
                 } else {
                     throw new IllegalStateException("Invalid afterCreatedAction: " + actionString);
                 }
-
-                action.afterPatientCreated(patient, request.getParameterMap());
+                registrationAppData.getAfterRegistrationActions().put(action, request.getParameterMap());
             }
+        }
+
+        // register the patient and execute all actions transactionally
+        // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
+        try {
+            patient = registrationService.registerPatient(registrationAppData);
+        }
+        catch (Exception ex) {
+
+            // TODO I remember getting into trouble if i called this validator before the above save method.
+            // TODO Am therefore putting this here for: https://tickets.openmrs.org/browse/RA-232
+            patientValidator.validate(patient, errors);
+            int originalErrorCount = errors.getErrorCount();
+            RegistrationAppUiUtils.checkForIdentifierExceptions(ex, errors);  // TODO do I need to check this again here since we are now calling it earlier? can keep it just to be save
+
+            if (!errors.hasErrors() || (originalErrorCount == errors.getErrorCount())) {
+                errors.reject(ex.getMessage());
+            }
+            return new FailureResult(createErrorMessage(errors, messageSourceService));
         }
 
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));

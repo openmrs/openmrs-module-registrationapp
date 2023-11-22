@@ -5,6 +5,33 @@
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<!-- Add here beans related to the API context -->
+    <bean id="registrationAppService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="org.openmrs.module.registrationapp.api.RegistrationAppServiceImpl">
+                <property name="registrationCoreService" ref="registrationCoreService" />
+                <property name="encounterService" ref="encounterService" />
+                <property name="obsService" ref="obsService" />
+            </bean>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.registrationapp.api.RegistrationAppService</value>
+                <ref bean="registrationAppService" />
+            </list>
+        </property>
+    </bean>
 
     <bean id="stringToPersonAddressConverter" class="org.openmrs.module.registrationapp.converter.StringToPersonAddressConverter" />
 	

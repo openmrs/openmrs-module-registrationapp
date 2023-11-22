@@ -72,6 +72,7 @@
 					<artifactId>javassist</artifactId>
 					<groupId>javassist</groupId>
 				</exclusion>
+
 			</exclusions>
         </dependency>
 
