@@ -24,7 +24,6 @@ import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * This service provides transactional services for the registration app module
@@ -38,8 +37,7 @@ public class RegistrationAppServiceImpl extends BaseOpenmrsService implements Re
 
 	@Override
 	public Patient registerPatient(RegistrationAppData registrationAppData) {
-		Patient patient = registrationAppData.getRegistrationData().getPatient();
-		registrationCoreService.registerPatient(registrationAppData.getRegistrationData());
+		Patient patient = registrationCoreService.registerPatient(registrationAppData.getRegistrationData());
 
 		Encounter registrationEncounter = registrationAppData.getRegistrationEncounter();
 		for (Obs o : registrationAppData.getRegistrationObs()) {
