@@ -23,6 +23,7 @@ import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -38,7 +39,6 @@ public class RegistrationAppServiceImpl extends BaseOpenmrsService implements Re
 	@Override
 	public Patient registerPatient(RegistrationAppData registrationAppData) {
 		Patient patient = registrationAppData.getRegistrationData().getPatient();
-
 		registrationCoreService.registerPatient(registrationAppData.getRegistrationData());
 
 		Encounter registrationEncounter = registrationAppData.getRegistrationEncounter();
@@ -47,6 +47,18 @@ public class RegistrationAppServiceImpl extends BaseOpenmrsService implements Re
 				registrationEncounter.addObs(o);
 			}
 			else {
+				if (o.getPerson() == null) {
+					o.setPerson(patient);
+				}
+				if (o.getLocation() == null) {
+					o.setLocation(registrationAppData.getRegistrationLocation());
+				}
+				if (o.getObsDatetime() == null) {
+					o.setObsDatetime(registrationAppData.getRegistrationDate());
+					if (o.getObsDatetime() == null) {
+						o.setObsDatetime(new Date());
+					}
+				}
 				obsService.saveObs(o, null);
 			}
 		}

@@ -188,6 +188,8 @@ public class RegisterPatientFragmentController {
         }
 
         RegistrationAppData registrationAppData = new RegistrationAppData();
+        registrationAppData.setRegistrationDate(registrationDate);
+        registrationAppData.setRegistrationLocation(sessionContext.getSessionLocation());
 
         // add core registration data
         registrationAppData.setRegistrationData(registrationData);
@@ -211,15 +213,6 @@ public class RegisterPatientFragmentController {
         }
         if (!obsGroupMap.isEmpty()){
             buildGroupObs(conceptService, obsToCreate, obsGroupMap);
-        }
-        if (registrationEncounter == null) {
-            // since we don't inherit anything from the Encounter, we need to specify these
-            Date datetime = registrationDate != null ? registrationDate : new Date();
-            for (Obs obs : obsToCreate) {
-                obs.setPerson(patient);
-                obs.setLocation(sessionContext.getSessionLocation());
-                obs.setObsDatetime(datetime);
-            }
         }
         registrationAppData.setRegistrationObs(obsToCreate);
 

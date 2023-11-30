@@ -10,12 +10,14 @@
 package org.openmrs.module.registrationapp.api;
 
 import org.openmrs.Encounter;
+import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.module.registrationapp.action.AfterPatientCreatedAction;
 import org.openmrs.module.registrationcore.RegistrationData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,30 @@ import java.util.Map;
  */
 public class RegistrationAppData implements Serializable {
 
+	private Date registrationDate;
+	private Location registrationLocation;
 	private RegistrationData registrationData;
 	private Encounter registrationEncounter;
 	private List<Obs> registrationObs;
 	private Map<AfterPatientCreatedAction, Map<String, String[]>> afterRegistrationActions;
 
 	public RegistrationAppData() {
+	}
+
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
+	public Location getRegistrationLocation() {
+		return registrationLocation;
+	}
+
+	public void setRegistrationLocation(Location registrationLocation) {
+		this.registrationLocation = registrationLocation;
 	}
 
 	public RegistrationData getRegistrationData() {
