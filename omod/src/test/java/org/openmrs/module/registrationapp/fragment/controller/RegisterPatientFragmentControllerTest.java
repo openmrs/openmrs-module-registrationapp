@@ -32,9 +32,12 @@ import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.registrationapp.TestAfterPatientCreatedAction;
+import org.openmrs.module.registrationapp.api.RegistrationAppServiceImpl;
 import org.openmrs.module.registrationcore.RegistrationData;
 import org.openmrs.module.registrationcore.api.RegistrationCoreService;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.util.OpenmrsConstants;
@@ -43,10 +46,9 @@ import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -74,6 +76,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
     private UiSessionContext sessionContext;
     private RegistrationCoreService registrationService;
+    private RegistrationAppServiceImpl registrationAppService;
     private UiUtils uiUtils;
     private MockHttpServletRequest request;
 
@@ -174,13 +177,18 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         when(uiUtils.message(anyString(), any(Object[].class))).thenReturn("message");
 
         request = new MockHttpServletRequest();
+
+        registrationAppService = new RegistrationAppServiceImpl();
+        registrationAppService.setRegistrationCoreService(registrationService);
+        registrationAppService.setEncounterService(encounterService);
+        registrationAppService.setObsService(obsService);
     }
 
     @Test
     public void testPostWithObs() throws Exception {
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -201,7 +209,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
     public void testPostWithCodedObs() throws Exception {
         request.addParameter("obs." + CIVIL_STATUS_CONCEPT_UUID, MARRIED_CONCEPT_UUID);
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -226,7 +234,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -253,7 +261,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         name.setFamilyName(null);
         name.setGivenName(null);
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -300,7 +308,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         request.addParameter("patientIdentifierField", "123abcd");
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -345,7 +353,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
         request.addParameter("patientIdentifierField", "123abcd");
 
-        FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
                 patient, name, address, 30, null, null, true, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
@@ -358,4 +366,43 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
 
     }
 
+    @Test
+    public void testShouldProcessActions() throws Exception {
+
+        name.setGivenName("John");
+        name.setFamilyName("Doe");
+
+        ArrayNode actions = (ArrayNode) app.getConfig().get("afterCreatedActions");
+        actions.add("class:" + TestAfterPatientCreatedAction.class.getName());
+
+        request.addParameter("firstName", "Mary");
+
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
+                patient, name, address, 30, null, null, true, null, request,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof SuccessResult);
+        assertThat(patient.getGivenName(), is("Mary"));
+    }
+
+    @Test
+    public void testShouldNotSavePatientIfAnyActionsFail() throws Exception {
+
+        name.setGivenName("John");
+        name.setFamilyName("Doe");
+
+        ArrayNode actions = (ArrayNode) app.getConfig().get("afterCreatedActions");
+        actions.add("class:" + TestAfterPatientCreatedAction.class.getName());
+
+        request.addParameter("throwError", "FORCED_ERROR");
+
+        FragmentActionResult result = controller.submit(sessionContext, app, registrationAppService,
+                patient, name, address, 30, null, null, true, null, request,
+                messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
+                patientValidator, uiUtils);
+
+        assertTrue(result instanceof FailureResult);
+        assertThat(((FailureResult) result).getSingleError(), containsString("FORCED_ERROR"));
+    }
 }
