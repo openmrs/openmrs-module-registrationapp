@@ -66,9 +66,8 @@ public class RegistrationAppServiceImpl extends BaseOpenmrsService implements Re
 			encounterService.saveEncounter(registrationEncounter);
 		}
 
-		for (AfterPatientCreatedAction action : registrationAppData.getAfterRegistrationActions().keySet()) {
-			Map<String, String[]> parameters = registrationAppData.getAfterRegistrationActions().get(action);
-			action.afterPatientCreated(patient, parameters);
+		for (AfterPatientCreatedAction action : registrationAppData.getAfterPatientCreatedActions()) {
+			action.afterPatientCreated(patient, registrationAppData.getParameters());
 		}
 
 		return patient;

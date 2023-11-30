@@ -18,7 +18,7 @@ import org.openmrs.module.registrationcore.RegistrationData;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,8 @@ public class RegistrationAppData implements Serializable {
 	private RegistrationData registrationData;
 	private Encounter registrationEncounter;
 	private List<Obs> registrationObs;
-	private Map<AfterPatientCreatedAction, Map<String, String[]>> afterRegistrationActions;
+	List<AfterPatientCreatedAction> afterPatientCreatedActions;
+	private Map<String, String[]> parameters;
 
 	public RegistrationAppData() {
 	}
@@ -80,14 +81,25 @@ public class RegistrationAppData implements Serializable {
 		this.registrationObs = registrationObs;
 	}
 
-	public Map<AfterPatientCreatedAction, Map<String, String[]>> getAfterRegistrationActions() {
-		if (afterRegistrationActions == null) {
-			afterRegistrationActions = new LinkedHashMap<AfterPatientCreatedAction, Map<String, String[]>>();
+	public List<AfterPatientCreatedAction> getAfterPatientCreatedActions() {
+		if (afterPatientCreatedActions == null) {
+			afterPatientCreatedActions = new ArrayList<AfterPatientCreatedAction>();
 		}
-		return afterRegistrationActions;
+		return afterPatientCreatedActions;
 	}
 
-	public void setAfterRegistrationActions(Map<AfterPatientCreatedAction, Map<String, String[]>> afterRegistrationActions) {
-		this.afterRegistrationActions = afterRegistrationActions;
+	public void setAfterPatientCreatedActions(List<AfterPatientCreatedAction> afterPatientCreatedActions) {
+		this.afterPatientCreatedActions = afterPatientCreatedActions;
+	}
+
+	public Map<String, String[]> getParameters() {
+		if (parameters == null) {
+			parameters = new HashMap<String, String[]>();
+		}
+		return parameters;
+	}
+
+	public void setParameters(Map<String, String[]> parameters) {
+		this.parameters = parameters;
 	}
 }

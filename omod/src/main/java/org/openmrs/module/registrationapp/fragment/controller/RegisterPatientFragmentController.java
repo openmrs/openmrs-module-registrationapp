@@ -232,9 +232,10 @@ public class RegisterPatientFragmentController {
                 } else {
                     throw new IllegalStateException("Invalid afterCreatedAction: " + actionString);
                 }
-                registrationAppData.getAfterRegistrationActions().put(action, request.getParameterMap());
+                registrationAppData.getAfterPatientCreatedActions().add(action);
             }
         }
+        registrationAppData.setParameters(request.getParameterMap());
 
         // register the patient and execute all actions transactionally
         // if patientIdentifier is blank, the underlying registerPatient method should automatically generate one
