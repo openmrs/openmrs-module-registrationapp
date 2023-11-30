@@ -32,7 +32,7 @@ public class RegistrationAppData implements Serializable {
 	private RegistrationData registrationData;
 	private Encounter registrationEncounter;
 	private List<Obs> registrationObs;
-	List<AfterPatientCreatedAction> afterPatientCreatedActions;
+	private List<AfterPatientCreatedAction> afterPatientCreatedActions;
 	private Map<String, String[]> parameters;
 
 	public RegistrationAppData() {
