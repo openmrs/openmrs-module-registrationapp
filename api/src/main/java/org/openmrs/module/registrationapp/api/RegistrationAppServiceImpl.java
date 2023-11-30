@@ -50,7 +50,9 @@ public class RegistrationAppServiceImpl extends BaseOpenmrsService implements Re
 				obsService.saveObs(o, null);
 			}
 		}
-		encounterService.saveEncounter(registrationEncounter);
+		if (registrationEncounter != null) {
+			encounterService.saveEncounter(registrationEncounter);
+		}
 
 		for (AfterPatientCreatedAction action : registrationAppData.getAfterRegistrationActions().keySet()) {
 			Map<String, String[]> parameters = registrationAppData.getAfterRegistrationActions().get(action);
