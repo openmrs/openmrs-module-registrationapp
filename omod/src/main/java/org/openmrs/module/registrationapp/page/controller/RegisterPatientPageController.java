@@ -13,6 +13,7 @@ import org.openmrs.module.registrationapp.NameSupportCompatibility;
 import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -28,16 +29,17 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
     public void get(UiSessionContext sessionContext, PageModel model,
                     @RequestParam("appId") AppDescriptor app,
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
+                    @RequestParam(value = "initialValues", required = false)  String initialValues,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
                     @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                     UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, appFrameworkService, sessionContext);
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, initialValues, appFrameworkService, sessionContext);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, AppFrameworkService appFrameworkService, UiSessionContext sessionContext) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, String initialValues, AppFrameworkService appFrameworkService, UiSessionContext sessionContext) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, app.getConfig().get("combineSections") != null ? app.getConfig().get("combineSections").getBooleanValue() : false,
                 appFrameworkService, sessionContext.generateAppContextModel());
 
@@ -66,6 +68,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
+        model.addAttribute("initialFieldValues", initialValues);
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
 
         List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser("registerPatient.includeFragments");

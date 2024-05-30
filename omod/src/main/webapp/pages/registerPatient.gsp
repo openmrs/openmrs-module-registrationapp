@@ -116,6 +116,32 @@ fieldset[id\$="-fieldset"] div > div {
             sections.push('${section.id}');
     <% } %>
 
+    jq(document).ready(function() {
+        if ('${initialFieldValues}') {
+            let initialValues = JSON.parse('${initialFieldValues}');
+            let fields = Object.keys(initialValues);
+            if (fields) {
+                fields.forEach((field) => {
+                    // fields initial values are passed as a list of property-value
+                    // e.g. {
+                    //    "demographics.mothersFirstNameLabel.mothersFirstName": "Jen",
+                    //    "contactInfo.phoneNumberLabel.phoneNumber" : "432-098-0987"
+                    // }
+                    // following the existing format of the registration form: SECTION.QUESTION.FIELD
+                    const fieldProps = field.split(".");
+                    if (fieldProps && fieldProps.length == 3 ) {
+                        //section.question.field
+                        let fieldName = fieldProps[2];
+                        jq('input[name="' + fieldName + '"]').val(initialValues[field]);
+                        let questionName = fieldProps[1];
+                        if (NavigatorController.getQuestionById(questionName) != undefined) {
+                            NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
+                        }
+                    }
+                });
+            }
+        }
+    });
 </script>
 
 <div id="validation-errors" class="note-container" style="display: none" >
