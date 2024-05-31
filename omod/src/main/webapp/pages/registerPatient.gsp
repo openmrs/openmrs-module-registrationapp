@@ -200,7 +200,9 @@ fieldset[id\$="-fieldset"] div > div {
     </div>
 
     <form class="simple-form-ui" id="registration" method="POST">
-
+        <p>
+            <input type="hidden" id="returnUrl" name="returnUrl" value="${ returnUrl }"/>
+        </p>
         <% if (includeRegistrationDateSection) { %>
         <section id="registration-info" class="non-collapsible">
             <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
