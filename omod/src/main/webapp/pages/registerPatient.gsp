@@ -137,6 +137,10 @@ fieldset[id\$="-fieldset"] div > div {
                         if (NavigatorController.getQuestionById(questionName) != undefined) {
                             NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
                         }
+                        if (fieldName == 'mother-field') {
+                            // otherwise the field's change() event that gets trigger automatically would clear the initial values which we just set above
+                            jq('#mother-field').autocomplete("option", "disabled", true);
+                        }
                     }
                 });
             }
@@ -385,6 +389,10 @@ fieldset[id\$="-fieldset"] div > div {
 
 	                                if (field.type == 'personAddress') {
 	                                    configOptions.addressTemplate = addressTemplate
+                                        // if a mother has been specified for this patient, then use the mother's address
+                                        if ( question.id == 'personAddressQuestion' && mother) {
+                                            configOptions.initialValue = mother.personAddress
+                                        }
 	                                }
 
 	                                if (field.type == 'personRelationships') {
