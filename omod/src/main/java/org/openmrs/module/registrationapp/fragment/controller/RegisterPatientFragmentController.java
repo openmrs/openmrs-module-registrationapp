@@ -113,6 +113,7 @@ public class RegisterPatientFragmentController {
                             @RequestParam(value="registrationDate", required = false) Date registrationDate,
                             @RequestParam(value="unknown", required = false) Boolean unknown,
                             @RequestParam(value="patientIdentifier", required = false) String patientIdentifier,
+                            @RequestParam(value="returnUrl", required = false) String returnUrl,
                             HttpServletRequest request,
                             @SpringBean("messageSourceService") MessageSourceService messageSourceService,
                             @SpringBean("encounterService") EncounterService encounterService,
@@ -269,13 +270,16 @@ public class RegisterPatientFragmentController {
 
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
-        String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
-        redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid());
-        if (registrationEncounter != null) {
-            redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
+        if (StringUtils.isNotBlank(returnUrl)) {
+            return new SuccessResult(returnUrl);
+        } else {
+            String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
+            redirectUrl = redirectUrl.replaceAll("\\{\\{patientId\\}\\}", patient.getUuid());
+            if (registrationEncounter != null) {
+                redirectUrl = redirectUrl.replaceAll("\\{\\{encounterId\\}\\}", registrationEncounter.getId().toString());
+            }
+            return new SuccessResult(redirectUrl);
         }
-
-        return new SuccessResult(redirectUrl);
     }
 
     private void parseObsGroup(Map<String, List<ObsGroupItem>> obsGroupMap, String param, String[] parameterValues) {

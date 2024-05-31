@@ -18,7 +18,7 @@
                 ${ config.label } <% if (config.classes && config.classes.join(' ').contains("required")) { %><span>(${ ui.message("emr.formValidation.messages.requiredField.label") })</span><% } %>
             </label>
 
-            <input type="text"  id="${ config.id }-field" class="searchablePerson" size="40" placeholder="${ui.message(ui.encodeHtmlAttribute('registrationapp.person.name'))}"/>
+            <input type="text"  id="${ config.id }-field" name="${ config.id }-field" class="searchablePerson" size="40" placeholder="${ui.message(ui.encodeHtmlAttribute('registrationapp.person.name'))}"/>
             <input type="hidden" name="other_person_uuid" id="${ config.id }-other_person_uuid"/>
             <input type="hidden" name="other_person_name" id="${ config.id }-other_person_name"/>
             <% if ( multipleValues ) { %>

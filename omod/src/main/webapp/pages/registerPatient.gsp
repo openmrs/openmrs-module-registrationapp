@@ -137,6 +137,10 @@ fieldset[id\$="-fieldset"] div > div {
                         if (NavigatorController.getQuestionById(questionName) != undefined) {
                             NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
                         }
+                        if (fieldName == 'mother-field') {
+                            // otherwise the field's change() event that gets trigger automatically would clear the initial values which we just set above
+                            jq('#mother-field').autocomplete("option", "disabled", true);
+                        }
                     }
                 });
             }
@@ -196,7 +200,9 @@ fieldset[id\$="-fieldset"] div > div {
     </div>
 
     <form class="simple-form-ui" id="registration" method="POST">
-
+        <p>
+            <input type="hidden" id="returnUrl" name="returnUrl" value="${ returnUrl }"/>
+        </p>
         <% if (includeRegistrationDateSection) { %>
         <section id="registration-info" class="non-collapsible">
             <span class="title">${ui.message("registrationapp.registrationDate.label")}</span>
@@ -385,6 +391,10 @@ fieldset[id\$="-fieldset"] div > div {
 
 	                                if (field.type == 'personAddress') {
 	                                    configOptions.addressTemplate = addressTemplate
+                                        // if a mother has been specified for this patient, then use the mother's address
+                                        if ( question.id == 'personAddressQuestion' && mother) {
+                                            configOptions.initialValue = mother.personAddress
+                                        }
 	                                }
 
 	                                if (field.type == 'personRelationships') {

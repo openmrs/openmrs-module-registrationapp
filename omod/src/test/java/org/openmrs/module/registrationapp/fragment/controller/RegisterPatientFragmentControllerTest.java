@@ -181,7 +181,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, name, address, 30, null, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -202,7 +202,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + CIVIL_STATUS_CONCEPT_UUID, MARRIED_CONCEPT_UUID);
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, name, address, 30, null, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -227,7 +227,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("obs." + WEIGHT_CONCEPT_UUID, "70"); // this is WEIGHT (KG)
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, null, null, request,
+                patient, name, address, 30, null, null, null, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -254,7 +254,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         name.setGivenName(null);
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, name, address, 30, null, null, true, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -301,7 +301,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("patientIdentifierField", "123abcd");
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, name, address, 30, null, null, true, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
@@ -346,7 +346,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         request.addParameter("patientIdentifierField", "123abcd");
 
         FragmentActionResult result = controller.submit(sessionContext, app, registrationService,
-                patient, name, address, 30, null, null, true, null, request,
+                patient, name, address, 30, null, null, true, null, null, request,
                 messageSourceService, encounterService, obsService, conceptService, patientService, appFrameworkService, emrApiProperties,
                 patientValidator, uiUtils);
 
