@@ -132,11 +132,12 @@ fieldset[id\$="-fieldset"] div > div {
                     if (fieldProps && fieldProps.length == 3 ) {
                         //section.question.field
                         let fieldName = fieldProps[2];
-                        jq('input[name="' + fieldName + '"]').val(initialValues[field]);
                         let questionName = fieldProps[1];
+                        jq('#' + questionName + ' input[name="' + fieldName + '"]').val(initialValues[field]);
                         if (NavigatorController.getQuestionById(questionName) != undefined) {
                             NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
                         }
+                        // when the relationships widget is configured to capture the mother info then the 'mother-field' will be present in the form
                         if (fieldName == 'mother-field') {
                             // otherwise the field's change() event that gets trigger automatically would clear the initial values which we just set above
                             jq('#mother-field').autocomplete("option", "disabled", true);
