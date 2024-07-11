@@ -141,6 +141,16 @@ fieldset[id\$="-fieldset"] div > div {
                         if (fieldName == 'mother-field') {
                             // otherwise the field's change() event that gets trigger automatically would clear the initial values which we just set above
                             jq('#mother-field').autocomplete("option", "disabled", true);
+                        } else if (fieldName == 'gender') {
+                            // the gender field is a select list of options
+                            jq('#' + questionName + ' select[name="' + fieldName + '"] > option').each(function(){
+                                if (jq(this).text() == initialValues[field]) {
+                                    jq(this).prop('selected', true);
+                                }
+                            });
+                        } else if (fieldName == 'birthdateMonth') {
+                            // the birthdateMonth field is a dropdown list of months
+                            jq('#' + questionName + ' select[name="' + fieldName + '"]').val(initialValues[field]);
                         }
                     }
                 });
