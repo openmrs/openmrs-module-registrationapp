@@ -118,6 +118,7 @@ fieldset[id\$="-fieldset"] div > div {
 
     jq(document).ready(function() {
         if ('${initialFieldValues}') {
+            const registrationQuestions = new Set();
             let initialValues = JSON.parse('${initialFieldValues}');
             let fields = Object.keys(initialValues);
             if (fields) {
@@ -133,6 +134,7 @@ fieldset[id\$="-fieldset"] div > div {
                         //section.question.field
                         let fieldName = fieldProps[2];
                         let questionName = fieldProps[1];
+                        registrationQuestions.add(questionName);
                         jq('#' + questionName + ' input[name="' + fieldName + '"]').val(initialValues[field]);
                         if (NavigatorController.getQuestionById(questionName) != undefined) {
                             NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
@@ -141,9 +143,32 @@ fieldset[id\$="-fieldset"] div > div {
                         if (fieldName == 'mother-field') {
                             // otherwise the field's change() event that gets trigger automatically would clear the initial values which we just set above
                             jq('#mother-field').autocomplete("option", "disabled", true);
+                        } else if (fieldName == 'gender') {
+                            // the gender field is a select list of options
+                            jq('#' + questionName + ' select[name="' + fieldName + '"] > option').each(function(){
+                                if (jq(this).text() == initialValues[field]) {
+                                    jq(this).prop('selected', true);
+                                }
+                            });
+                        } else if (fieldName == 'birthdateMonth') {
+                            // the birthdateMonth field is a dropdown list of months
+                            jq('#' + questionName + ' select[name="' + fieldName + '"]').val(initialValues[field]);
                         }
                     }
                 });
+                if (registrationQuestions.size > 0) {
+                    let formQuestions = NavigatorController.getQuestions();
+                    for (let index = 0; index < formQuestions.length; index++) {
+                        let questionId = formQuestions[index].id;
+                        if (registrationQuestions.has(questionId)) {
+                            NavigatorController.getQuestionById(questionId).click();
+                        }
+                    }
+                }
+            }
+            if ('${goToSectionId}') {
+                let sectionId = '${goToSectionId}';
+                NavigatorController.getQuestionById(sectionId).click();
             }
         }
     });

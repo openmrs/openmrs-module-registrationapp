@@ -31,6 +31,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                     @RequestParam(value = "breadcrumbOverride", required = false) String breadcrumbOverride,
                     @RequestParam(value="returnUrl", required=false) String returnUrl,
                     @RequestParam(value = "initialValues", required = false)  String initialValues,
+                    @RequestParam(value = "goToSectionId", required = false)  String goToSectionId,
                     @RequestParam(value = "mother", required = false)  Patient mother,
                     @ModelAttribute("patient") @BindParams Patient patient,
                     @SpringBean("emrApiProperties") EmrApiProperties emrApiProperties,
@@ -38,10 +39,10 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                     UiUtils ui) throws Exception {
 
         sessionContext.requireAuthentication();
-        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, returnUrl, initialValues, mother,appFrameworkService, sessionContext);
+        addModelAttributes(model, patient, app, emrApiProperties.getPrimaryIdentifierType(), breadcrumbOverride, returnUrl, initialValues, goToSectionId, mother,appFrameworkService, sessionContext);
     }
 
-    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, String returnUrl, String initialValues, Patient mother, AppFrameworkService appFrameworkService, UiSessionContext sessionContext) throws Exception {
+    public void addModelAttributes(PageModel model, Patient patient, AppDescriptor app, PatientIdentifierType primaryIdentifierType, String breadcrumbOverride, String returnUrl, String initialValues, String goToSectionId, Patient mother, AppFrameworkService appFrameworkService, UiSessionContext sessionContext) throws Exception {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, app.getConfig().get("combineSections") != null ? app.getConfig().get("combineSections").getBooleanValue() : false,
                 appFrameworkService, sessionContext.generateAppContextModel());
 
@@ -72,6 +73,7 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
         model.addAttribute("returnUrl", returnUrl);
         model.addAttribute("initialFieldValues", initialValues);
+        model.addAttribute("goToSectionId", goToSectionId);
         model.addAttribute("mother", mother);
         model.addAttribute("relationshipTypes", Context.getPersonService().getAllRelationshipTypes());
 
