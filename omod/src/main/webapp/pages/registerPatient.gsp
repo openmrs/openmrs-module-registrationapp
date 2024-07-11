@@ -118,6 +118,7 @@ fieldset[id\$="-fieldset"] div > div {
 
     jq(document).ready(function() {
         if ('${initialFieldValues}') {
+            const registrationQuestions = new Set();
             let initialValues = JSON.parse('${initialFieldValues}');
             let fields = Object.keys(initialValues);
             if (fields) {
@@ -133,6 +134,7 @@ fieldset[id\$="-fieldset"] div > div {
                         //section.question.field
                         let fieldName = fieldProps[2];
                         let questionName = fieldProps[1];
+                        registrationQuestions.add(questionName);
                         jq('#' + questionName + ' input[name="' + fieldName + '"]').val(initialValues[field]);
                         if (NavigatorController.getQuestionById(questionName) != undefined) {
                             NavigatorController.getQuestionById(questionName).questionLi.addClass("done");
@@ -154,6 +156,19 @@ fieldset[id\$="-fieldset"] div > div {
                         }
                     }
                 });
+                if (registrationQuestions.size > 0) {
+                    let formQuestions = NavigatorController.getQuestions();
+                    for (let index = 0; index < formQuestions.length; index++) {
+                        let questionId = formQuestions[index].id;
+                        if (registrationQuestions.has(questionId)) {
+                            NavigatorController.getQuestionById(questionId).click();
+                        }
+                    }
+                }
+            }
+            if ('${goToSectionId}') {
+                let sectionId = '${goToSectionId}';
+                NavigatorController.getQuestionById(sectionId).click();
             }
         }
     });
