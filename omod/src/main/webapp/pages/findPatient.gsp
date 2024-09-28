@@ -45,11 +45,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         </div>
         <div class="col-12"><h3>${ ui.message("coreapps.searchPatientHeading") }</h3></div>
         <div class="col-12 col-md-8">
-            ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget",
-                [ afterSelectedUrl: afterSelectedUrl,
-                rowSelectionHandler: "selectPatientHandler",
-                initialSearchFromParameter: "search",
-                showLastViewedPatients: 'false' ])}
+            ${ ui.includeFragment("coreapps", "patientsearch/patientSearchWidget", [
+                    afterSelectedUrl: afterSelectedUrl,
+                    rowSelectionHandler: "selectPatientHandler",
+                    initialSearchFromParameter: "search",
+                    showLastViewedPatients: 'false',
+                    columnConfig: patientSearchColumnConfig
+            ])}
         </div>
     </div>
 

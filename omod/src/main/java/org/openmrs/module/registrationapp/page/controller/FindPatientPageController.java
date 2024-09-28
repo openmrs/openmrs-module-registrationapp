@@ -2,11 +2,11 @@ package org.openmrs.module.registrationapp.page.controller;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonNode;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
@@ -64,6 +64,12 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
             model.addAttribute("mostRecentRegistrationEncounters", null);
             model.addAttribute("appId", null);
         }
+
+        JsonNode columnConfig = null;
+        if (app.getConfig() != null) {
+            columnConfig = app.getConfig().get("patientSearchColumnConfig");
+        }
+        model.addAttribute("patientSearchColumnConfig", columnConfig);
 
         List<Extension> includeFragments = appFrameworkService.getExtensionsForCurrentUser(RegistrationAppConstants.FIND_PATIENT_FRAGMENTS_EXTENSION_POINT);
         Collections.sort(includeFragments);
