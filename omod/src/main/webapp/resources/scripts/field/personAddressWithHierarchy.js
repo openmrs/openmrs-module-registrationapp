@@ -318,27 +318,32 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
             });
             _.each(ui.item.data, function (value, key) {
                 setValue(key, value);
+                if (typeof (NavigatorController) != 'undefined') {
+                    NavigatorController.stepForward();
+                }
             });
 
-            // go to the first level we didn't just set
+            // go to the first level we didn't just set if there is one defined
             var goToLevel = firstLevelNotIncluded(ui.item.data);
-            //this will disable next mandatory levels if no entries are configured in the system
-            preloadLevels(goToLevel);
+            if (goToLevel) {
+                //this will disable next mandatory levels if no entries are configured in the system
+                preloadLevels(goToLevel);
 
-            // if we are using the simple UI navigator, use the NavigatorController so that the simple for UI keeps up
-            if (typeof(NavigatorController) != 'undefined') {
-                var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
-                setTimeout(function () {
-                    var oldField = selectedModel(NavigatorController.getFields());
-                    if (oldField) {
-                        oldField.toggleSelection();
-                    }
-                    field.select();
-                });
-            }
-            // otherwise just jump manually
-            else {
-                getInputElementFor(goToLevel.addressField).focus();
+                // if we are using the simple UI navigator, use the NavigatorController so that the simple for UI keeps up
+                if (typeof (NavigatorController) != 'undefined') {
+                    var field = NavigatorController.getFieldById(personAddressWithHierarchy.id + '-' + goToLevel.addressField);
+                    setTimeout(function () {
+                        var oldField = selectedModel(NavigatorController.getFields());
+                        if (oldField) {
+                            oldField.toggleSelection();
+                        }
+                        field.select();
+                    });
+                }
+                // otherwise just jump manually
+                else {
+                    getInputElementFor(goToLevel.addressField).focus();
+                }
             }
         },
         change: function (event, ui) {
