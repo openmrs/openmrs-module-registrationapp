@@ -83,6 +83,8 @@ angular.module('openmrs-module-registrationapp-fingerprint-search', ['pascalprec
 
                         jq('#patient-search-form').trigger('search:clear');
 
+                        jq('#patient-search-form').trigger('search:start');
+
                         FingerprintService.matchFinger(data.template).then(function (data) {
 
                             if (data && data.length > 0) {
