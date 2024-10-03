@@ -55,15 +55,25 @@ public class FindPatientPageController extends AbstractRegistrationAppPageContro
                            ) throws EvaluationException {
 
         Location sessionLocation = uiSessionContext.getSessionLocation();
+        List<Encounter> mostRecentRegistrationEncounters = null;
+
         // only show the most recent registration encounters if a registration encounter has been defined for this app
-        if (app.getConfig() != null && app.getConfig().get("registrationEncounter") != null) {
-            model.addAttribute("mostRecentRegistrationEncounters", addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService, sessionLocation));
-            model.addAttribute("appId", app.getId());
+        if (app.getConfig() != null) {
+            JsonNode registrationEncounterConfig = app.getConfig().get("registrationEncounter");
+            if (registrationEncounterConfig != null) {
+                JsonNode encounterTypeConfig = registrationEncounterConfig.get("encounterType");
+                if (encounterTypeConfig != null) {
+                    String encounterTypeUuid = encounterTypeConfig.getTextValue();
+                    EncounterType et = encounterService.getEncounterTypeByUuid(encounterTypeUuid);
+                    if (et == null) {
+                        throw new IllegalStateException("Invalid configuration for registrationEncounter.  No encounterType found for uuid " + encounterTypeUuid);
+                    }
+                    mostRecentRegistrationEncounters = addMostRecentRegistrationEncounters(model, app, libraries, dsdService, encounterService, sessionLocation);
+                }
+            }
         }
-        else {
-            model.addAttribute("mostRecentRegistrationEncounters", null);
-            model.addAttribute("appId", null);
-        }
+        model.addAttribute("mostRecentRegistrationEncounters", mostRecentRegistrationEncounters);
+        model.addAttribute("appId", app.getId());
 
         JsonNode columnConfig = null;
         if (app.getConfig() != null) {
