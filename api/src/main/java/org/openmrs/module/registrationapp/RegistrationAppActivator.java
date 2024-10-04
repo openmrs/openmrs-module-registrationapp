@@ -14,6 +14,7 @@
 package org.openmrs.module.registrationapp;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifierType;
@@ -36,7 +37,6 @@ public class RegistrationAppActivator extends BaseModuleActivator {
     @Override
     public void started() {
         setupIdentifierTypeGlobalProperties(Context.getAdministrationService(), Context.getService(IdentifierSourceService.class));
-
         super.started();
     }
 
@@ -45,12 +45,13 @@ public class RegistrationAppActivator extends BaseModuleActivator {
         // identifier type from the EMR API module, if possible. (This may not be possible if things aren't configured right,
         // e.g. due to module startup order, in which case we log a warning and continue.)
         try {
-            EmrApiProperties emrApiProperties = Context.getRegisteredComponents(EmrApiProperties.class).iterator().next();
-            PatientIdentifierType primaryIdentifierType = emrApiProperties.getPrimaryIdentifierType();
-
-            IdentifierSource sourceForPrimaryType = identifierSourceService.getAutoGenerationOption(primaryIdentifierType).getSource();
-
-            administrationService.setGlobalProperty(RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID, sourceForPrimaryType.getId().toString());
+            String existingValue = administrationService.getGlobalProperty(RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID);
+            if (StringUtils.isBlank(existingValue)) {
+                EmrApiProperties emrApiProperties = Context.getRegisteredComponents(EmrApiProperties.class).iterator().next();
+                PatientIdentifierType primaryIdentifierType = emrApiProperties.getPrimaryIdentifierType();
+                IdentifierSource sourceForPrimaryType = identifierSourceService.getAutoGenerationOption(primaryIdentifierType).getSource();
+                administrationService.setGlobalProperty(RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID, sourceForPrimaryType.getId().toString());
+            }
         }
         catch (Exception ex) {
             log.warn("Failed to set global property for " + RegistrationCoreConstants.GP_OPENMRS_IDENTIFIER_SOURCE_ID + " based on " + EmrApiConstants.PRIMARY_IDENTIFIER_TYPE + ". Will try again at next module startup.", ex);
