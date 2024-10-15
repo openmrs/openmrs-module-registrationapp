@@ -2,6 +2,7 @@ package org.openmrs.module.registrationapp.fragment.controller.summary;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.module.appframework.context.AppContextModel;
@@ -10,7 +11,10 @@ import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.coreapps.contextmodel.PatientContextModel;
+import org.openmrs.module.coreapps.contextmodel.VisitContextModel;
+import org.openmrs.module.emrapi.adt.AdtService;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
+import org.openmrs.module.emrapi.visit.VisitDomainWrapper;
 import org.openmrs.module.registrationapp.RegistrationAppConstants;
 import org.openmrs.module.registrationapp.converter.RegistrationSummaryExtensionsGenerator;
 import org.openmrs.ui.framework.annotation.InjectBeans;
@@ -29,6 +33,7 @@ public class RegistrationSummaryFragmentController {
                            FragmentModel model,
                            @SpringBean AppFrameworkService appFrameworkService,
                            @SpringBean("adminService") AdministrationService administrationService,
+                           @SpringBean("adtService") AdtService adtService,
                            @InjectBeans PatientDomainWrapper patientDomainWrapper,
                            @RequestParam(value = "search", required = false) String search, // context for going back to registration landing page
                            UiSessionContext sessionContext
@@ -45,8 +50,23 @@ public class RegistrationSummaryFragmentController {
             patientDomainWrapper = (PatientDomainWrapper) patient;
             appContextModel.put("patient", new PatientContextModel(((PatientDomainWrapper) patient).getPatient()));
         }
+
         appContextModel.put("search", search); // TODO consider putting all request params in the module in some structured way
-		appContextModel.put("patientId", patientDomainWrapper != null ? patientDomainWrapper.getPatient().getUuid() : null);  // support legacy substitution methods that use "{{patientId}}" as a template and expect a uuid substitution
+        appContextModel.put("patientId", patientDomainWrapper != null ? patientDomainWrapper.getPatient().getUuid() : null);  // support legacy substitution methods that use "{{patientId}}" as a template and expect a uuid substitution
+        appContextModel.put("visit", null);
+
+        try {
+            Location visitLocation = adtService.getLocationThatSupportsVisits(sessionContext.getSessionLocation());
+            if (visitLocation != null && patientDomainWrapper != null) {
+                VisitDomainWrapper activeVisit = adtService.getActiveVisit(patientDomainWrapper.getPatient(), visitLocation);
+                if (activeVisit != null) {
+                    appContextModel.put("visit", new VisitContextModel(activeVisit));
+                }
+            }
+        }
+        catch (IllegalArgumentException ex) {
+            // location does not support visits
+        }
 
         model.addAttribute("patient", patientDomainWrapper);
         model.addAttribute("appContextModel", appContextModel);
