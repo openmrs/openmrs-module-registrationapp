@@ -22,6 +22,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.domain.Extension;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.emrapi.adt.AdtService;
 import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
 import org.openmrs.module.registrationapp.RegistrationAppConstants;
 import org.openmrs.module.registrationapp.fragment.controller.summary.RegistrationSummaryFragmentController;
@@ -45,6 +46,8 @@ public class RegistrationSummaryFragmentControllerTest {
     private PatientDomainWrapper patientDomainWrapper;
     
     private AppFrameworkService appFrameworkService;
+	
+	private AdtService adtService;
     
     private List<Extension> firstColFragments;
     
@@ -73,6 +76,7 @@ public class RegistrationSummaryFragmentControllerTest {
         when(appFrameworkService.getApp(eq((String) fragmentConfig.get("appId")))).thenReturn(appDescriptor);
         
         administrationService = mock(AdministrationService.class);
+		adtService = mock(AdtService.class);
 
         sessionContext = mock(UiSessionContext.class);
         when(sessionContext.generateAppContextModel()).thenReturn(new AppContextModel());
@@ -85,7 +89,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	when(administrationService.getGlobalProperty(eq(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS), eq("false"))).thenReturn("false");
     	
     	// replay
-    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService 
+    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService, adtService 
     											,patientDomainWrapper
     					                        ,null, sessionContext);
     	List<Extension> firstColumnFragments = (ArrayList<Extension>) fragmentModel.getAttribute("firstColumnFragments");
@@ -107,7 +111,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	when(administrationService.getGlobalProperty(eq(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS), eq("false"))).thenReturn("true");
     	
     	// replay
-    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService
+    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService, adtService
     											,patientDomainWrapper
     					                        ,null, sessionContext);
     	List<Extension> firstColumnFragments = (ArrayList<Extension>) fragmentModel.getAttribute("firstColumnFragments");
@@ -131,7 +135,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	when(administrationService.getGlobalProperty(eq(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS), eq("false"))).thenReturn("false");
     	
     	//replay
-    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService 
+    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService, adtService 
     											,patientDomainWrapper
     											,null, sessionContext);
     	List<Extension> firstColumnFragments = (ArrayList<Extension>) fragmentModel.getAttribute("firstColumnFragments");
@@ -153,7 +157,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	when(administrationService.getGlobalProperty(eq(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS), eq("false"))).thenReturn("false");
     	
     	//replay
-    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService 
+    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService, adtService 
     											,patientDomainWrapper
     											,null, sessionContext);
     	List<Extension> firstColumnFragments = (ArrayList<Extension>) fragmentModel.getAttribute("firstColumnFragments");
@@ -180,7 +184,7 @@ public class RegistrationSummaryFragmentControllerTest {
     	when(administrationService.getGlobalProperty(eq(RegistrationAppConstants.DISTRIBUTE_SUMMARY_WIDGETS), eq("false"))).thenReturn("false");
     	
     	//replay
-    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService 
+    	regSummaryFragmentcontroller.controller(fragmentConfig, fragmentModel, appFrameworkService, administrationService, adtService 
     											,patientDomainWrapper
     											,null, sessionContext);
     	List<Extension> firstColumnFragments = (ArrayList<Extension>) fragmentModel.getAttribute("firstColumnFragments");
