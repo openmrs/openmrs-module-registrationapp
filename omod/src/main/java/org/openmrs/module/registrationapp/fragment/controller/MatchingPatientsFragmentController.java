@@ -13,16 +13,21 @@
  */
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.appui.UiSessionContext;
+import org.openmrs.module.idgen.IdentifierSource;
+import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
@@ -143,9 +148,39 @@ public class MatchingPatientsFragmentController {
 
         patient.addName(name);
         patient.addAddress(address);
+        RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
 
-        if (formStructure != null) {
-            RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
+        // Patient Identifiers
+        List<Field> fields = formStructure.getFields();
+        if (fields != null) {
+            for (Field field : fields) {
+                if (StringUtils.equals(field.getType(), "patientIdentifier")) {
+                    String identifier = request.getParameter(field.getFormFieldName());
+                    if (StringUtils.isNotBlank(identifier)) {
+                        PatientIdentifierType identifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(field.getUuid());
+                        patient.addIdentifier(new PatientIdentifier(identifier, identifierType, null));
+                    }
+                }
+            }
+        }
+
+        String patientIdentifier = request.getParameter("patientIdentifier");
+        if (StringUtils.isNotBlank(patientIdentifier)) {
+            IdentifierSourceService iss = Context.getService(IdentifierSourceService.class);
+            AdministrationService adminService = Context.getService(AdministrationService.class);
+            String idSourceId = adminService.getGlobalProperty("registrationcore.identifierSourceId");
+            if (StringUtils.isNotBlank(idSourceId)) {
+                IdentifierSource source;
+                try {
+                    source = iss.getIdentifierSource(Integer.parseInt(idSourceId));
+                }
+                catch (Exception e) {
+                    source = iss.getIdentifierSourceByUuid(idSourceId);
+                }
+                if (source != null) {
+                    patient.addIdentifier(new PatientIdentifier(patientIdentifier, source.getIdentifierType(), null));
+                }
+            }
         }
     }
 
