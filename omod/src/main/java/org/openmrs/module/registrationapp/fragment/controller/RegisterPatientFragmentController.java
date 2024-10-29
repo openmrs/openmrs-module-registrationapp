@@ -99,8 +99,8 @@ public class RegisterPatientFragmentController {
 
     public FragmentActionResult importMpiPatient(@RequestParam("mpiPersonId") String personId,
                             @SpringBean("registrationCoreService") RegistrationCoreService registrationService) {
-        String patientUuid = registrationService.importMpiPatient(personId);
-        return new SuccessResult(patientUuid);
+        Patient patient = registrationService.importMpiPatient(personId);
+        return new SuccessResult(patient.getUuid());
     }
 
     public FragmentActionResult submit(UiSessionContext sessionContext, @RequestParam(value="appId") AppDescriptor app,
