@@ -95,7 +95,14 @@
                             }
 	                        // TODO support other types besides personAttribute and personAddress
 	                    %>
-	                        ${ displayValue ? ui.encodeHtmlContent(displayValue).replace("\n", "<br />") : ''}&nbsp;
+                            <% if (config.displayEachField) { %>
+                                <div class="question-field">
+                                    <h3>${ui.message(field.label)}</h3>
+                                    <p class="left">${ displayValue ? ui.encodeHtmlContent(displayValue).replace("\n", "<br />") : ''}</p>
+                                </div>
+                            <% } else { %>
+	                            ${ displayValue ? ui.encodeHtmlContent(displayValue).replace("\n", "<br />") : ''}&nbsp;
+                            <% } %>
 	                    <% } %>
 	                </p>
 	            </div>
