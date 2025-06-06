@@ -174,6 +174,13 @@ fieldset[id\$="-fieldset"] div > div {
     });
 </script>
 
+<div id="modal-overlay">
+    <div id="modal-content">
+        <div class="spinner"></div>
+        <p>${ui.message("registrationapp.pleaseDoNotRefreshPage")}</p>
+    </div>
+</div>
+
 <div id="validation-errors" class="note-container" style="display: none" >
     <div class="note error">
         <div id="validation-errors-content" class="text">
