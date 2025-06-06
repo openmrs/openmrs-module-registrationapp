@@ -231,6 +231,7 @@ jq(function() {
     jq('#registration').submit(function (e) {
         e.preventDefault();
         jq('#submit').attr('disabled', 'disabled');
+        jq('#modal-overlay').fadeIn();
         jq('#cancelSubmission').attr('disabled', 'disabled');
         jq('#validation-errors').hide();
         var formData = jq('#registration').serialize();
@@ -248,6 +249,7 @@ jq(function() {
                 jq('#validation-errors-content').html(response.responseJSON.globalErrors);
                 jq('#validation-errors').show();
                 jq('#submit').removeAttr('disabled');
+                jq('#modal-overlay').fadeOut();
                 jq('#cancelSubmission').removeAttr('disabled');
             }
         });
