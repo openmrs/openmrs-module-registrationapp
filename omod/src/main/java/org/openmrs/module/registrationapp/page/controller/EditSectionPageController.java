@@ -73,9 +73,9 @@ public class EditSectionPageController {
     }
 
     /**
-     * @should void the old person address and replace it with a new one when it is edited
-     * @should void the old person address and replace it with a new one when it is edited
-     * @should not void the existing address if there are no changes
+     * should void the old person address and replace it with a new one when it is edited
+     * should void the old person address and replace it with a new one when it is edited
+     * should not void the existing address if there are no changes
      */
     public String post(UiSessionContext sessionContext, PageModel model,
                        @RequestParam("patientId") @BindParams Patient patient,

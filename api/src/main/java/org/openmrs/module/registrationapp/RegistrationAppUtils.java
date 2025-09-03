@@ -19,12 +19,12 @@ public class RegistrationAppUtils {
      *
      * @param id the concept identifier
      * @return the concept if exist, else null
-     * @should find a concept by its conceptId
-     * @should find a concept by its mapping
-     * @should find a concept by its uuid
-     * @should find a concept by static constant
-     * @should return null otherwise
-     * @should find a concept by its mapping with a space in between
+     * should find a concept by its conceptId
+     * should find a concept by its mapping
+     * should find a concept by its uuid
+     * should find a concept by static constant
+     * should return null otherwise
+     * should find a concept by its mapping with a space in between
      */
     public static Concept getConcept(String id, ConceptService conceptService) {
 

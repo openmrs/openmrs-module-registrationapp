@@ -62,7 +62,7 @@ public class RegisterPatientFormBuilder {
 	 *
 	 * @param app the app descriptor
 	 * @return the form structure
-	 * @should flatten the widget config
+	 * should flatten the widget config
 	 */
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app) {
 		return buildFormStructure(app, false, null, null);
@@ -74,8 +74,8 @@ public class RegisterPatientFormBuilder {
 	 * @param app             the app descriptor
 	 * @param combineSections if true, sections are combined into one demographics section
 	 * @return the form structure
-	 * @should flatten the widget config
-	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * should flatten the widget config
+	 * should combine sections of widget config given 'combineSections' property set to true
 	 * @since 1.15.0
 	 * Builds the navigable form structure for the specified app descriptor combining sections
 	 * if specified
@@ -89,7 +89,7 @@ public class RegisterPatientFormBuilder {
 	 *
 	 * @param app the app descriptor
 	 * @return the form structure
-	 * @should flatten the widget config
+	 * should flatten the widget config
 	 */
 	public static NavigableFormStructure buildFormStructure(AppDescriptor app, AppFrameworkService appFrameworkService,
 			AppContextModel appContextModel) {
@@ -100,8 +100,8 @@ public class RegisterPatientFormBuilder {
 	 * @param app             the app descriptor
 	 * @param combineSections if true, sections are combined into one demographics section
 	 * @return the form structure
-	 * @should flatten the widget config
-	 * @should combine sections of widget config given 'combineSections' property set to true
+	 * should flatten the widget config
+	 * should combine sections of widget config given 'combineSections' property set to true
 	 * @since 1.15.0
 	 * Builds the navigable form structure for the specified app descriptor combining sections
 	 * if specified

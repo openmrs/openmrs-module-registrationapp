@@ -34,7 +34,7 @@ public class RegistrationSummaryExtensionsGenerator {
 	 * 
 	 * @throws IllegalArgumentException
 	 * 
-	 * @should throw when the provided app is not a registration app
+	 * should throw when the provided app is not a registration app
 	 */
 	public static List<Extension> generate(AppDescriptor app, boolean distribute) throws IllegalArgumentException {
 		

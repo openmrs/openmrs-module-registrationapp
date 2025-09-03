@@ -135,8 +135,8 @@ public class RegistrationAppUiUtils {
 	 * 
 	 * @param latitude
 	 * @return true if the latitude value if true otherwise false
-	 * @should pass for a valid latitude value
-	 * @should fail for an invalid latitude value
+	 * should pass for a valid latitude value
+	 * should fail for an invalid latitude value
 	 */
 	public static boolean isValidLatitude(String latitude) {
 		return isValid(latitude, DEFAULT_LATITUDE_REGEX);
@@ -148,8 +148,8 @@ public class RegistrationAppUiUtils {
 	 * 
 	 * @param longitude
 	 * @return true if the latitude value if true otherwise false
-	 * @should pass for a valid longitude value
-	 * @should fail for an invalid longitude value
+	 * should pass for a valid longitude value
+	 * should fail for an invalid longitude value
 	 */
 	public static boolean isValidLongitude(String longitude) {
 		return isValid(longitude, DEFAULT_LONGITUDE_REGEX);
