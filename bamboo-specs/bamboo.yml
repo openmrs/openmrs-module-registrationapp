@@ -134,7 +134,7 @@ repositories:
     command-timeout-minutes: '180'
     lfs: false
     verbose-logs: false
-    use-shallow-clones: true
+    use-shallow-clones: false
     cache-on-agents: false
     submodules: false
     submodules-use-shallow-clones: false
