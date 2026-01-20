@@ -92,7 +92,7 @@ jq(function() {
             var button;
             if (isMpi) {
                 button = $('#matchedPatientTemplates .mpi_button').clone();
-                button.attr("onclick", "importMpiPatient(" + item.uuid + ")");
+                button.attr("onclick", "importMpiPatient('" + item.uuid + "')");
             } else {
                 button = $('#matchedPatientTemplates .local_button').clone();
                 var link = patientDashboardLink;
