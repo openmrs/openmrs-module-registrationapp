@@ -1,5 +1,6 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,6 +58,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -271,6 +273,14 @@ public class RegisterPatientFragmentController {
         InfoErrorMessageUtil.flashInfoMessage(request.getSession(), ui.message("registrationapp.createdPatientMessage", ui.encodeHtml(ui.format(patient))));
 
         if (StringUtils.isNotBlank(returnUrl)) {
+            // URL encode the returnUrl parameter if it contains "returnUrl=" to prevent truncation
+            if (returnUrl.contains("returnUrl=")) {
+                returnUrl =StringEscapeUtils.unescapeHtml(returnUrl);
+                int returnUrlIndex = returnUrl.indexOf("returnUrl=");
+                String beforeReturnUrl = returnUrl.substring(0, returnUrlIndex + "returnUrl=".length());
+                String afterReturnUrl = returnUrl.substring(returnUrlIndex + "returnUrl=".length());
+                returnUrl = beforeReturnUrl + URLEncoder.encode(afterReturnUrl);
+            }
             return new SuccessResult(returnUrl);
         } else {
             String redirectUrl = app.getConfig().get("afterCreatedUrl").getTextValue();
