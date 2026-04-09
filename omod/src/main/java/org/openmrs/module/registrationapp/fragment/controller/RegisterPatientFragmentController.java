@@ -275,7 +275,7 @@ public class RegisterPatientFragmentController {
         if (StringUtils.isNotBlank(returnUrl)) {
             // URL encode the returnUrl parameter if it contains "returnUrl=" to prevent truncation
             if (returnUrl.contains("returnUrl=")) {
-                returnUrl =StringEscapeUtils.unescapeHtml(returnUrl);
+                returnUrl = StringEscapeUtils.unescapeHtml(returnUrl);
                 int returnUrlIndex = returnUrl.indexOf("returnUrl=");
                 String beforeReturnUrl = returnUrl.substring(0, returnUrlIndex + "returnUrl=".length());
                 String afterReturnUrl = returnUrl.substring(returnUrlIndex + "returnUrl=".length());
