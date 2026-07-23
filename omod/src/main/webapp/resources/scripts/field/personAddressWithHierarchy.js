@@ -83,8 +83,18 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     setValue(level.addressField, result[0].name);
                     preloadLevels(levelAfter(level.addressField));
                 } else {
-                    // focus on the element
-                    getInputElementFor(level.addressField).focus();
+                    // more than one option available for this level
+                    var currentValue = getValue(level.addressField);
+                    // if the field already holds a valid value (e.g. a configured elementDefault like "Haiti"),
+                    // commit it so it is treated as a legal, selected value; otherwise the blur handler would
+                    // clear it (legalValues was never populated) and it would be lost on the confirmation screen
+                    if (currentValue && _.contains(_.pluck(result, 'name'), currentValue)) {
+                        setValue(level.addressField, currentValue);
+                        preloadLevels(levelAfter(level.addressField));
+                    } else {
+                        // focus on the element
+                        getInputElementFor(level.addressField).focus();
+                    }
                 }
             });
         }
