@@ -36,24 +36,26 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>1.9.9</openMRSVersion>
-        <uiframeworkVersion>3.9</uiframeworkVersion>
-        <appframeworkVersion>2.15.0</appframeworkVersion>
+		<openMRSVersion>2.7.0</openMRSVersion>
+        <uiframeworkVersion>4.0.0</uiframeworkVersion>
+        <appframeworkVersion>2.19.0</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
-        <idgenVersion>4.4.0</idgenVersion>
+        <idgenVersion>5.0.4</idgenVersion>
         <uicommonsVersion>3.2.0-SNAPSHOT</uicommonsVersion>
-        <emrapiVersion>1.18</emrapiVersion>
-        <calculationVersion>1.2</calculationVersion>
-        <providerManagementVersion>2.5.0</providerManagementVersion>
-        <registrationcoreVersion>1.8.0</registrationcoreVersion>
-        <reportingModuleVersion>0.10.4</reportingModuleVersion>
-        <addresshierarchyVersion>2.9</addresshierarchyVersion>
-        <htmlformentryVersion>3.3.0</htmlformentryVersion>
-        <appuiVersion>1.7</appuiVersion>
-        <coreappsVersion>1.11.1</coreappsVersion>
-        <serializationXstreamModuleVersion>0.2.12</serializationXstreamModuleVersion>
-        <eventVersion>2.8.0</eventVersion>
-        <groovyVersion>1.8.7</groovyVersion>
+        <emrapiVersion>2.0.0</emrapiVersion>
+        <calculationVersion>2.0.0</calculationVersion>
+        <registrationcoreVersion>1.13.0</registrationcoreVersion>
+        <reportingModuleVersion>2.0.0</reportingModuleVersion>
+        <addresshierarchyVersion>2.21.0</addresshierarchyVersion>
+        <appuiVersion>1.18.0</appuiVersion>
+        <coreappsVersion>3.5.0</coreappsVersion>
+        <serializationXstreamModuleVersion>0.3.0</serializationXstreamModuleVersion>
+        <eventVersion>4.0.0</eventVersion>
+        <metadatamappingVersion>1.6.0</metadatamappingVersion>
+        <mockitoInlineVersion>4.8.0</mockitoInlineVersion>
+        <byteBuddyVersion>1.17.6</byteBuddyVersion>
+        <byteBuddyVersion>1.15.10</byteBuddyVersion>
+        <groovyVersion>2.4.21</groovyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -128,6 +130,11 @@
 					<artifactId>javassist</artifactId>
 					<groupId>javassist</groupId>
 				</exclusion>
+				<!-- PowerMock does not work on Java 17+, and its Mockito plugin prevents Mockito.mockStatic from working -->
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>org.powermock</groupId>
+				</exclusion>
 			</exclusions>
         </dependency>
 
@@ -166,13 +173,6 @@
             <artifactId>calculation-api</artifactId>
             <version>${calculationVersion}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>providermanagement-api</artifactId>
-            <version>${providerManagementVersion}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -227,31 +227,13 @@
             <version>${serializationXstreamModuleVersion}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api-1.9</artifactId>
-            <version>${serializationXstreamModuleVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api-1.10</artifactId>
-            <version>${serializationXstreamModuleVersion}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api-2.0</artifactId>
-            <version>${serializationXstreamModuleVersion}</version>
-            <scope>test</scope>
-        </dependency>
 
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>htmlformentry-api</artifactId>
-            <version>${htmlformentryVersion}</version>
-            <scope>test</scope>
+            <artifactId>metadatamapping-api</artifactId>
+            <version>${metadatamappingVersion}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -270,6 +252,44 @@
 		</dependency>
 
 
+        <!-- The byte-buddy version that comes with core 2.7 does not support Java 21, which Mockito needs in order to create mocks -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byteBuddyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-agent</artifactId>
+            <version>${byteBuddyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Allows mocking static methods with Mockito.mockStatic (replaces PowerMock, which does not work on Java 17+) -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockitoInlineVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- The byte-buddy version that comes with core 2.7 does not support Java 21 -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byteBuddyVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Needed by the hibernate validator that appframework instantiates when firing up the application context in tests -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- End OpenMRS modules -->
 
         <!-- start other dependencies -->
@@ -285,8 +305,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<target>1.6</target>
-						<source>1.6</source>
+						<target>1.8</target>
+						<source>1.8</source>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -320,7 +340,7 @@
                     <configuration>
                         <runOrder>alphabetical</runOrder>
                         <!-- https://talk.openmrs.org/t/error-could-not-find-or-load-main-class-org-apache-maven-surefire-booter-forkedbooter/20509 -->
-                        <argLine>-Xmx1024m -XX:MaxPermSize=512m -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+                        <argLine>-Xmx1024m -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
                     </configuration>
                 </plugin>
                 <plugin>

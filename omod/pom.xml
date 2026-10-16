@@ -40,6 +40,21 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
+            <artifactId>coreapps-omod</artifactId>
+            <version>${coreappsVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- coreapps-omod registers a REST controller that requires the webservices.rest classes when firing up the application context in tests -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>webservices.rest-omod-common</artifactId>
+            <version>2.42.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
             <artifactId>uicommons-omod</artifactId>
             <version>${uicommonsVersion}</version>
             <scope>provided</scope>

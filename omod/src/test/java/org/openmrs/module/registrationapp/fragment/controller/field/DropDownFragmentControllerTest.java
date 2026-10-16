@@ -11,22 +11,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
 public class DropDownFragmentControllerTest {
 	
 	private static String CONCEPT_SET_UUID = "concept-set-uuid";
@@ -38,6 +36,8 @@ public class DropDownFragmentControllerTest {
 	
 	@Mock
 	private UserContext userContext;
+	
+	private MockedStatic<Context> mockedContext;
 	
 	private FragmentConfiguration config;
 	
@@ -53,6 +53,7 @@ public class DropDownFragmentControllerTest {
 	
 	@Before
     public void setUp() throws Exception {
+		MockitoAnnotations.openMocks(this);
 		dwController = new DropDownFragmentController();
 		conceptSet = new Concept(0);
 		conceptSet.setUuid(CONCEPT_SET_UUID);
@@ -72,11 +73,16 @@ public class DropDownFragmentControllerTest {
 		conceptSet.addSetMember(concept1);
 		conceptSet.addSetMember(concept2);
 		
-		PowerMockito.mockStatic(Context.class);
-		when(Context.getConceptService()).thenReturn(conceptService);
-		when(Context.getUserContext()).thenReturn(userContext);
+		mockedContext = Mockito.mockStatic(Context.class);
+		mockedContext.when(Context::getConceptService).thenReturn(conceptService);
+		mockedContext.when(Context::getUserContext).thenReturn(userContext);
 		when(conceptService.getConceptByUuid(CONCEPT_SET_UUID)).thenReturn(conceptSet);
 		when(userContext.getLocale()).thenReturn(Locale.ENGLISH);		
+    }
+    
+    @After
+    public void tearDown() {
+		mockedContext.close();
     }
     
     @Test
