@@ -17,15 +17,17 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.openmrs.module.registrationapp.RegistrationAppUiUtils.isValidLatitude;
 import static org.openmrs.module.registrationapp.RegistrationAppUiUtils.isValidLongitude;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
@@ -33,11 +35,7 @@ import org.openmrs.RelationshipType;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.UiUtils;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class })
 public class RegistrationAppUiUtilsTest {
 	
 	private List<Relationship> relationships;
@@ -55,8 +53,11 @@ public class RegistrationAppUiUtilsTest {
 	@Mock
 	private PersonService personService;
 	
+	private MockedStatic<Context> mockedContext;
+	
 	@Before
 	public void setup() {
+		MockitoAnnotations.openMocks(this);
 		patient = new Person();
 		person1 = new Person();
 		person1.addName(new PersonName("Person1GivenName", null, "Person1FamilyName"));
@@ -72,9 +73,14 @@ public class RegistrationAppUiUtilsTest {
 		relationships.add(new Relationship(person1, patient, relType1));
 		relationships.add(new Relationship(patient, person2, relType2));
 		
-		mockStatic(Context.class);
-		when(Context.getPersonService()).thenReturn(personService);
+		mockedContext = Mockito.mockStatic(Context.class);
+		mockedContext.when(Context::getPersonService).thenReturn(personService);
 		when(personService.getRelationshipsByPerson(patient)).thenReturn(relationships);
+	}
+	
+	@After
+	public void tearDown() {
+		mockedContext.close();
 	}
 	
 	/**

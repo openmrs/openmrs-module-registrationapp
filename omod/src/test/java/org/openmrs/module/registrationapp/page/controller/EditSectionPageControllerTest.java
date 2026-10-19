@@ -16,11 +16,13 @@ package org.openmrs.module.registrationapp.page.controller;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
@@ -35,9 +37,6 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.uicommons.util.InfoErrorMessageUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.validator.PatientValidator;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,8 +45,6 @@ import javax.servlet.http.HttpSession;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Context.class, InfoErrorMessageUtil.class, RegistrationAppUiUtils.class })
 public class EditSectionPageControllerTest {
 	
 	@Mock
@@ -76,30 +73,43 @@ public class EditSectionPageControllerTest {
     @Mock
     private MessageSourceService messageSourceService;
 
+    private MockedStatic<Context> mockedContext;
+
+    private MockedStatic<InfoErrorMessageUtil> mockedInfoErrorMessageUtil;
+
+    private MockedStatic<RegistrationAppUiUtils> mockedRegistrationAppUiUtils;
+
 	@Before
 	public void setUpMockUserContext() throws Exception {
+        MockitoAnnotations.openMocks(this);
+
         UserContext userContext = Mockito.mock(UserContext.class);
         Context.setUserContext(userContext);
         Mockito.when(userContext.isAuthenticated()).thenReturn(true);
 
-        PowerMockito.mockStatic(Context.class);
-        Mockito.when(Context.getAdministrationService()).thenReturn(adminService);
-        Mockito.when(Context.getPatientService()).thenReturn(patientService);
+        mockedContext = Mockito.mockStatic(Context.class);
+        mockedContext.when(Context::getAdministrationService).thenReturn(adminService);
+        mockedContext.when(Context::getPatientService).thenReturn(patientService);
 
-        PowerMockito.spy(RegistrationAppUiUtils.class);
-        PowerMockito.doNothing().when(RegistrationAppUiUtils.class);
-        RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(Mockito.any(PersonAddress.class),
-                Mockito.any(BindingResult.class));
+        // only the lat/long validation is stubbed out, all other static methods keep their real behaviour
+        mockedRegistrationAppUiUtils = Mockito.mockStatic(RegistrationAppUiUtils.class, Mockito.CALLS_REAL_METHODS);
+        mockedRegistrationAppUiUtils.when(() -> RegistrationAppUiUtils.validateLatitudeAndLongitudeIfNecessary(
+                Mockito.nullable(PersonAddress.class), Mockito.nullable(BindingResult.class))).thenAnswer(invocation -> null);
 
-        PowerMockito.spy(InfoErrorMessageUtil.class);
-        PowerMockito.doNothing().when(InfoErrorMessageUtil.class);
-        InfoErrorMessageUtil.flashInfoMessage(Mockito.any(HttpSession.class), Mockito.anyString());
+        mockedInfoErrorMessageUtil = Mockito.mockStatic(InfoErrorMessageUtil.class);
 
         ObjectNode objectNode = new ObjectNode(null);
         objectNode.put("sections", new ArrayNode(null));
         Mockito.when(app.getConfig()).thenReturn(objectNode);
 
 		controller = new EditSectionPageController();
+	}
+
+	@After
+	public void tearDown() {
+		mockedInfoErrorMessageUtil.close();
+		mockedRegistrationAppUiUtils.close();
+		mockedContext.close();
 	}
 
 	/**

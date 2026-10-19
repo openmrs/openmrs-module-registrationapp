@@ -25,17 +25,8 @@ AtLeastDateOrEstimatedAgeValidator.prototype.validate = function(field){
     return null;
 }
 
-// Updating list of validators to include AtLeastDateOrEstimatedAgeValidator()
-Validators = {
-    required: new RequiredFieldValidator(),
-    date: new DateFieldValidator(),
-    integer: new IntegerFieldValidator(),
-    number: new NumberFieldValidator(),
-    "numeric-range": new NumericRangeFieldValidator(),
-    regex: new RegexFieldValidator(),
-    phone: new PhoneFieldValidator(),
-    'atleast-date-or-estimated-age': new AtLeastDateOrEstimatedAgeValidator()
-}
+// Adding AtLeastDateOrEstimatedAgeValidator() to the validators defined by uicommons (rather than replacing the map)
+Validators['atleast-date-or-estimated-age'] = new AtLeastDateOrEstimatedAgeValidator();
 
 jQuery(function() {
     jQuery('#birthdateYear-field').addClass('atleast-date-or-estimated-age');

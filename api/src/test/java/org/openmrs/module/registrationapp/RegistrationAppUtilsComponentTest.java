@@ -55,12 +55,8 @@ public class RegistrationAppUtilsComponentTest extends BaseModuleContextSensitiv
     @Test
     @Verifies(value = "should find a concept by its uuid", method = "getConcept(String)")
     public void getConcept_shouldFindAConceptWithNonStandardUuid() throws Exception {
-        // concept from HtmlFormEntryTest-data.xml
+        // concept 64 from standardTestDataset has a non-standard uuid
         String id = "1000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        Concept concept = conceptService.getConcept(10);
-        concept.setUuid(id);
-        conceptService.saveConcept(concept);
-        Context.flushSession();
         Assert.assertEquals(id, RegistrationAppUtils.getConcept(id, conceptService).getUuid());
     }
 

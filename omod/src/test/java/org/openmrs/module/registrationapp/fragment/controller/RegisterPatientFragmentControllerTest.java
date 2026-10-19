@@ -143,6 +143,7 @@ public class RegisterPatientFragmentControllerTest extends BaseModuleWebContextS
         PersonAttributeType pat = new PersonAttributeType();
         pat.setName(EmrApiConstants.UNKNOWN_PATIENT_PERSON_ATTRIBUTE_TYPE_NAME);
         pat.setDescription(EmrApiConstants.UNKNOWN_PATIENT_PERSON_ATTRIBUTE_TYPE_NAME);
+        pat.setFormat("java.lang.String");
         personService.savePersonAttributeType(pat);
 
         // Normally RegistrationCoreService.registerPatient calls idgen to generate the patient's identifier, but
