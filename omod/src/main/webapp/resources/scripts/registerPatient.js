@@ -287,6 +287,8 @@ jq(function() {
 
         jq('#checkbox-autogenerate-identifier').click(function () {
             if (jq('#checkbox-autogenerate-identifier').is(':checked')) {
+                // clear any manually entered value, so it is neither validated nor submitted
+                NavigatorController.getFieldById('patient-identifier').resetValue();
                 NavigatorController.getFieldById('patient-identifier').hide();
             }
             else {
