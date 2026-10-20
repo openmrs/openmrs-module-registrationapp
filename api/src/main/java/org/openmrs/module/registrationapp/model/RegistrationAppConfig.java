@@ -44,6 +44,11 @@ public class RegistrationAppConfig {
     @JsonProperty
     private Integer maxPatientSearchResults;
 
+    // if true, the registration form checks for duplicates with the "Possible duplicates" question that follows the
+    // phone number; if false (the default), it shows the similar patients banner and the exact matches on confirmation
+    @JsonProperty
+    private boolean showDuplicatePatientSection;
+
     public RegistrationAppConfig() {
     }
 
@@ -109,6 +114,14 @@ public class RegistrationAppConfig {
 
     public void setMaxPatientSearchResults(Integer maxPatientSearchResults) {
         this.maxPatientSearchResults = maxPatientSearchResults;
+    }
+
+    public boolean isShowDuplicatePatientSection() {
+        return showDuplicatePatientSection;
+    }
+
+    public void setShowDuplicatePatientSection(boolean showDuplicatePatientSection) {
+        this.showDuplicatePatientSection = showDuplicatePatientSection;
     }
 
     public RegistrationEncounter getRegistrationEncounter() {

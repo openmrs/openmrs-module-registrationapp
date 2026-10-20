@@ -14,6 +14,22 @@
     if (combineSubSections == true) {
         ui.includeJavascript("registrationapp", "customMultiInputDateValidator.js");
     }
+
+    // the "Possible duplicates" question goes last in the Contact Info section (falling back to the section holding the
+    // phone number), and only if the phone number is on the form, since that is what triggers the check
+    def duplicateCheckSectionId = null
+    if (combineSubSections != true && formStructure.fields?.any { it.formFieldName == 'phoneNumber' }) {
+        duplicateCheckSectionId = formStructure.sections.containsKey('contactInfo') ? 'contactInfo' :
+            formStructure.sections.values().find { s -> s.questions.any { q -> q.fields.any { f -> f.formFieldName == 'phoneNumber' } } }?.id
+    }
+
+    // the duplicate check is opt-in (the showDuplicatePatientSection setting of the app), and needs a place on the form; otherwise the
+    // form shows the similar patients banner, and the exact matches on the confirmation
+    def useDuplicateGate = showDuplicatePatientSection == true && duplicateCheckSectionId != null
+
+    if (useDuplicateGate) {
+        ui.includeJavascript("registrationapp", "duplicateCheck.js");
+    }
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
@@ -35,6 +51,12 @@
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 
+    def duplicateMessageCodes = ["same", "similar", "different", "notRecorded", "title", "noteNone", "noteFound", "warning",
+        "tag.strong", "tag.possible", "field.name", "field.gender", "field.birthdate", "field.mothersFirstName", "field.address",
+        "field.phone", "compare", "showOther", "hideOther", "none.many", "none.one", "mustReview", "reviewed", "thisIsPatient",
+        "thisRegistration", "existingRecord", "backToList", "compareTitle", "previous", "next", "close", "position"
+    ].collect { "registrationapp.duplicates." + it }
+
 %>
 
 <% if(includeFragments){
@@ -44,7 +66,7 @@
 } %>
 
 <!-- used within registerPatient.js -->
-<%=	ui.includeFragment("appui", "messages", [ codes: genderCodes.flatten()
+<%=	ui.includeFragment("appui", "messages", [ codes: genderCodes.flatten() + (useDuplicateGate ? duplicateMessageCodes : [])
 ]) %>
 
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -108,6 +130,7 @@ fieldset[id\$="-fieldset"] div > div {
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';
     var appId = '${ui.encodeJavaScript(appId)}';
+    var duplicateCheckEnabled = ${useDuplicateGate};
 
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js
     var sections =  [];
@@ -193,6 +216,12 @@ fieldset[id\$="-fieldset"] div > div {
         ${ ui.message("registrationapp.registration.label") }
     </h2>
 
+<% if (useDuplicateGate) { %>
+    <div id="duplicates-note" class="note-container" role="status" aria-live="polite" style="display: none;">
+        <div class="note"><div class="text"></div></div>
+    </div>
+
+<% } else { %>
 	<div id="similarPatients" class="highlighted" style="display: none;">
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
@@ -204,6 +233,7 @@ fieldset[id\$="-fieldset"] div > div {
         </ul>
     </div>
 
+<% } %>
     <div id="biometricPatients" class="highlighted" style="display: none;">
         <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometrics.matchingPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
         <div class="clear"></div>
@@ -439,6 +469,23 @@ fieldset[id\$="-fieldset"] div > div {
 	                        <${combineSubSections == true ? "/div" : "/fieldset"}>
 	                    <% } %>
                     <% } %>
+                    <% if (useDuplicateGate && section.id == duplicateCheckSectionId) { %>
+                        <fieldset id="possible-duplicates" class="duplicates-gate no-confirmation">
+                            <legend>${ui.message("registrationapp.duplicates.title")}</legend>
+                            <h3 id="duplicates-heading" tabindex="-1">${ui.message("registrationapp.duplicates.title")}</h3>
+                            <div id="duplicates-screen">
+                                <div class="note-container"><div class="note warning"><div class="text" id="duplicates-warning"></div></div></div>
+                                <ul id="duplicates-strong" class="duplicate-list"></ul>
+                                <a href="#" id="duplicates-toggle-weak" role="button" aria-expanded="false" aria-controls="duplicates-weak" style="display: none;"></a>
+                                <ul id="duplicates-weak" class="duplicate-list" style="display: none;"></ul>
+                                <p class="duplicates-hint">${ui.message("registrationapp.duplicates.hint")}</p>
+                            </div>
+                            <p>
+                                <span class="field-error"></span>
+                                <button type="button" id="duplicates-none" class="confirm"></button>
+                            </p>
+                        </fieldset>
+                    <% } %>
                   <${combineSubSections == true ? "/fieldset" : "/div"}>
             </section>
         <% } %>
@@ -458,10 +505,12 @@ fieldset[id\$="-fieldset"] div > div {
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
+            <% if (!useDuplicateGate) { %>
             <div id="exact-matches" style="display: none; margin-bottom: 20px">
                 <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
                 <ul id="exactPatientsSelect" class="select"></ul>
             </div>
+            <% } %>
             <div id="confirmationQuestion">
                 ${ ui.message("registrationapp.confirm") }
                 <p style="display: inline">

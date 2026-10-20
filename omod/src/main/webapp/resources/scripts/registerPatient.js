@@ -119,8 +119,14 @@ jq(function() {
         focusedField.focus();
     };
 
-    jq('input').change(getSimilarPatients);
-    jq('select').change(getSimilarPatients);
+    if (duplicateCheckEnabled) {
+        /* The duplicate check replaces the similar patients banner, see duplicateCheck.js */
+        DuplicateCheck.init();
+    }
+    else {
+        jq('input').change(getSimilarPatients);
+        jq('select').change(getSimilarPatients);
+    }
 
     // Biometric matching
     // TODO: This is mostly copied from similar patients above.  Refactor into shared, common functionality as appropriate
@@ -212,6 +218,11 @@ jq(function() {
 
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {
+
+        // with the duplicate check, the matches are reviewed after the phone number instead
+        if (duplicateCheckEnabled) {
+            return;
+        }
 
         var formData = jq('#registration').serialize();
 
