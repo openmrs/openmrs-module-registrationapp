@@ -14,6 +14,9 @@
     if (combineSubSections == true) {
         ui.includeJavascript("registrationapp", "customMultiInputDateValidator.js");
     }
+    if (allowManualIdentifier) {
+        ui.includeJavascript("registrationapp", "patientIdentifierFormatValidator.js");
+    }
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
@@ -384,7 +387,9 @@ fieldset[id\$="-fieldset"] div > div {
                         identifierSectionFound = true; %>
                         <% if (allowManualIdentifier) { %>
                             ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
-                                    identifierTypeName: ui.format(primaryIdentifierType)
+                                    identifierTypeName: ui.format(primaryIdentifierType),
+                                    identifierFormat: primaryIdentifierType?.format,
+                                    identifierFormatDescription: primaryIdentifierType?.formatDescription
                             ])}
                         <% } %>
                     <% } %>
@@ -448,7 +453,9 @@ fieldset[id\$="-fieldset"] div > div {
                 <span class="title">${ui.message("registrationapp.patient.identifiers.label")}</span>
 
                 ${ ui.includeFragment("registrationapp", "field/allowManualIdentifier", [
-                        identifierTypeName: ui.format(primaryIdentifierType)
+                        identifierTypeName: ui.format(primaryIdentifierType),
+                        identifierFormat: primaryIdentifierType?.format,
+                        identifierFormatDescription: primaryIdentifierType?.formatDescription
                 ])}
             </section>
         <% } %>
