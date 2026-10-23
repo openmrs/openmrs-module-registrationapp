@@ -103,13 +103,13 @@
   margin-bottom: 10px;
 }
 
-#possible-duplicates .duplicate-list {
+.duplicates-gate .duplicate-list {
   list-style: none;
   margin: 0 0 10px;
   padding: 0;
 }
 
-#possible-duplicates .duplicate-card {
+.duplicates-gate .duplicate-card {
   border: 1px solid #c9ced3;
   border-radius: 4px;
   margin-bottom: 10px;
@@ -118,11 +118,11 @@
   background: #fff;
 }
 
-#possible-duplicates .duplicate-card-head {
+.duplicates-gate .duplicate-card-head {
   margin-bottom: 4px;
 }
 
-#possible-duplicates .duplicate-name {
+.duplicates-gate .duplicate-name {
   font-size: 20px;
   font-weight: bold;
   margin-right: 10px;
@@ -145,42 +145,42 @@
   color: #7a5a00;
 }
 
-#possible-duplicates .duplicate-ids {
+.duplicates-gate .duplicate-ids {
   margin: 4px 0;
 }
 
-#possible-duplicates .duplicate-id-name {
+.duplicates-gate .duplicate-id-name {
   font-weight: bold;
 }
 
-#possible-duplicates .duplicate-id-value {
+.duplicates-gate .duplicate-id-value {
   margin-right: 16px;
 }
 
-#possible-duplicates .duplicate-agreement-match {
+.duplicates-gate .duplicate-agreement-match {
   color: #1d6b3a;
 }
 
-#possible-duplicates .duplicate-agreement-similar {
+.duplicates-gate .duplicate-agreement-similar {
   color: #7a5a00;
 }
 
-#possible-duplicates .duplicate-agreement-different {
+.duplicates-gate .duplicate-agreement-different {
   color: #8a1c1c;
 }
 
-#possible-duplicates .duplicate-compare {
+.duplicates-gate .duplicate-compare {
   position: absolute;
   top: 10px;
   right: 14px;
 }
 
-#possible-duplicates #duplicates-toggle-weak {
+.duplicates-gate #duplicates-toggle-weak {
   display: inline-block;
   margin: 0 0 10px;
 }
 
-#possible-duplicates .duplicates-hint {
+.duplicates-gate .duplicates-hint {
   color: #5b6770;
 }
 

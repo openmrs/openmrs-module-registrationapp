@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationcore.api.search.FieldMatchResult;
@@ -27,21 +26,16 @@ import org.openmrs.ui.framework.UiUtils;
 
 public class MatchingPatientsFragmentControllerTest {
 	
-	private AdministrationService adminService = mock(AdministrationService.class);
-	
 	@Test
-	public void getCutoff_shouldReadGlobalProperty() {
-		when(adminService.getGlobalProperty("some.gp")).thenReturn(" 7.5 ");
-		assertThat(MatchingPatientsFragmentController.getCutoff(adminService, "some.gp", 2.0), is(7.5));
+	public void getCutoff_shouldReadTheValue() {
+		assertThat(MatchingPatientsFragmentController.getCutoff(" 7.5 ", 2.0), is(7.5));
 	}
 	
 	@Test
-	public void getCutoff_shouldUseDefaultIfGlobalPropertyIsMissingBlankOrNotANumber() {
-		when(adminService.getGlobalProperty("blank.gp")).thenReturn("  ");
-		when(adminService.getGlobalProperty("bad.gp")).thenReturn("lots");
-		assertThat(MatchingPatientsFragmentController.getCutoff(adminService, "missing.gp", 2.0), is(2.0));
-		assertThat(MatchingPatientsFragmentController.getCutoff(adminService, "blank.gp", 2.0), is(2.0));
-		assertThat(MatchingPatientsFragmentController.getCutoff(adminService, "bad.gp", 2.0), is(2.0));
+	public void getCutoff_shouldUseDefaultIfValueIsMissingBlankOrNotANumber() {
+		assertThat(MatchingPatientsFragmentController.getCutoff(null, 2.0), is(2.0));
+		assertThat(MatchingPatientsFragmentController.getCutoff("  ", 2.0), is(2.0));
+		assertThat(MatchingPatientsFragmentController.getCutoff("lots", 2.0), is(2.0));
 	}
 	
 	@Test

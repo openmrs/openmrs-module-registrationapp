@@ -15,17 +15,15 @@
         ui.includeJavascript("registrationapp", "customMultiInputDateValidator.js");
     }
 
-    // the "Possible duplicates" question goes last in the Contact Info section (falling back to the section holding the
-    // phone number), and only if the phone number is on the form, since that is what triggers the check
-    def duplicateCheckSectionId = null
-    if (combineSubSections != true && formStructure.fields?.any { it.formFieldName == 'phoneNumber' }) {
-        duplicateCheckSectionId = formStructure.sections.containsKey('contactInfo') ? 'contactInfo' :
-            formStructure.sections.values().find { s -> s.questions.any { q -> q.fields.any { f -> f.formFieldName == 'phoneNumber' } } }?.id
-    }
+    // the duplicate check is opt-in: the app configures a question with a field of type "possibleDuplicates", wherever it wants it to
+    // be. It is independent of the similar patients banner and of the exact matches on the confirmation, which have settings of their own.
+    def useDuplicateGate = combineSubSections != true &&
+        formStructure.fields?.any { it.type == 'possibleDuplicates' } == true
 
-    // the duplicate check is opt-in (the showDuplicatePatientSection setting of the app), and needs a place on the form; otherwise the
-    // form shows the similar patients banner, and the exact matches on the confirmation
-    def useDuplicateGate = showDuplicatePatientSection == true && duplicateCheckSectionId != null
+    // the "note" banner belongs to the possible duplicates question, so without one the banner is the expandable one
+    def similarPatientsBannerStyle = (similarPatientsBanner == 'note' && !useDuplicateGate) ? 'expandable' : similarPatientsBanner
+    // the exact matches are listed on the confirmation in the markup of the expandable banner
+    def includeSimilarPatientsMarkup = similarPatientsBannerStyle == 'expandable' || checkExactMatchesOnConfirmation == true
 
     if (useDuplicateGate) {
         ui.includeJavascript("registrationapp", "duplicateCheck.js");
@@ -51,7 +49,7 @@
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 
-    def duplicateMessageCodes = ["same", "similar", "different", "notRecorded", "title", "noteNone", "noteFound", "warning",
+    def duplicateMessageCodes = ["same", "similar", "different", "notRecorded", "title", "noteNone", "noteFound", "warning", "checking", "failed", "retry", "noMatches", "continue",
         "tag.strong", "tag.possible", "field.name", "field.gender", "field.birthdate", "field.mothersFirstName", "field.address",
         "field.phone", "compare", "showOther", "hideOther", "none.many", "none.one", "mustReview", "reviewed", "thisIsPatient",
         "thisRegistration", "existingRecord", "backToList", "compareTitle", "previous", "next", "close", "position"
@@ -131,6 +129,8 @@ fieldset[id\$="-fieldset"] div > div {
     var patientDashboardLink = '${patientDashboardLink}';
     var appId = '${ui.encodeJavaScript(appId)}';
     var duplicateCheckEnabled = ${useDuplicateGate};
+    var similarPatientsBanner = '${ui.encodeJavaScript(similarPatientsBannerStyle)}';
+    var checkExactMatchesOnConfirmation = ${checkExactMatchesOnConfirmation == true};
 
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js
     var sections =  [];
@@ -216,12 +216,13 @@ fieldset[id\$="-fieldset"] div > div {
         ${ ui.message("registrationapp.registration.label") }
     </h2>
 
-<% if (useDuplicateGate) { %>
+<% if (useDuplicateGate && similarPatientsBannerStyle == 'note') { %>
     <div id="duplicates-note" class="note-container" role="status" aria-live="polite" style="display: none;">
         <div class="note"><div class="text"></div></div>
     </div>
 
-<% } else { %>
+<% } %>
+<% if (includeSimilarPatientsMarkup) { %>
 	<div id="similarPatients" class="highlighted" style="display: none;">
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
@@ -420,10 +421,12 @@ fieldset[id\$="-fieldset"] div > div {
                     <% } %>
 
                     <% questions.each { question ->
-	                    // Skip re-rendering custom name field if present in app definition/formStructure
-	                    if (question.id == null || question.id != 'personName') {
+	                    def isDuplicatesQuestion = question.fields?.any { it.type == 'possibleDuplicates' } == true
+	                    // Skip re-rendering custom name field if present in app definition/formStructure, and the possible duplicates
+	                    // question when the duplicate check isn't in use
+	                    if ((question.id == null || question.id != 'personName') && (useDuplicateGate || !isDuplicatesQuestion)) {
 	                        def fields=question.fields
-	                        def classes = "";
+	                        def classes = isDuplicatesQuestion ? "duplicates-gate no-confirmation" : "";
 	                        if (question.legend == "Person.address") {
 	                            classes = "requireOne"
 	                        }
@@ -469,23 +472,6 @@ fieldset[id\$="-fieldset"] div > div {
 	                        <${combineSubSections == true ? "/div" : "/fieldset"}>
 	                    <% } %>
                     <% } %>
-                    <% if (useDuplicateGate && section.id == duplicateCheckSectionId) { %>
-                        <fieldset id="possible-duplicates" class="duplicates-gate no-confirmation">
-                            <legend>${ui.message("registrationapp.duplicates.title")}</legend>
-                            <h3 id="duplicates-heading" tabindex="-1">${ui.message("registrationapp.duplicates.title")}</h3>
-                            <div id="duplicates-screen">
-                                <div class="note-container"><div class="note warning"><div class="text" id="duplicates-warning"></div></div></div>
-                                <ul id="duplicates-strong" class="duplicate-list"></ul>
-                                <a href="#" id="duplicates-toggle-weak" role="button" aria-expanded="false" aria-controls="duplicates-weak" style="display: none;"></a>
-                                <ul id="duplicates-weak" class="duplicate-list" style="display: none;"></ul>
-                                <p class="duplicates-hint">${ui.message("registrationapp.duplicates.hint")}</p>
-                            </div>
-                            <p>
-                                <span class="field-error"></span>
-                                <button type="button" id="duplicates-none" class="confirm"></button>
-                            </p>
-                        </fieldset>
-                    <% } %>
                   <${combineSubSections == true ? "/fieldset" : "/div"}>
             </section>
         <% } %>
@@ -505,7 +491,7 @@ fieldset[id\$="-fieldset"] div > div {
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
-            <% if (!useDuplicateGate) { %>
+            <% if (checkExactMatchesOnConfirmation == true) { %>
             <div id="exact-matches" style="display: none; margin-bottom: 20px">
                 <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
                 <ul id="exactPatientsSelect" class="select"></ul>

@@ -4,7 +4,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -29,21 +29,15 @@ public class RegistrationAppConfigTest {
     }
 
     @Test
-    public void testShowDuplicatePatientSectionIsOffUnlessConfigured() throws Exception {
-        RegistrationAppConfig parsed = new ObjectMapper().readValue(getClass().getClassLoader().getResourceAsStream("registrationAppConfig.json"), RegistrationAppConfig.class);
-        assertFalse(parsed.isShowDuplicatePatientSection());
-    }
-
-    @Test
-    public void testShowDuplicatePatientSectionIsParsedAndSerialized() throws Exception {
+    public void testSimilarPatientsSettingsAreOptional() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        RegistrationAppConfig parsed = mapper.readValue("{\"showDuplicatePatientSection\": true}", RegistrationAppConfig.class);
-        assertTrue(parsed.isShowDuplicatePatientSection());
+        RegistrationAppConfig parsed = mapper.readValue("{\"similarPatientsBanner\": \"note\", \"checkExactMatchesOnConfirmation\": false}", RegistrationAppConfig.class);
+        assertThat(parsed.getSimilarPatientsBanner(), is("note"));
+        assertThat(parsed.getCheckExactMatchesOnConfirmation(), is(false));
 
-        // the app descriptor of a site is built from this class, so the setting has to make it into the json
-        RegistrationAppConfig config = new RegistrationAppConfig();
-        config.setShowDuplicatePatientSection(true);
-        assertThat(mapper.valueToTree(config).get("showDuplicatePatientSection").getBooleanValue(), is(true));
-        assertThat(mapper.valueToTree(new RegistrationAppConfig()).get("showDuplicatePatientSection").getBooleanValue(), is(false));
+        // left null unless set, so that the page applies the defaults, and a config built in code doesn't switch anything off
+        RegistrationAppConfig unset = new RegistrationAppConfig();
+        assertNull(unset.getSimilarPatientsBanner());
+        assertNull(unset.getCheckExactMatchesOnConfirmation());
     }
 }

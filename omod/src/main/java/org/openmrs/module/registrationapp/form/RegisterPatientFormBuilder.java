@@ -32,6 +32,7 @@ import org.openmrs.module.appframework.domain.AppDescriptor;
 import org.openmrs.module.appframework.service.AppFrameworkService;
 import org.openmrs.module.registrationapp.model.Field;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
+import org.openmrs.module.registrationapp.model.PossibleDuplicatesWidget;
 import org.openmrs.module.registrationapp.model.Question;
 import org.openmrs.module.registrationapp.model.Section;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
@@ -56,6 +57,26 @@ public class RegisterPatientFormBuilder {
 	protected static final Log log = LogFactory.getLog(RegisterPatientFormBuilder.class);
 
 	public static final String DEMOGRAPHICS_SECTION_ID = "demographics";
+
+	/**
+	 * The type of the field of the question that reviews possible duplicates of the patient being registered
+	 */
+	public static final String POSSIBLE_DUPLICATES_FIELD_TYPE = PossibleDuplicatesWidget.FIELD_TYPE;
+
+	/**
+	 * Removes the questions that only make sense while registering a new patient, i.e. those with a field of type
+	 * {@link #POSSIBLE_DUPLICATES_FIELD_TYPE}, so that a section can be shown or edited for an existing patient
+	 *
+	 * @param section the section, may be null
+	 * @return the same section
+	 */
+	public static Section withoutRegistrationOnlyQuestions(Section section) {
+		if (section != null && section.getQuestions() != null) {
+			section.getQuestions().removeIf(question -> question.getFields() != null && question.getFields().stream()
+					.anyMatch(field -> POSSIBLE_DUPLICATES_FIELD_TYPE.equals(field.getType())));
+		}
+		return section;
+	}
 
 	/**
 	 * Builds the navigable form structure for the specified app descriptor

@@ -1,31 +1,40 @@
 /*
  * Duplicate patient check for the registration form.
  *
- * Once the phone number has been entered, the entries so far are checked against existing patients. If there are matches,
- * a "Possible duplicates" question is enabled as the last question of the Contact Info section, and everything after it
- * stays locked until the clerk has reviewed the matches: the question simply fails validation until acknowledged, and the
- * navigator already refuses to move past (Tab, Next, clicking a later question or section) a question that is invalid.
+ * The app configures a "Possible duplicates" question wherever it wants it (a field of type possibleDuplicates, see
+ * fragments/field/possibleDuplicates.gsp). Once the trigger field (or, without one, the question before it) has been
+ * entered, or when the question is reached, the entries so far are checked against existing patients. The question is always
+ * there: it lists the matches, or says there are none. It fails validation until a check for the current entries has
+ * succeeded and, if there are matches, they have been reviewed: the navigator already refuses to move past (Tab, Next,
+ * clicking a later question or section) a question that is invalid, and the form is not submitted while it is.
  *
  * Strong matches are listed first, weaker ones collapsed under a link. A match can be compared side by side with the
  * entries in a side panel, from where the existing record can be opened.
  *
+ * If the app uses the "note" style for the similar patients banner, a line above the form also tells how many similar
+ * patients there are, until they have been reviewed.
+ *
  * Needs NavigatorController, so DuplicateCheck.init() is called from registerPatient.js once that exists.
  */
 
-// the navigator calls validate() on each field of the question; the question has a single field, the "None of these" button
+// the navigator calls validate() on each field of the question; the question has a single field, the button
 function DuplicatesGateValidator() {}
 DuplicatesGateValidator.prototype = new FieldValidator();
 DuplicatesGateValidator.prototype.constructor = DuplicatesGateValidator;
 DuplicatesGateValidator.prototype.validate = function() {
-    return DuplicateCheck.isAcknowledged() ? null : emr.message('registrationapp.duplicates.mustReview');
+    return DuplicateCheck.validationMessage();
 };
 // added to the existing validators, rather than replacing them
 Validators['duplicates-gate'] = new DuplicatesGateValidator();
 
 var DuplicateCheck = (function(jq) {
 
-    var QUESTION_ID = 'possible-duplicates';
+    // the phone number is one of the entries compared with the existing patients
     var PHONE_FIELD_NAME = 'phoneNumber';
+
+    // the question that holds the widget, and the name of the field that starts the check, if the app has set one
+    var questionId = null;
+    var triggerFieldName = null;
 
     // the keys the search algorithm uses for the per-field results, mapped to the registration form field they compare
     var COMPARE_FIELDS = ['name', 'gender', 'birthdate', 'mothersFirstName', 'address', 'phone'];
@@ -33,14 +42,19 @@ var DuplicateCheck = (function(jq) {
         'address4', 'address5', 'address6', 'address7', 'address8', 'address9', 'address10', 'address11', 'address12',
         'address13', 'address14', 'address15', 'postalCode'];
 
+    var noteEnabled = false;
+
     var state = {
+        status: 'idle',       // idle (not checked yet), pending, failed or done; only a check that is done can pass
         matches: [],          // the possible duplicates, strongest first
         key: '',              // identifies the set of matches, so that a changed set has to be reviewed again
         acknowledgedKey: null,
-        started: false,       // set once the phone number has been reached; from then on, any change re-runs the check
-        lastGatePayload: null,
+        started: false,       // set once the trigger has been reached; from then on, any change re-runs the check
+        selected: false,      // whether the question is the one being answered
+        noteCount: null,      // the number of similar patients in the note above the form, if known
+        lastPayload: null,
         lastEarlyPayload: null,
-        gateRequest: 0,
+        request: 0,
         earlyRequest: 0
     };
 
@@ -64,24 +78,38 @@ var DuplicateCheck = (function(jq) {
     }
 
     function question() {
-        return NavigatorController.getQuestionById(QUESTION_ID);
+        return questionId ? NavigatorController.getQuestionById(questionId) : null;
     }
 
     function isUnknownPatient() {
         return jq('#checkbox-unknown-patient').is(':checked');
     }
 
-    function isActive() {
-        return state.matches.length > 0 && !isUnknownPatient();
+    // the check passes when it has succeeded for the current entries and, if it found matches, they have been reviewed
+    function isSatisfied() {
+        if (isUnknownPatient()) {
+            return true;
+        }
+        return state.status === 'done' && (state.matches.length === 0 || state.acknowledgedKey === state.key);
     }
 
-    function isAcknowledged() {
-        return !isActive() || state.acknowledgedKey === state.key;
+    function validationMessage() {
+        if (isSatisfied()) {
+            return null;
+        }
+        if (state.status === 'idle') {
+            runCheck();  // reached before the trigger, e.g. by clicking on the question
+        }
+        return state.status === 'failed' ? msg('registrationapp.duplicates.failed') :
+            state.status === 'done' ? msg('registrationapp.duplicates.mustReview') :
+            msg('registrationapp.duplicates.checking');
     }
 
     function formData() {
-        // the date components update the hidden date value on blur
+        // the date components update the hidden date value on blur, which takes the focus off the field that is being changed
+        var focusedField = jq(':focus');
         jq('.date-component').trigger('blur');
+        focusedField.focus();
         return jq('#registration').serialize();
     }
 
@@ -104,9 +132,15 @@ var DuplicateCheck = (function(jq) {
 
     /* The note above the form */
 
-    function showNote(count) {
+    // shown while there are similar patients that haven't been reviewed, and while no check has been made it says nothing
+    function updateNote() {
+        if (!noteEnabled) {
+            return;
+        }
         var note = jq('#duplicates-note');
-        if (count === null) {
+        var count = state.noteCount;
+        var reviewed = state.status === 'done' && count > 0 && state.acknowledgedKey === state.key;
+        if (count === null || state.selected || reviewed) {
             note.hide();
             return;
         }
@@ -115,38 +149,27 @@ var DuplicateCheck = (function(jq) {
         note.show();
     }
 
-    /* Enabling and disabling the question */
-
-    function syncQuestion() {
-        var q = question();
-        if (!q) {
-            return;
-        }
-        // show() and hide() are only called when there is something to change, as showing a selected question selects it again
-        if (isActive()) {
-            if (q.isDisabled()) {
-                q.show();
-            }
-            updateAcknowledgedMarker();
-        } else if (!q.isDisabled()) {
-            q.hide();
-        }
-    }
-
     function updateAcknowledgedMarker() {
-        // makes the navigator tick the question once reviewed
+        // makes the navigator tick the question once it is satisfied
         var button = jq('#duplicates-none');
-        if (isAcknowledged()) {
+        if (state.status === 'done' && isSatisfied()) {
             button.attr('data-display-value', msg('registrationapp.duplicates.reviewed'));
         } else {
             button.removeAttr('data-display-value');
         }
     }
 
-    // when a check finds matches after the clerk has already moved past the question, take them back to it
+    // when a check finishes without having been passed by the clerk, who has already moved past the question, take them back to it
+    function returnToQuestion() {
+        var q = question();
+        if (q && !isSatisfied()) {
+            q.click();
+        }
+    }
+
     function returnToQuestionIfPassed() {
         var q = question();
-        if (!q || !isActive() || isAcknowledged()) {
+        if (!q || isSatisfied()) {
             return;
         }
         var questions = NavigatorController.getQuestions();
@@ -160,36 +183,50 @@ var DuplicateCheck = (function(jq) {
 
     function applyMatches(matches) {
         var previousKey = state.key;
+        state.status = 'done';
         state.matches = matches;
         state.key = matchKey(matches);
+        state.noteCount = matches.length;
         if (state.key !== previousKey) {
             closeDrawer(false);
         }
         renderScreen();
-        showNote(matches.length);
-        syncQuestion();
+        updateNote();
         returnToQuestionIfPassed();
     }
 
-    // the check that gates the form, same search as the note above the form (getSimilarPatients)
-    function runGateCheck() {
+    function applyFailure() {
+        state.status = 'failed';
+        state.lastPayload = null;  // so that trying again sends the request again
+        renderScreen();
+        returnToQuestionIfPassed();
+    }
+
+    // the check that gates the form, same search as the banner above the form (getSimilarPatients)
+    function runCheck(force) {
         if (isUnknownPatient()) {
             return;
         }
         var payload = formData();
-        if (payload === state.lastGatePayload) {
+        if (!force && payload === state.lastPayload) {
             return;
         }
-        state.lastGatePayload = payload;
-        var request = ++state.gateRequest;
+        state.lastPayload = payload;
+        state.status = 'pending';
+        var request = ++state.request;
+        renderScreen();
         jq.post(actionUrl('getSimilarPatients'), payload, function(data) {
-            if (request === state.gateRequest) {
+            if (request === state.request) {
                 applyMatches(data);
             }
-        }, 'json');
+        }, 'json').fail(function() {
+            if (request === state.request) {
+                applyFailure();
+            }
+        });
     }
 
-    // before the phone number is reached, only the note above the form is kept up to date
+    // before the trigger is reached, only the note above the form is kept up to date
     function runEarlyCheck() {
         if (state.started || isUnknownPatient()) {
             return;
@@ -202,23 +239,24 @@ var DuplicateCheck = (function(jq) {
         var request = ++state.earlyRequest;
         jq.post(actionUrl('getSimilarPatients'), payload, function(data) {
             if (request === state.earlyRequest && !state.started) {
-                showNote(data.length);
+                state.noteCount = data.length;
+                updateNote();
             }
         }, 'json');
     }
 
-    function onPhoneReached() {
+    function onTriggerReached() {
         state.started = true;
-        runGateCheck();
+        runCheck();
     }
 
     function onAnyChange(event) {
-        if (jq(event.target).attr('name') === PHONE_FIELD_NAME) {
+        if (triggerFieldName && jq(event.target).attr('name') === triggerFieldName) {
             return;
         }
         if (state.started) {
-            runGateCheck();
-        } else {
+            runCheck();
+        } else if (noteEnabled) {
             runEarlyCheck();
         }
     }
@@ -292,16 +330,19 @@ var DuplicateCheck = (function(jq) {
         var strongList = jq('#duplicates-strong').empty();
         var weakList = jq('#duplicates-weak').empty();
         var toggle = jq('#duplicates-toggle-weak');
+        var hasMatches = state.status === 'done' && state.matches.length > 0;
 
         var weakCount = 0;
-        jq.each(state.matches, function(index, match) {
-            if (match.strong) {
-                strongList.append(buildCard(match, index));
-            } else {
-                weakList.append(buildCard(match, index));
-                weakCount++;
-            }
-        });
+        if (hasMatches) {
+            jq.each(state.matches, function(index, match) {
+                if (match.strong) {
+                    strongList.append(buildCard(match, index));
+                } else {
+                    weakList.append(buildCard(match, index));
+                    weakCount++;
+                }
+            });
+        }
 
         // weaker matches are collapsed, unless there is nothing else to show
         var hasStrong = strongList.children().length > 0;
@@ -313,9 +354,28 @@ var DuplicateCheck = (function(jq) {
             weakList.toggle(weakCount > 0);
         }
 
-        jq('#duplicates-warning').text(msg('registrationapp.duplicates.warning', state.matches.length));
-        jq('#duplicates-none').text(state.matches.length == 1 ?
-            msg('registrationapp.duplicates.none.one') : msg('registrationapp.duplicates.none.many', state.matches.length));
+        // what the screen says, and what its button does, depends on the state of the check
+        var text, button, warning = false;
+        if (state.status === 'failed') {
+            text = msg('registrationapp.duplicates.failed');
+            button = msg('registrationapp.duplicates.retry');
+            warning = true;
+        } else if (state.status !== 'done') {
+            text = msg('registrationapp.duplicates.checking');
+            button = msg('registrationapp.duplicates.checking');
+        } else if (!hasMatches) {
+            text = msg('registrationapp.duplicates.noMatches');
+            button = msg('registrationapp.duplicates.continue');
+        } else {
+            text = msg('registrationapp.duplicates.warning', state.matches.length);
+            button = state.matches.length == 1 ? msg('registrationapp.duplicates.none.one') :
+                msg('registrationapp.duplicates.none.many', state.matches.length);
+            warning = true;
+        }
+        jq('#duplicates-warning').text(text).closest('.note').toggleClass('warning', warning);
+        jq('#duplicates-none').text(button);
+        jq('#duplicates-screen .duplicates-hint').toggle(hasMatches);
+        updateAcknowledgedMarker();
     }
 
     function toggleWeak(event) {
@@ -328,16 +388,23 @@ var DuplicateCheck = (function(jq) {
             .text(expanded ? msg('registrationapp.duplicates.hideOther') : msg('registrationapp.duplicates.showOther', weakCount));
     }
 
-    function acknowledge() {
-        state.acknowledgedKey = state.key;
-        updateAcknowledgedMarker();
-        NavigatorController.stepForward();
+    // the one button of the question
+    function onButton() {
+        if (state.status === 'failed') {
+            runCheck(true);
+        } else if (state.status === 'done') {
+            state.acknowledgedKey = state.key;
+            updateAcknowledgedMarker();
+            updateNote();
+            NavigatorController.stepForward();
+        }
     }
 
     /* The side panel comparing the entries with a match */
 
     function valueOfRegistration(name) {
-        return jq.trim(jq('#registration').find('[name="' + name + '"]').not(':radio').first().val() || '');
+        // :input, as a label can have a name too (the address fields of uicommons' personAddress)
+        return jq.trim(jq('#registration').find(':input[name="' + name + '"]').not(':radio').first().val() || '');
     }
 
     var formattedBirthdates = {};
@@ -539,33 +606,47 @@ var DuplicateCheck = (function(jq) {
 
     /* Setting up */
 
-    function init() {
+    function init(withNote) {
+        var widget = jq('#duplicates-widget');
+        if (widget.length === 0) {
+            return;  // the form has no possible duplicates question
+        }
+        noteEnabled = withNote === true;
+        questionId = widget.closest('fieldset').attr('id');
+        triggerFieldName = widget.attr('data-trigger-field') || null;
+
         var q = question();
         if (!q) {
-            return;  // the form has no phone number, or no place for the question
+            return;
         }
 
-        // nothing to review until a check finds matches
-        q.hide();
+        if (triggerFieldName) {
+            // leaving the field counts too, since the field may be left blank
+            jq('#registration').find(':input[name="' + triggerFieldName + '"]').on('change unselect', onTriggerReached);
+        } else {
+            var questions = NavigatorController.getQuestions();
+            var previous = questions[questions.indexOf(q) - 1];
+            if (previous) {
+                previous.element.on('unselect', onTriggerReached);
+            } else {
+                state.started = true;
+            }
+        }
 
-        // the phone number is the trigger; leaving the field counts too, since a blank phone number is allowed
-        var phone = jq('#registration').find('[name="' + PHONE_FIELD_NAME + '"]');
-        phone.on('change unselect', onPhoneReached);
-
-        // other fields: keep the note above the form up to date, and re-check once the phone number has been reached
+        // other fields: keep the note above the form up to date, and re-check once the trigger has been reached
         jq('#registration').on('change', 'input, select', onAnyChange);
 
-        jq('#duplicates-none').click(acknowledge);
+        jq('#duplicates-none').click(onButton);
         jq('#duplicates-toggle-weak').click(toggleWeak);
         jq('#duplicates-screen').on('click', '.duplicate-compare', function() {
             openDrawer(parseInt(jq(this).attr('data-match-index'), 10), jq(this));
         });
 
         // The navigator listens to key presses on the whole page, and always moves to another field on Tab, and presses the
-        // selected field (the "None of these" button) on Enter. On the screen, Tab is left to the browser until the first or
+        // selected field (the button) on Enter. On the screen, Tab is left to the browser until the first or
         // last control is reached, and Enter, Esc and the up and down keys only apply to the control that has the focus.
-        jq('#' + QUESTION_ID).on('keydown', function(event) {
-            var onNoneButton = jq(event.target).is('#duplicates-none');
+        jq('#' + questionId).on('keydown', function(event) {
+            var onActionButton = jq(event.target).is('#duplicates-none');
             if (event.which === 9) {
                 var focusable = jq('#duplicates-heading, #duplicates-screen button, #duplicates-screen a[href], #duplicates-none').filter(':visible');
                 var current = focusable.index(document.activeElement);
@@ -573,35 +654,48 @@ var DuplicateCheck = (function(jq) {
                 if (!atEdge) {
                     event.stopPropagation();
                 }
-            } else if (!onNoneButton && (event.which === 13 || event.which === 27 || event.which === 38 || event.which === 40)) {
+            } else if (!onActionButton && (event.which === 13 || event.which === 27 || event.which === 38 || event.which === 40)) {
                 event.stopPropagation();
             }
         });
 
-        jq('#' + QUESTION_ID).on('select', function(event) {
+        jq('#' + questionId).on('select', function(event) {
             if (event.target !== this) {
                 return;
             }
-            showNote(null);
+            state.selected = true;
+            updateNote();
+            if (state.status === 'idle') {
+                runCheck();
+            }
             // the screen is read from the top, and Tab then walks through the matches
             setTimeout(function() { jq('#duplicates-heading').focus(); }, 0);
         });
-        jq('#' + QUESTION_ID).on('unselect', function(event) {
+        jq('#' + questionId).on('unselect', function(event) {
             if (event.target === this) {
-                showNote(state.matches.length);
+                state.selected = false;
+                updateNote();
             }
         });
 
-        // the unknown patient handler disables and enables whole sections, so put the question back as it should be
+        // the check is skipped for an unknown patient, so make it again when that is unchecked
         jq('#checkbox-unknown-patient').click(function() {
-            setTimeout(syncQuestion, 0);
+            setTimeout(function() {
+                if (!isUnknownPatient() && state.started) {
+                    runCheck();
+                }
+                updateNote();
+            }, 0);
         });
+
+        renderScreen();
     }
 
     return {
         init: init,
-        isAcknowledged: isAcknowledged,
-        isActive: isActive
+        isSatisfied: isSatisfied,
+        validationMessage: validationMessage,
+        returnToQuestion: returnToQuestion
     };
 
 })(jQuery);

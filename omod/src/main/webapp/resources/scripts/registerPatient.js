@@ -119,13 +119,14 @@ jq(function() {
         focusedField.focus();
     };
 
-    if (duplicateCheckEnabled) {
-        /* The duplicate check replaces the similar patients banner, see duplicateCheck.js */
-        DuplicateCheck.init();
-    }
-    else {
+    if (similarPatientsBanner === 'expandable') {
         jq('input').change(getSimilarPatients);
         jq('select').change(getSimilarPatients);
+    }
+
+    if (duplicateCheckEnabled) {
+        /* The possible duplicates question, with the "note" banner if configured, see duplicateCheck.js */
+        DuplicateCheck.init(similarPatientsBanner === 'note');
     }
 
     // Biometric matching
@@ -219,8 +220,7 @@ jq(function() {
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {
 
-        // with the duplicate check, the matches are reviewed after the phone number instead
-        if (duplicateCheckEnabled) {
+        if (!checkExactMatchesOnConfirmation) {
             return;
         }
 
@@ -241,6 +241,13 @@ jq(function() {
     /* Submit functionality */
     jq('#registration').submit(function (e) {
         e.preventDefault();
+
+        // matches may have turned up after the possible duplicates question was passed
+        if (duplicateCheckEnabled && !DuplicateCheck.isSatisfied()) {
+            DuplicateCheck.returnToQuestion();
+            return;
+        }
+
         jq('#submit').attr('disabled', 'disabled');
         jq('#modal-overlay').fadeIn();
         jq('#cancelSubmission').attr('disabled', 'disabled');

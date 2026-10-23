@@ -36,7 +36,7 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>2.7.0</openMRSVersion>
+		<openMRSVersion>2.8.3</openMRSVersion>
         <uiframeworkVersion>4.0.0</uiframeworkVersion>
         <appframeworkVersion>2.19.0</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>

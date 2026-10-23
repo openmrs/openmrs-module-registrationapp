@@ -60,6 +60,14 @@
             <scope>provided</scope>
         </dependency>
 
+		<!-- the web context tests need the servlet API of openmrs-core 2.8.3 and later, see TRUNK-6345 -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.openmrs</groupId>
 			<artifactId>event-api</artifactId>

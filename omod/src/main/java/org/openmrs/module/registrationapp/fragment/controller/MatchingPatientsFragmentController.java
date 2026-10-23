@@ -41,6 +41,7 @@ import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject
 import org.openmrs.module.registrationcore.api.mpi.common.MpiPatient;
 import org.openmrs.module.registrationcore.api.search.FieldMatchResult;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -71,9 +72,6 @@ public class MatchingPatientsFragmentController {
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
 
-    // matches scoring below this are not returned (CUTOFF is used if the global property is not set)
-    public static final String SIMILAR_PATIENTS_CUTOFF_GP = "registrationapp.similarPatientsCutoff";
-
     // matches scoring at least this are flagged as strong matches; scores depend on the weights configured for the
     // search algorithm in use, so this is meant to be tuned per site
     public static final String STRONG_MATCH_CUTOFF_GP = "registrationapp.strongMatchCutoff";
@@ -95,16 +93,14 @@ public class MatchingPatientsFragmentController {
                                                  @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                                                  @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                  @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
-                                                 @SpringBean("adminService") AdministrationService adminService,
                                                  HttpServletRequest request, UiUtils ui) throws Exception {
         NavigableFormStructure formStructure = buildFormStructure(sessionContext, app, appFrameworkService);
         addToPatient(patient, formStructure, name, address, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints,
-                getCutoff(adminService, SIMILAR_PATIENTS_CUTOFF_GP, CUTOFF), determineMaxResults(app));
-        return getSimpleObjects(app, ui, matches, formStructure, getCutoff(adminService, STRONG_MATCH_CUTOFF_GP, STRONG_MATCH_CUTOFF));
+        List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        return getSimpleObjects(app, ui, matches, formStructure, getCutoff(ConfigUtil.getProperty(STRONG_MATCH_CUTOFF_GP), STRONG_MATCH_CUTOFF));
     }
 
     public List<SimpleObject> getExactPatients(UiSessionContext sessionContext,
@@ -116,16 +112,13 @@ public class MatchingPatientsFragmentController {
                                                @RequestParam(value="birthdateYears", required = false) Integer birthdateYears,
                                                @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
-                                               @SpringBean("adminService") AdministrationService adminService,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
-        NavigableFormStructure formStructure = buildFormStructure(sessionContext, app, appFrameworkService);
-        addToPatient(patient, formStructure, name, address, request);
+        addToPatient(patient, buildFormStructure(sessionContext, app, appFrameworkService), name, address, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
-        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints,
-                getCutoff(adminService, SIMILAR_PATIENTS_CUTOFF_GP, CUTOFF), determineMaxResults(app));
-        return getSimpleObjects(app, ui, matches, formStructure, getCutoff(adminService, STRONG_MATCH_CUTOFF_GP, STRONG_MATCH_CUTOFF));
+        List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
+        return getSimpleObjects(app, ui, matches, null, null);
     }
 
     public List<SimpleObject> getBiometricMatches(UiSessionContext sessionContext,
@@ -274,14 +267,14 @@ public class MatchingPatientsFragmentController {
         return results;
     }
 
-    static double getCutoff(AdministrationService adminService, String globalProperty, double defaultValue) {
-        String value = adminService.getGlobalProperty(globalProperty);
+    // the value of a setting, as it comes from ConfigUtil, falling back to the default if it is missing or not a number
+    static double getCutoff(String value, double defaultValue) {
         if (StringUtils.isNotBlank(value)) {
             try {
                 return Double.parseDouble(value.trim());
             }
             catch (NumberFormatException e) {
-                log.warn("Global property " + globalProperty + " is not a number (" + value + "), using " + defaultValue);
+                log.warn("Cutoff " + value + " is not a number, using " + defaultValue);
             }
         }
         return defaultValue;
