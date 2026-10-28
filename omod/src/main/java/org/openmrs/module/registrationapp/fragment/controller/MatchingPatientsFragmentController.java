@@ -14,11 +14,14 @@
 package org.openmrs.module.registrationapp.fragment.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
@@ -36,7 +39,9 @@ import org.openmrs.module.registrationcore.api.biometrics.BiometricEngine;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricMatch;
 import org.openmrs.module.registrationcore.api.biometrics.model.BiometricSubject;
 import org.openmrs.module.registrationcore.api.mpi.common.MpiPatient;
+import org.openmrs.module.registrationcore.api.search.FieldMatchResult;
 import org.openmrs.module.registrationcore.api.search.PatientAndMatchQuality;
+import org.openmrs.util.ConfigUtil;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
@@ -48,8 +53,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +67,16 @@ import java.util.Map;
 //TODO this class is to complex. Filtering by patient properties should be extracted into separate class.
 public class MatchingPatientsFragmentController {
 
+    private static final Log log = LogFactory.getLog(MatchingPatientsFragmentController.class);
+
     public static final int MAX_RESULTS = 10;
     public static final double CUTOFF = 2.0;
+
+    // matches scoring at least this are flagged as strong matches; scores depend on the weights configured for the
+    // search algorithm in use, so this is meant to be tuned per site
+    public static final String STRONG_MATCH_CUTOFF_GP = "registrationapp.strongMatchCutoff";
+
+    public static final double STRONG_MATCH_CUTOFF = 12.0;
 
     public static final String[] PATIENT_PROPERTIES = new String[]{"uuid", "givenName", "familyName",
             "gender", "birthdate", "personAddress"};
@@ -79,12 +94,13 @@ public class MatchingPatientsFragmentController {
                                                  @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                  @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                                                  HttpServletRequest request, UiUtils ui) throws Exception {
-        addToPatient(patient, app, name, address, sessionContext, appFrameworkService, request);
+        NavigableFormStructure formStructure = buildFormStructure(sessionContext, app, appFrameworkService);
+        addToPatient(patient, formStructure, name, address, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
         List<PatientAndMatchQuality> matches = service.findFastSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        return getSimpleObjects(app, ui, matches);
+        return getSimpleObjects(app, ui, matches, formStructure, getCutoff(ConfigUtil.getProperty(STRONG_MATCH_CUTOFF_GP), STRONG_MATCH_CUTOFF));
     }
 
     public List<SimpleObject> getExactPatients(UiSessionContext sessionContext,
@@ -97,12 +113,12 @@ public class MatchingPatientsFragmentController {
                                                @RequestParam(value="birthdateMonths", required = false) Integer birthdateMonths,
                                                @SpringBean("appFrameworkService") AppFrameworkService appFrameworkService,
                                                HttpServletRequest request, UiUtils ui) throws Exception {
-        addToPatient(patient, app, name, address, sessionContext, appFrameworkService, request);
+        addToPatient(patient, buildFormStructure(sessionContext, app, appFrameworkService), name, address, request);
 
         Map<String, Object> otherDataPoints = createDataPoints(birthdateYears, birthdateMonths);
 
         List<PatientAndMatchQuality> matches = service.findPreciseSimilarPatients(patient, otherDataPoints, CUTOFF, determineMaxResults(app));
-        return getSimpleObjects(app, ui, matches);
+        return getSimpleObjects(app, ui, matches, null, null);
     }
 
     public List<SimpleObject> getBiometricMatches(UiSessionContext sessionContext,
@@ -115,7 +131,7 @@ public class MatchingPatientsFragmentController {
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
                 sessionContext.generateAppContextModel());
         List<PatientAndMatchQuality> matches = getBiometricMatches(service, patientService, formStructure, request.getParameterMap());
-        return getSimpleObjects(app, ui, matches);
+        return getSimpleObjects(app, ui, matches, null, null);
     }
 
     private List<PatientAndMatchQuality> getBiometricMatches(RegistrationCoreService service, PatientService patientService,
@@ -141,11 +157,13 @@ public class MatchingPatientsFragmentController {
         return ret;
     }
 
-    private void addToPatient(Patient patient, AppDescriptor app, PersonName name, PersonAddress address,
-            UiSessionContext sessionContext, AppFrameworkService appFrameworkService, HttpServletRequest request) throws IOException {
-        NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService,
-                sessionContext.generateAppContextModel());
+    private NavigableFormStructure buildFormStructure(UiSessionContext sessionContext, AppDescriptor app,
+                                                      AppFrameworkService appFrameworkService) throws IOException {
+        return RegisterPatientFormBuilder.buildFormStructure(app, appFrameworkService, sessionContext.generateAppContextModel());
+    }
 
+    private void addToPatient(Patient patient, NavigableFormStructure formStructure, PersonName name, PersonAddress address,
+            HttpServletRequest request) {
         patient.addName(name);
         patient.addAddress(address);
         RegisterPatientFormBuilder.resolvePersonAttributeFields(formStructure, patient, request.getParameterMap());
@@ -184,6 +202,29 @@ public class MatchingPatientsFragmentController {
         }
     }
 
+    /**
+     * Formats a birthdate that has been entered on the registration form the same way the birthdate of an existing patient
+     * is formatted in the matches, so the two can be shown side by side.
+     */
+    public SimpleObject formatBirthdate(@RequestParam("day") Integer day, @RequestParam("month") Integer month,
+                                        @RequestParam("year") Integer year, UiUtils ui) {
+        return SimpleObject.create("birthdate", formatBirthdate(day, month, year, ui));
+    }
+
+    static String formatBirthdate(int day, int month, int year, UiUtils ui) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.setLenient(false);
+        try {
+            calendar.set(year, month - 1, day);
+            return ui.format(calendar.getTime());
+        }
+        catch (IllegalArgumentException e) {
+            // not a date, e.g. 31 February
+            return "";
+        }
+    }
+
     private Map<String, Object> createDataPoints(Integer birthdateYears, Integer birthdateMonths) {
         Map<String, Object> otherDataPoints = new HashMap<String, Object>();
         otherDataPoints.put("birthdateYears", birthdateYears);
@@ -191,7 +232,14 @@ public class MatchingPatientsFragmentController {
         return otherDataPoints;
     }
 
-    private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches) {
+    /**
+     * @param formStructure if given, the matches also carry the values of the person attributes that are fields on
+     *            the registration form (keyed by form field name), so the UI can compare them to what was entered
+     * @param strongCutoff if given, the matches are flagged as strong when they score at least this much, and carry
+     *            the per-field results reported by the search algorithm (if any)
+     */
+    private List<SimpleObject> getSimpleObjects(AppDescriptor app, UiUtils ui, List<PatientAndMatchQuality> matches,
+                                                NavigableFormStructure formStructure, Double strongCutoff) {
         List<SimpleObject> results = new ArrayList<SimpleObject>();
 
         for (PatientAndMatchQuality matchedPatient : matches) {
@@ -205,10 +253,69 @@ public class MatchingPatientsFragmentController {
                     patientSimple = SimpleObject.fromObject(patientEntry, ui, determinePropertiesToInclude(app, PATIENT_PROPERTIES));
                 }
                 addIdentifiersToPatientSimple(app, patientEntry, patientSimple);
+                patientSimple.put("score", matchedPatient.getScore());
+                if (strongCutoff != null) {
+                    patientSimple.put("strong", isStrong(matchedPatient.getScore(), strongCutoff));
+                    patientSimple.put("fieldResults", toSimpleFieldResults(matchedPatient.getFieldResults()));
+                }
+                if (formStructure != null) {
+                    patientSimple.put("attributes", getFormAttributeValues(formStructure, patientEntry));
+                }
                 results.add(patientSimple);
             }
         }
         return results;
+    }
+
+    // the value of a setting, as it comes from ConfigUtil, falling back to the default if it is missing or not a number
+    static double getCutoff(String value, double defaultValue) {
+        if (StringUtils.isNotBlank(value)) {
+            try {
+                return Double.parseDouble(value.trim());
+            }
+            catch (NumberFormatException e) {
+                log.warn("Cutoff " + value + " is not a number, using " + defaultValue);
+            }
+        }
+        return defaultValue;
+    }
+
+    static boolean isStrong(Double score, double strongCutoff) {
+        return score != null && score >= strongCutoff;
+    }
+
+    static List<SimpleObject> toSimpleFieldResults(List<FieldMatchResult> fieldResults) {
+        List<SimpleObject> simple = new ArrayList<SimpleObject>();
+        for (FieldMatchResult result : fieldResults) {
+            SimpleObject entry = new SimpleObject();
+            entry.put("field", result.getField());
+            entry.put("status", result.getStatus().name().toLowerCase());
+            entry.put("score", result.getScore());
+            simple.add(entry);
+        }
+        return simple;
+    }
+
+    static Map<String, String> getFormAttributeValues(NavigableFormStructure formStructure, Patient patient) {
+        Map<String, String> values = new LinkedHashMap<String, String>();
+        List<Field> fields = formStructure.getFields();
+        if (fields != null) {
+            for (Field field : fields) {
+                if (StringUtils.equals(field.getType(), "personAttribute")) {
+                    PersonAttribute attribute = null;
+                    for (PersonAttribute candidate : patient.getActiveAttributes()) {
+                        if (candidate.getAttributeType().getUuid().equals(field.getUuid())) {
+                            attribute = candidate;
+                            break;
+                        }
+                    }
+                    if (attribute != null && StringUtils.isNotBlank(attribute.getValue())) {
+                        values.put(field.getFormFieldName(), attribute.getValue());
+                    }
+                }
+            }
+        }
+        return values;
     }
 
     private Boolean alreadyInResults(Patient patient, List<SimpleObject> results) {

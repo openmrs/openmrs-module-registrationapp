@@ -17,6 +17,21 @@
     if (allowManualIdentifier) {
         ui.includeJavascript("registrationapp", "patientIdentifierFormatValidator.js");
     }
+
+    // the duplicate check is opt-in: the app configures a question with a field of type "possibleDuplicates", wherever it wants it to
+    // be. It is independent of the similar patients banner and of the exact matches on the confirmation, which have settings of their own.
+    def useDuplicateGate = combineSubSections != true &&
+        formStructure.fields?.any { it.type == 'possibleDuplicates' } == true
+
+    // the "note" banner belongs to the possible duplicates question, so without one the banner is the expandable one
+    def similarPatientsBannerStyle = (similarPatientsBanner == 'note' && !useDuplicateGate) ? 'expandable' : similarPatientsBanner
+    // the exact matches are listed on the confirmation in the markup of the expandable banner
+    def includeSimilarPatientsMarkup = similarPatientsBannerStyle == 'expandable' || checkExactMatchesOnConfirmation == true
+
+    if (useDuplicateGate) {
+        ui.includeJavascript("registrationapp", "duplicateCheck.js");
+    }
+
     ui.includeJavascript("registrationapp", "registerPatient.js");
     ui.includeCss("registrationapp","registerPatient.css")
 
@@ -38,6 +53,12 @@
     def patientDashboardLink = patientDashboardLink ? ("/${contextPath}/" + patientDashboardLink) : ui.pageLink("coreapps", "clinicianfacing/patient")
     def identifierSectionFound = false
 
+    def duplicateMessageCodes = ["same", "similar", "different", "notRecorded", "title", "noteNone", "noteFound", "warning", "checking", "failed", "retry", "noMatches", "continue",
+        "tag.strong", "tag.possible", "field.name", "field.gender", "field.birthdate", "field.mothersFirstName", "field.address",
+        "field.phone", "compare", "showOther", "hideOther", "none.many", "none.one", "mustReview", "reviewed", "thisIsPatient",
+        "thisRegistration", "existingRecord", "backToList", "compareTitle", "previous", "next", "close", "position"
+    ].collect { "registrationapp.duplicates." + it }
+
 %>
 
 <% if(includeFragments){
@@ -47,7 +68,7 @@
 } %>
 
 <!-- used within registerPatient.js -->
-<%=	ui.includeFragment("appui", "messages", [ codes: genderCodes.flatten()
+<%=	ui.includeFragment("appui", "messages", [ codes: genderCodes.flatten() + (useDuplicateGate ? duplicateMessageCodes : [])
 ]) %>
 
 ${ ui.includeFragment("uicommons", "validationMessages")}
@@ -111,6 +132,9 @@ fieldset[id\$="-fieldset"] div > div {
     var testFormStructure = "${formStructure}";
     var patientDashboardLink = '${patientDashboardLink}';
     var appId = '${ui.encodeJavaScript(appId)}';
+    var duplicateCheckEnabled = ${useDuplicateGate};
+    var similarPatientsBanner = '${ui.encodeJavaScript(similarPatientsBannerStyle)}';
+    var checkExactMatchesOnConfirmation = ${checkExactMatchesOnConfirmation == true};
 
     // hack to create the sections variable used by the unknown patient handler in registerPatient.js
     var sections =  [];
@@ -196,6 +220,13 @@ fieldset[id\$="-fieldset"] div > div {
         ${ ui.message("registrationapp.registration.label") }
     </h2>
 
+<% if (useDuplicateGate && similarPatientsBannerStyle == 'note') { %>
+    <div id="duplicates-note" class="note-container" role="status" aria-live="polite" style="display: none;">
+        <div class="note"><div class="text"></div></div>
+    </div>
+
+<% } %>
+<% if (includeSimilarPatientsMarkup) { %>
 	<div id="similarPatients" class="highlighted" style="display: none;">
 		   <div class="left" style="padding: 6px"><span id="similarPatientsCount"></span> ${ ui.message("registrationapp.similarPatientsFound") }</div><button class="right" id="reviewSimilarPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
 		   <div class="clear"></div>
@@ -207,6 +238,7 @@ fieldset[id\$="-fieldset"] div > div {
         </ul>
     </div>
 
+<% } %>
     <div id="biometricPatients" class="highlighted" style="display: none;">
         <div class="left" style="padding: 6px"><span id="biometricPatientsCount"></span> ${ ui.message("registrationapp.biometrics.matchingPatientsFound") }</div><button class="right" id="reviewBiometricPatientsButton">${ ui.message("registrationapp.reviewSimilarPatients.button") }</button>
         <div class="clear"></div>
@@ -395,10 +427,12 @@ fieldset[id\$="-fieldset"] div > div {
                     <% } %>
 
                     <% questions.each { question ->
-	                    // Skip re-rendering custom name field if present in app definition/formStructure
-	                    if (question.id == null || question.id != 'personName') {
+	                    def isDuplicatesQuestion = question.fields?.any { it.type == 'possibleDuplicates' } == true
+	                    // Skip re-rendering custom name field if present in app definition/formStructure, and the possible duplicates
+	                    // question when the duplicate check isn't in use
+	                    if ((question.id == null || question.id != 'personName') && (useDuplicateGate || !isDuplicatesQuestion)) {
 	                        def fields=question.fields
-	                        def classes = "";
+	                        def classes = isDuplicatesQuestion ? "duplicates-gate no-confirmation" : "";
 	                        if (question.legend == "Person.address") {
 	                            classes = "requireOne"
 	                        }
@@ -465,10 +499,12 @@ fieldset[id\$="-fieldset"] div > div {
             <div class="before-dataCanvas"></div>
             <div id="dataCanvas"></div>
             <div class="after-data-canvas"></div>
+            <% if (checkExactMatchesOnConfirmation == true) { %>
             <div id="exact-matches" style="display: none; margin-bottom: 20px">
                 <span class="field-error">${ui.message("registrationapp.exactPatientFound")}</span>
                 <ul id="exactPatientsSelect" class="select"></ul>
             </div>
+            <% } %>
             <div id="confirmationQuestion">
                 ${ ui.message("registrationapp.confirm") }
                 <p style="display: inline">

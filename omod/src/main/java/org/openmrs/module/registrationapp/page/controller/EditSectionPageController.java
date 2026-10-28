@@ -68,7 +68,8 @@ public class EditSectionPageController {
         sessionContext.requireAuthentication();
 
         NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(app, false);
-        addModelAttributes(model, patient, formStructure.getSections().get(sectionId), administrationService, returnUrl,
+        addModelAttributes(model, patient, RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(formStructure.getSections().get(sectionId)),
+                administrationService, returnUrl,
                 app);
     }
 
@@ -198,7 +199,8 @@ public class EditSectionPageController {
             session.setAttribute(UiCommonsConstants.SESSION_ATTRIBUTE_ERROR_MESSAGE, errorMessage.toString());
         }
 
-        addModelAttributes(model, patient, formStructure.getSections().get(sectionId), administrationService, returnUrl,
+        addModelAttributes(model, patient, RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(formStructure.getSections().get(sectionId)),
+                administrationService, returnUrl,
                 app);
         //redisplay the form
         return null;

@@ -136,4 +136,34 @@ public class RegisterPatientFormBuilderTest {
 			assertThat(question.getId(), not(equalTo("phoneNumber")));
 		}
 	}
+
+	@Test
+	public void withoutRegistrationOnlyQuestions_shouldRemoveThePossibleDuplicatesQuestion() throws Exception {
+		AppDescriptor appDescriptor = new ObjectMapper().readValue("{\"id\": \"registrationapp.test\", \"config\": {\"sections\": [{"
+		        + "\"id\": \"contactInfo\", \"label\": \"Contact info\", \"questions\": ["
+		        + "{\"id\": \"phoneNumberLabel\", \"legend\": \"Phone\", \"fields\": [{\"type\": \"personAttribute\", \"formFieldName\": \"phoneNumber\","
+		        + "\"widget\": {\"providerName\": \"uicommons\", \"fragmentId\": \"field/text\"}}]},"
+		        + "{\"id\": \"possible-duplicates\", \"legend\": \"Duplicates\", \"fields\": [{\"type\": \"possibleDuplicates\","
+		        + "\"widget\": {\"providerName\": \"registrationapp\", \"fragmentId\": \"field/possibleDuplicates\", \"config\": {\"triggerField\": \"phoneNumber\"}}}]}"
+		        + "]}]}}", AppDescriptor.class);
+
+		NavigableFormStructure formStructure = RegisterPatientFormBuilder.buildFormStructure(appDescriptor);
+		Section section = formStructure.getSections().get("contactInfo");
+
+		// the registration form keeps the question, with its config for the widget
+		assertEquals(2, section.getQuestions().size());
+		assertThat(formStructure.getFields(), hasItem(hasProperty("type", is(RegisterPatientFormBuilder.POSSIBLE_DUPLICATES_FIELD_TYPE))));
+		assertEquals("phoneNumber", formStructure.getFields().get(1).getFragmentRequest().getConfiguration().get("triggerField"));
+
+		// viewing or editing a section of an existing patient leaves it out
+		assertEquals(section, RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(section));
+		assertEquals(1, section.getQuestions().size());
+		assertEquals("phoneNumberLabel", section.getQuestions().get(0).getId());
+	}
+
+	@Test
+	public void withoutRegistrationOnlyQuestions_shouldAllowForNoSection() {
+		assertEquals(null, RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(null));
+		assertThat(RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(new Section()).getQuestions(), is((List<Question>) null));
+	}
 }

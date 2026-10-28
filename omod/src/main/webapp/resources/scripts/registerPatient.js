@@ -119,8 +119,15 @@ jq(function() {
         focusedField.focus();
     };
 
-    jq('input').change(getSimilarPatients);
-    jq('select').change(getSimilarPatients);
+    if (similarPatientsBanner === 'expandable') {
+        jq('input').change(getSimilarPatients);
+        jq('select').change(getSimilarPatients);
+    }
+
+    if (duplicateCheckEnabled) {
+        /* The possible duplicates question, with the "note" banner if configured, see duplicateCheck.js */
+        DuplicateCheck.init(similarPatientsBanner === 'note');
+    }
 
     // Biometric matching
     // TODO: This is mostly copied from similar patients above.  Refactor into shared, common functionality as appropriate
@@ -213,6 +220,10 @@ jq(function() {
     /* Exact match patient functionality */
     jq("#confirmation").on('select', function (confSection) {
 
+        if (!checkExactMatchesOnConfirmation) {
+            return;
+        }
+
         var formData = jq('#registration').serialize();
 
         jq('#exact-matches').hide();
@@ -230,6 +241,13 @@ jq(function() {
     /* Submit functionality */
     jq('#registration').submit(function (e) {
         e.preventDefault();
+
+        // matches may have turned up after the possible duplicates question was passed
+        if (duplicateCheckEnabled && !DuplicateCheck.isSatisfied()) {
+            DuplicateCheck.returnToQuestion();
+            return;
+        }
+
         jq('#submit').attr('disabled', 'disabled');
         jq('#modal-overlay').fadeIn();
         jq('#cancelSubmission').attr('disabled', 'disabled');

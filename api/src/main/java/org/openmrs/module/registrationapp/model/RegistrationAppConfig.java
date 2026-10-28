@@ -44,6 +44,20 @@ public class RegistrationAppConfig {
     @JsonProperty
     private Integer maxPatientSearchResults;
 
+    // how the form tells that similar patients have been found while it is filled in: "expandable" (the default) is a banner
+    // that opens to list the patients, "note" is a line of text, with the matches reviewed at the possible duplicates question
+    // (falls back to "expandable" if the form has none), "none" is no banner
+    public static final String SIMILAR_PATIENTS_BANNER_EXPANDABLE = "expandable";
+    public static final String SIMILAR_PATIENTS_BANNER_NOTE = "note";
+    public static final String SIMILAR_PATIENTS_BANNER_NONE = "none";
+
+    @JsonProperty
+    private String similarPatientsBanner;
+
+    // whether to list patients that match exactly on the confirmation (default is true)
+    @JsonProperty
+    private Boolean checkExactMatchesOnConfirmation;
+
     public RegistrationAppConfig() {
     }
 
@@ -109,6 +123,22 @@ public class RegistrationAppConfig {
 
     public void setMaxPatientSearchResults(Integer maxPatientSearchResults) {
         this.maxPatientSearchResults = maxPatientSearchResults;
+    }
+
+    public String getSimilarPatientsBanner() {
+        return similarPatientsBanner;
+    }
+
+    public void setSimilarPatientsBanner(String similarPatientsBanner) {
+        this.similarPatientsBanner = similarPatientsBanner;
+    }
+
+    public Boolean getCheckExactMatchesOnConfirmation() {
+        return checkExactMatchesOnConfirmation;
+    }
+
+    public void setCheckExactMatchesOnConfirmation(Boolean checkExactMatchesOnConfirmation) {
+        this.checkExactMatchesOnConfirmation = checkExactMatchesOnConfirmation;
     }
 
     public RegistrationEncounter getRegistrationEncounter() {

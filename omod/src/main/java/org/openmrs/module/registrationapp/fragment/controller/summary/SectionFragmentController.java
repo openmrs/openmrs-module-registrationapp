@@ -42,7 +42,7 @@ public class SectionFragmentController {
         NameSupportCompatibility nameSupport = Context.getRegisteredComponent(NameSupportCompatibility.ID, NameSupportCompatibility.class);
 
         model.put("nameTemplate", nameSupport.getDefaultLayoutTemplate());
-        model.put("section", formStructure.getSections().get(sectionId));
+        model.put("section", RegisterPatientFormBuilder.withoutRegistrationOnlyQuestions(formStructure.getSections().get(sectionId)));
         model.put("uiUtils", new RegistrationAppUiUtils());
     }
 

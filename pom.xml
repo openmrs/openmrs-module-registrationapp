@@ -36,7 +36,7 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>2.7.0</openMRSVersion>
+		<openMRSVersion>2.8.3</openMRSVersion>
         <uiframeworkVersion>4.0.0</uiframeworkVersion>
         <appframeworkVersion>2.19.0</appframeworkVersion>
         <springVersion>3.0.5.RELEASE</springVersion>
@@ -44,7 +44,7 @@
         <uicommonsVersion>3.2.0-SNAPSHOT</uicommonsVersion>
         <emrapiVersion>2.0.0</emrapiVersion>
         <calculationVersion>2.0.0</calculationVersion>
-        <registrationcoreVersion>1.13.0</registrationcoreVersion>
+        <registrationcoreVersion>2.0.0-SNAPSHOT</registrationcoreVersion>
         <reportingModuleVersion>2.0.0</reportingModuleVersion>
         <addresshierarchyVersion>2.21.0</addresshierarchyVersion>
         <appuiVersion>1.18.0</appuiVersion>

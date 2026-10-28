@@ -1,5 +1,6 @@
 package org.openmrs.module.registrationapp.page.controller;
 
+import org.codehaus.jackson.JsonNode;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.context.Context;
@@ -14,6 +15,7 @@ import org.openmrs.module.registrationapp.RegistrationAppUiUtils;
 import org.openmrs.module.registrationapp.form.RegisterPatientFormBuilder;
 import org.openmrs.module.registrationapp.model.NavigableFormStructure;
 import org.openmrs.module.registrationapp.model.Question;
+import org.openmrs.module.registrationapp.model.RegistrationAppConfig;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.SpringBean;
@@ -68,6 +70,9 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
                 app.getConfig().get("patientDashboardLink").getTextValue() : null);
         model.addAttribute("combineSubSections", app.getConfig().get("combineSubSections") !=null ?
         		app.getConfig().get("combineSubSections").getBooleanValue() : false);
+        model.addAttribute("similarPatientsBanner", getSimilarPatientsBanner(app));
+        model.addAttribute("checkExactMatchesOnConfirmation", app.getConfig().get("checkExactMatchesOnConfirmation") != null ?
+                app.getConfig().get("checkExactMatchesOnConfirmation").getBooleanValue() : true);
         model.addAttribute("enableOverrideOfAddressPortlet",
                 Context.getAdministrationService().getGlobalProperty("addresshierarchy.enableOverrideOfAddressPortlet", "false"));
         model.addAttribute("breadcrumbOverride", breadcrumbOverride);
@@ -81,5 +86,18 @@ public class RegisterPatientPageController extends AbstractRegistrationAppPageCo
         Collections.sort(includeFragments);
         model.addAttribute("includeFragments", includeFragments);
         model.addAttribute("genderOptions", RegistrationAppUiUtils.getGenderOptions(app));
+    }
+
+    /**
+     * @return the similarPatientsBanner setting of the app, "expandable" if it is not set or not a known value
+     */
+    static String getSimilarPatientsBanner(AppDescriptor app) {
+        JsonNode setting = app.getConfig().get("similarPatientsBanner");
+        String banner = setting != null ? setting.getTextValue() : null;
+        if (RegistrationAppConfig.SIMILAR_PATIENTS_BANNER_NOTE.equals(banner) ||
+                RegistrationAppConfig.SIMILAR_PATIENTS_BANNER_NONE.equals(banner)) {
+            return banner;
+        }
+        return RegistrationAppConfig.SIMILAR_PATIENTS_BANNER_EXPANDABLE;
     }
 }
