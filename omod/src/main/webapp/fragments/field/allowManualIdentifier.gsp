@@ -1,5 +1,10 @@
 <%
     config.require("identifierTypeName")
+
+    // the identifier type's format is validated in the browser by the patient-identifier-format validator
+    def identifierFormat = config.identifierFormat
+    def identifierFormatMessage = identifierFormat ?
+            ui.message("registrationapp.error.identifier.invalidFormat", config.identifierFormatDescription ?: identifierFormat) : null
 %>
 <fieldset id="patient-identifier-question">
     <legend id="patientIdentifierLabel">${config.identifierTypeName}</legend>
@@ -12,6 +17,13 @@
 
     <p>
         <label for="patient-identifier">${ui.message("registrationapp.patient.identifier.label")}</label>
-        <input id="patient-identifier" name="patientIdentifier"/>
+        <% if (identifierFormat) { %>
+            <input id="patient-identifier" name="patientIdentifier" class="patient-identifier-format"
+                   data-identifier-format="${ui.escapeAttribute(identifierFormat)}"
+                   data-identifier-format-message="${ui.escapeAttribute(identifierFormatMessage)}"/>
+        <% } else { %>
+            <input id="patient-identifier" name="patientIdentifier"/>
+        <% } %>
+        ${ ui.includeFragment("uicommons", "fieldErrors", [ fieldName: "patientIdentifier" ]) }
     </p>
 </fieldset>
