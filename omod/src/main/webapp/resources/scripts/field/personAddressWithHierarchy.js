@@ -3,6 +3,21 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
 
     var levels;
 
+    // Set once the user presses a key, clicks or taps anywhere on the page. The initial load runs after AJAX calls
+    // return, and must not then move focus away from where the user already is (e.g. typing in the quick search)
+    var userHasInteracted = false;
+    $(document).on('keydown mousedown touchstart', function () {
+        userHasInteracted = true;
+    });
+
+    // move focus to a field, unless this is part of the initial load and the user has already started using the page
+    function focusField(element, initialLoad) {
+        if (initialLoad && userHasInteracted) {
+            return;
+        }
+        element.focus();
+    }
+
     $.getJSON('/' + OPENMRS_CONTEXT_PATH + '/module/addresshierarchy/ajax/getOrderedAddressHierarchyLevels.form', {}, function (result) {
         levels = result;
         _.each(levels, function (item, index) {
@@ -20,11 +35,11 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
             for (let i=0; i <levels.length; i++ ) {
                 if (!levels[i].lastSelection) {
                     //this level is empty, check to see if there are available entries
-                    preloadLevels(levels[i]);
+                    preloadLevels(levels[i], true);
                 }
             }
         } else {
-            preloadLevels(levels[0]);
+            preloadLevels(levels[0], true);
         }
     });
 
@@ -49,7 +64,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     }
 
     // Starting from this level down disable all remaining levels and associated input boxes
-    function disableLevelsAfter(level) {
+    // initialLoad is true when called while loading the page rather than in response to the user
+    function disableLevelsAfter(level, initialLoad) {
         if (!_.contains(personAddressWithHierarchy.manualFields, level.addressField)) {
             let inputElement = getInputElementFor(level.addressField);
             if (inputElement) {
@@ -62,26 +78,27 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         if ( nextLevel != null ) {
             let  isManualField = _.contains(personAddressWithHierarchy.manualFields, nextLevel.addressField);
             if ( !isManualField ) {
-                disableLevelsAfter(nextLevel);
+                disableLevelsAfter(nextLevel, initialLoad);
             } else {
                 // focus on the first manual field
-                getInputElementFor(nextLevel.addressField).focus();
+                focusField(getInputElementFor(nextLevel.addressField), initialLoad);
             }
         }
     }
 
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
-    function preloadLevels(level) {
+    // initialLoad is true when called while loading the page rather than in response to the user
+    function preloadLevels(level, initialLoad) {
         var searchString = searchStringUntil(level.addressField);
         if (searchString != null) {
             queryWithCallback(searchString, function (result) {
                 if (result.length == 0) {
                     // there are no more entries from this level down, therefore disable all remaining levels of the hierarchy
-                    disableLevelsAfter(level);
+                    disableLevelsAfter(level, initialLoad);
                 } else if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
-                    preloadLevels(levelAfter(level.addressField));
+                    preloadLevels(levelAfter(level.addressField), initialLoad);
                 } else {
                     // more than one option available for this level
                     var currentValue = getValue(level.addressField);
@@ -90,10 +107,10 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     // clear it (legalValues was never populated) and it would be lost on the confirmation screen
                     if (currentValue && _.contains(_.pluck(result, 'name'), currentValue)) {
                         setValue(level.addressField, currentValue);
-                        preloadLevels(levelAfter(level.addressField));
+                        preloadLevels(levelAfter(level.addressField), initialLoad);
                     } else {
                         // focus on the element
-                        getInputElementFor(level.addressField).focus();
+                        focusField(getInputElementFor(level.addressField), initialLoad);
                     }
                 }
             });
