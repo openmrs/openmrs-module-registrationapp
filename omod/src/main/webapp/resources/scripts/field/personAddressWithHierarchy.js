@@ -11,8 +11,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     });
 
     // move focus to a field, unless this is part of the initial load and the user has already started using the page
-    function focusField(element, initialLoad) {
-        if (initialLoad && userHasInteracted) {
+    function focusField(element, isInitialLoad) {
+        if (isInitialLoad && userHasInteracted) {
             return;
         }
         element.focus();
@@ -64,8 +64,8 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
     }
 
     // Starting from this level down disable all remaining levels and associated input boxes
-    // initialLoad is true when called while loading the page rather than in response to the user
-    function disableLevelsAfter(level, initialLoad) {
+    // isInitialLoad is true when called while loading the page rather than in response to the user
+    function disableLevelsAfter(level, isInitialLoad) {
         if (!_.contains(personAddressWithHierarchy.manualFields, level.addressField)) {
             let inputElement = getInputElementFor(level.addressField);
             if (inputElement) {
@@ -78,27 +78,27 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
         if ( nextLevel != null ) {
             let  isManualField = _.contains(personAddressWithHierarchy.manualFields, nextLevel.addressField);
             if ( !isManualField ) {
-                disableLevelsAfter(nextLevel, initialLoad);
+                disableLevelsAfter(nextLevel, isInitialLoad);
             } else {
                 // focus on the first manual field
-                focusField(getInputElementFor(nextLevel.addressField), initialLoad);
+                focusField(getInputElementFor(nextLevel.addressField), isInitialLoad);
             }
         }
     }
 
     // starting from the top, load whatever we can (pre-filling levels if they only have one option, pre-fetching options
     // for the first level with choices
-    // initialLoad is true when called while loading the page rather than in response to the user
-    function preloadLevels(level, initialLoad) {
+    // isInitialLoad is true when called while loading the page rather than in response to the user
+    function preloadLevels(level, isInitialLoad) {
         var searchString = searchStringUntil(level.addressField);
         if (searchString != null) {
             queryWithCallback(searchString, function (result) {
                 if (result.length == 0) {
                     // there are no more entries from this level down, therefore disable all remaining levels of the hierarchy
-                    disableLevelsAfter(level, initialLoad);
+                    disableLevelsAfter(level, isInitialLoad);
                 } else if (result.length == 1) {
                     setValue(level.addressField, result[0].name);
-                    preloadLevels(levelAfter(level.addressField), initialLoad);
+                    preloadLevels(levelAfter(level.addressField), isInitialLoad);
                 } else {
                     // more than one option available for this level
                     var currentValue = getValue(level.addressField);
@@ -107,10 +107,10 @@ function PersonAddressWithHierarchy(personAddressWithHierarchy) {
                     // clear it (legalValues was never populated) and it would be lost on the confirmation screen
                     if (currentValue && _.contains(_.pluck(result, 'name'), currentValue)) {
                         setValue(level.addressField, currentValue);
-                        preloadLevels(levelAfter(level.addressField), initialLoad);
+                        preloadLevels(levelAfter(level.addressField), isInitialLoad);
                     } else {
                         // focus on the element
-                        focusField(getInputElementFor(level.addressField), initialLoad);
+                        focusField(getInputElementFor(level.addressField), isInitialLoad);
                     }
                 }
             });
